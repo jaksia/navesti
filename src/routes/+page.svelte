@@ -86,13 +86,11 @@
 					class="h-6 w-6 rounded-full {safetySignal == 3 ? 'bg-green-600' : 'bg-stone-900'}"
 				></div>
 				<div
-					class="relative h-6 w-6 rounded-full {safetySignal == 4
+					class="relative h-6 w-6 rounded-full p-[5px] {safetySignal == 4
 						? 'bg-yellow-400'
 						: 'bg-stone-900'}"
 				>
-					<div
-						class="absolute left-1/2 top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 transform rounded-full bg-stone-900"
-					></div>
+					<div class="h-3.5 w-3.5 transform rounded-full bg-stone-900"></div>
 				</div>
 				<div
 					class="mt-3 h-6 w-6 rounded-full {safetyClicked ? 'bg-sky-500' : 'bg-stone-900'}"
@@ -212,11 +210,13 @@
 			/>
 		</div>
 	{/if}
+	<a href="/spadovisko" class="mt-auto font-bold underline">Spádovisko</a>
 </div>
 
 <style lang="scss">
 	.pole {
 		min-height: 24rem;
+		background: gray;
 		&.hlavne {
 			background-image: linear-gradient(
 				to bottom,
@@ -269,9 +269,6 @@
 				#00f 75%,
 				#fff 75%
 			);
-		}
-		&.predzvest {
-			background: gray;
 		}
 	}
 	.label {
