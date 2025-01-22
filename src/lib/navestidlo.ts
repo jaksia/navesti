@@ -15,6 +15,9 @@ export type Options = {
     bulbCount: number;
     speedIndication: boolean;
     labelExample: string[];
+    
+    repeating: boolean;
+    privolavanie: boolean;
 }
 
 export const typeOptions: { [key in TypNavestidla]: Options } = {
@@ -22,39 +25,51 @@ export const typeOptions: { [key in TypNavestidla]: Options } = {
         poleStyleClass: 'hlavne',
         bulbCount: 4,
         speedIndication: true,
-        labelExample: ['1L', 'KL', 'L5', 'S2-6']
+        labelExample: ['1L', 'KL', 'L5', 'S2-6'],
+        repeating: true,
+        privolavanie: true,
     },
     [TypNavestidla.HLAVNE_IBA_JAZDA]: {
         poleStyleClass: 'hlavne_jazda',
         labelStyleClass: 'hlavne',
         bulbCount: 4,
         speedIndication: true,
-        labelExample: ['2S', '1MS', 'S3-7', 'L4']
+        labelExample: ['2S', '1MS', 'S3-7', 'L4'],
+        repeating: true,
+        privolavanie: true,
     },
     [TypNavestidla.VLOZENE]: {
         poleStyleClass: 'vlozene',
         labelStyleClass: 'hlavne',
         bulbCount: 3,
         speedIndication: false,
-        labelExample: ['VL5', 'VS2-6']
+        labelExample: ['VL5', 'VS2-6'],
+        repeating: false,
+        privolavanie: false,
     },
     [TypNavestidla.AUTOBLOK]: {
         poleStyleClass: 'autoblok',
         bulbCount: 3,
         speedIndication: false,
-        labelExample: ['1-487', '2-358']
+        labelExample: ['1-487', '2-358'],
+        repeating: false,
+        privolavanie: false,
     },
     [TypNavestidla.ZRIADOVACIE]: {
         poleStyleClass: 'zriadovacie',
         bulbCount: 2,
         speedIndication: false,
-        labelExample: ['Se1', 'Se24']
+        labelExample: ['Se1', 'Se24'],
+        repeating: false,
+        privolavanie: false,
     },
     [TypNavestidla.PREDZVEST]: {
         poleStyleClass: 'predzvest',
         bulbCount: 2,
         speedIndication: false,
-        labelExample: ['Pr1L', 'Pr2KS']
+        labelExample: ['Pr1L', 'Pr2KS'],
+        repeating: false,
+        privolavanie: false,
     }
 }
 
