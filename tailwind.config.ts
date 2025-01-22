@@ -7,8 +7,8 @@ export default {
 	theme: {
 		extend: {
 			animation: {
-				'blink': 'blink 1.5s infinite',
-				'blink-fast': 'blink 0.7s infinite'
+				'blink': 'blink 1s infinite',
+				'blink-fast': 'blink 0.5s infinite'
 			},
 			keyframes: {
 				blink: {

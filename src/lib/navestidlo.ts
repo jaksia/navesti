@@ -105,8 +105,7 @@ export const nazvyNavesti = {
 export const navestneZnaky = {
     'volno': [null, 'bg-green-600', null, null],
     'stoj': {
-        [TypNavestidla.HLAVNE]: [null, null, null, 'bg-red-600'],
-        [TypNavestidla.AUTOBLOK]: [null, null, 'bg-red-600'],
+        [TypNavestidla.HLAVNE]: [null, null, 'bg-red-600', null],
         [TypNavestidla.VLOZENE]: ['bg-red-600', null, 'bg-blue-600'],
     },
     'vystraha': ['bg-yellow-400', null, null, null],
@@ -115,7 +114,7 @@ export const navestneZnaky = {
     80: [null, 'bg-green-600 animate-blink', null, null],
     100: [null, 'bg-green-600 animate-blink-fast', null, null],
     'p_dovoleny': {
-        [TypNavestidla.HLAVNE]: [null, null, 'bg-white', null],
+        [TypNavestidla.HLAVNE]: [null, null, null, 'bg-white'],
         [TypNavestidla.VLOZENE]: [null, 'bg-white', null],
         [TypNavestidla.ZRIADOVACIE]: ['bg-white', null],
     },
@@ -126,5 +125,5 @@ export const navestneZnaky = {
     'odchod_dovoluje': [null, 'bg-white animate-blink', null]
 }
 
-export const privolavaciaNavest = [null, null, 'bg-white animate-blink'];
-export const opakovanieNavesti = [null, null, 'bg-white'];
+export const privolavaciaNavest = [null, null, null, 'bg-white animate-blink'];
+export const opakovanieNavesti = [null, null, null, 'bg-white'];

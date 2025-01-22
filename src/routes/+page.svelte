@@ -141,7 +141,7 @@
 </div>
 <div class="flex flex-col bg-gray-500 p-5">
 	<div>
-		<label for="typ">Typ navestidla</label>
+		<label for="typ">Typ návestidla</label>
 		<select bind:value={typ} id="typ" name="typ" class="mt-1 block w-full">
 			{#each Object.values(TypNavestidla) as typNavestidla}
 				<option value={typNavestidla}>{typNavestidla}</option>
@@ -163,7 +163,7 @@
 		</select>
 	</div>
 	<div>
-		<label for="navest">Navest</label>
+		<label for="navest">Návesť</label>
 		<select bind:value={navest} id="navest" name="navest" class="mt-1 block w-full">
 			<option value={null}>---</option>
 			{#each povoleneNavesti[typ] as navest}
@@ -177,7 +177,7 @@
 		</select>
 	</div>
 	<div>
-		<label for="privolavacia">Privolávacia</label>
+		<label for="privolavacia">Privolávacia návesť</label>
 		<input
 			bind:checked={privolavacia}
 			disabled={!options.privolavanie}
@@ -211,6 +211,11 @@
 		</div>
 	{/if}
 	<a href="/spadovisko" class="mt-auto font-bold underline">Spádovisko</a>
+	<i class="mt-4z text-sm">
+		Presný počet a poradie svetiel sa môže líšiť.<br />
+		Napr. opakovacie hlavné návestidlá môžu mať <br />
+		biele svetlo tam, kde býva štandardne červené.
+	</i>
 </div>
 
 <style lang="scss">
