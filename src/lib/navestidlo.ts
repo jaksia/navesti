@@ -85,7 +85,7 @@ export const povoleneNavesti: { [key in TypNavestidla]: Navest[] } = {
     [TypNavestidla.HLAVNE_IBA_JAZDA]: ['volno', 'stoj', 'vystraha', 40, 60, 80, 100],
     [TypNavestidla.AUTOBLOK]: ['volno', 'stoj', 'vystraha', 40, 60, 80, 100],
     [TypNavestidla.PREDZVEST]: ['volno', 'vystraha', 40, 60, 80, 100],
-    [TypNavestidla.VLOZENE]: ['stoj', 'odchod_dovoluje'],
+    [TypNavestidla.VLOZENE]: ['stoj', 'odchod_dovoluje', 'p_dovoleny', 'p_zakazany'],
     [TypNavestidla.ZRIADOVACIE]: ['p_dovoleny', 'p_zakazany']
 }
 
@@ -116,9 +116,13 @@ export const navestneZnaky = {
     100: [null, 'bg-green-600 animate-blink-fast', null, null],
     'p_dovoleny': {
         [TypNavestidla.HLAVNE]: [null, null, 'bg-white', null],
-        [TypNavestidla.ZRIADOVACIE]: ['bg-white', null, null, null],
+        [TypNavestidla.VLOZENE]: [null, 'bg-white', null],
+        [TypNavestidla.ZRIADOVACIE]: ['bg-white', null],
     },
-    'p_zakazany': [null, 'bg-blue-600', null, null],
+    'p_zakazany': {
+        [TypNavestidla.VLOZENE]: [null, null, 'bg-blue-600'],
+        [TypNavestidla.ZRIADOVACIE]: [null, 'bg-blue-600'],
+    },
     'odchod_dovoluje': [null, 'bg-white animate-blink', null]
 }
 
