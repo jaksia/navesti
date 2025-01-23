@@ -2,7 +2,7 @@
 	import { RezimSpadoviska, spadNavestneZnaky, type TypSpadNavestidla } from '$lib/spadovisko';
 	import { navestneZnaky } from './navestidlo';
 
-	let { mode, type, label }: { mode: RezimSpadoviska; type: TypSpadNavestidla; lebel: string } =
+	let { mode, type, label }: { mode: RezimSpadoviska; type: TypSpadNavestidla; label: string } =
 		$props();
 
 	let aktivneZnaky = $derived(spadNavestneZnaky[type][mode]);

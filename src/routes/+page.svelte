@@ -16,7 +16,7 @@
 
 	let privolavacia = $state(false);
 	let opakovanie = $state(false);
-	let poslednyAutoblok = $state(true);
+	let poslednyAutoblok = $state(false);
 
 	let navest: Navest | null = $state(null);
 
@@ -25,8 +25,7 @@
 		if (navest) {
 			const options = navestneZnaky[navest];
 			if (Array.isArray(options)) znaky = options;
-			// @ts-ignore
-			else znaky = options[typ] ?? options[TypNavestidla.HLAVNE];
+			else znaky = options[typ] ?? options[TypNavestidla.HLAVNE] ?? [null, null, null, null];
 		} else znaky = [null, null, null, null];
 
 		if (privolavacia) znaky = znaky.map((znak, i) => znak ?? '' + (privolavaciaNavest[i] ?? ''));
@@ -210,8 +209,11 @@
 			/>
 		</div>
 	{/if}
-	<a href="/spadovisko" class="mt-auto font-bold underline">Spádovisko</a>
-	<i class="mt-4z text-sm">
+	<div class="mt-auto">
+		<a href="/spadovisko" class="block font-bold underline">Spádovisko</a>
+		<a href="/autoblok" class="block font-bold underline">Autoblok</a>
+	</div>
+	<i class="mt-4 text-sm">
 		Presný počet a poradie svetiel sa môže líšiť.<br />
 		Napr. opakovacie hlavné návestidlá môžu mať <br />
 		biele svetlo tam, kde býva štandardne červené.

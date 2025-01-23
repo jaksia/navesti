@@ -1,0 +1,53 @@
+<svg
+   width="512"
+   height="512"
+   xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient
+       id="linearGradient2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop
+         style="stop-color:#474747;stop-opacity:1;"
+         offset="0"
+         id="stop4" />
+      <stop
+         style="stop-color:#666666;stop-opacity:1;"
+         offset="1"
+         id="stop5" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop
+         style="stop-color:#666666;stop-opacity:1;"
+         offset="0"
+         id="stop1" />
+      <stop
+         style="stop-color:#484848;stop-opacity:1;"
+         offset="1"
+         id="stop2" />
+    </linearGradient>
+  </defs>
+   <rect
+      style="fill:#864707;fill-opacity:1;"
+      height="512"
+      width="100"
+      y="0"
+      x="78" />
+   <rect
+      style="fill:#864707;fill-opacity:1;"
+      height="512"
+      width="100"
+      y="0"
+      x="334" />
+   <rect
+      style="fill:url(#linearGradient1);"
+      height="58"
+      width="512"
+      y="99"
+      x="0" />
+   <rect
+      style="fill:url(#linearGradient2);"
+      height="58"
+      width="512"
+      y="355"
+      x="0" />
+</svg>

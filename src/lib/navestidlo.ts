@@ -76,9 +76,13 @@ export const typeOptions: { [key in TypNavestidla]: Options } = {
 export type Rychlost = 40 | 60 | 80 | 100;
 
 export type ZriadovacieNavesti = 'p_dovoleny' | 'p_zakazany';
+export type AutoblokNavest = 'volno' | 'vystraha' | 'stoj';
 
 export type Predzvest = 'vystraha' | Rychlost;
-export type Navest = 'volno' | 'stoj' | Predzvest | ZriadovacieNavesti | 'odchod_dovoluje';
+export type HlavnaNavest = 'volno' | 'stoj' | Predzvest;
+export type Navest = HlavnaNavest | ZriadovacieNavesti | 'odchod_dovoluje';
+
+type NavestnyZnak = (string | null)[];
 
 export const povoleneNavesti: { [key in TypNavestidla]: Navest[] } = {
     [TypNavestidla.HLAVNE]: ['volno', 'stoj', 'vystraha', 40, 60, 80, 100, 'p_dovoleny'],
@@ -102,7 +106,7 @@ export const nazvyNavesti = {
     'odchod_dovoluje': 'Odchodové návestidlo dovoľuje jazdu'
 }
 
-export const navestneZnaky = {
+export const navestneZnaky: { [key in Navest]: (NavestnyZnak|Partial<{ [key in TypNavestidla]: NavestnyZnak }>) } = {
     'volno': [null, 'bg-green-600', null, null],
     'stoj': {
         [TypNavestidla.HLAVNE]: [null, null, 'bg-red-600', null],
