@@ -11,6 +11,8 @@
 	import VchodoveNavestidlo from '$lib/VchodoveNavestidlo.svelte';
 	import Icon from '@iconify/svelte';
 
+	const MIN_FREE_TIME = 500;
+
 	let vchodNavest: HlavnaNavest = $state('stoj');
 	let vchodNavestRychlost: Rychlost | null = $state(null);
 	let vchodNavestPrivolavacia = $state(false);
@@ -47,9 +49,10 @@
 	});
 
 	let trainPositions: number[] = $state([]);
+	let trainSpeeds: number[] = $state([]);
 	let trainWidth: number[] = $state([]);
 	let movingTrains: boolean[] = $state([]);
-	let waitingTrains: boolean[] = $state([]);
+	let waitingTrains: (number | undefined)[] = $state([]);
 
 	const oddiel: boolean[] = $derived.by(() => {
 		const result = Array(pocetOddielov).fill(false);
@@ -65,20 +68,43 @@
 		return result;
 	});
 
+	let lastOddiel: boolean[] = [];
+	let lastOddielChangeTime: number[] = [];
+	let oddielChangeTime: number[] = $derived.by(() => {
+		const result = oddiel.map((o, i) => {
+			if (o !== lastOddiel[i]) {
+				lastOddielChangeTime[i] = Date.now();
+			}
+			return lastOddielChangeTime[i];
+		});
+		lastOddiel = oddiel;
+		return result;
+	});
+
+	let now = $state(Date.now());
+
 	setInterval(() => {
+		now = Date.now();
+
 		for (let i = 0; i < trainPositions.length; i++) {
 			if (movingTrains[i]) {
-				const newPosition = trainPositions[i] + 1;
-				// dont move into occupied section
+				const speedUnit = trainSpeeds[i] ?? 1;
 				const nextSection = boundaries.findIndex((b) => b > trainPositions[i] + trainWidth[i]);
 				if (nextSection === -1) {
 					movingTrains[i] = false;
-					waitingTrains[i] = false;
-				} else if (newPosition + trainWidth[i] >= boundaries[nextSection] && oddiel[nextSection]) {
-					waitingTrains[i] = true;
+					waitingTrains[i] = undefined;
+				} else if (
+					trainPositions[i] + speedUnit * 3 + trainWidth[i] >= boundaries[nextSection] &&
+					(oddiel[nextSection] ||
+						now - oddielChangeTime[nextSection] <= MIN_FREE_TIME ||
+						waitingTrains.some((w, j) => j < i && w === nextSection))
+				) {
+					// Only continue if the next section is free for more than MIN_FREE_TIME and there is no other train waiting to enter it
+					// Of all the trains waiting to enter the next section, the first one has priority
+					waitingTrains[i] = nextSection;
 				} else {
-					waitingTrains[i] = false;
-					trainPositions[i] = newPosition;
+					waitingTrains[i] = undefined;
+					trainPositions[i] = trainPositions[i] + speedUnit;
 				}
 			}
 		}
@@ -94,16 +120,24 @@
 
 {#if dev}
 	{#each Array.from({ length: pocetOddielov }) as _, i}
+		{@const timeDiff = now - oddielChangeTime[i]}
 		<div
 			class="absolute top-0 flex h-10 bg-opacity-40 {oddiel[i]
 				? 'bg-red-500'
-				: 'bg-green-500'} border-x border-dotted border-black"
+				: now - oddielChangeTime[i] <= MIN_FREE_TIME
+					? 'bg-yellow-500'
+					: 'bg-green-500'}
+				border-x border-dotted border-black"
 			style="left: {boundaries[i]}px; Width: {boundaries[i + 1] - boundaries[i]}px;"
-		></div>
+		>
+			{Math.floor(timeDiff / 60000)}:{Math.floor((timeDiff % 60000) / 1000)
+				.toString()
+				.padStart(2, '0')}.{(timeDiff % 1000).toString().padStart(3, '0')}
+		</div>
 	{/each}
 	{#each trainPositions as train, i}
 		<div
-			class="absolute top-0 flex h-10 items-center justify-center {waitingTrains[i]
+			class="absolute top-0 flex h-10 items-center justify-center {waitingTrains[i] !== undefined
 				? 'animate-pulse bg-violet-500 bg-opacity-60'
 				: 'bg-blue-500 bg-opacity-40'}"
 			style="left: {train}px; width: {trainWidth[i]}px;"
@@ -120,20 +154,21 @@
 				<td>
 					{#each trainPositions as trainpos, i}
 						<div
-							class="absolute top-0 z-10 w-[150%] -translate-y-1/3 transform {waitingTrains[i]
+							class="absolute top-0 z-10 w-[150%] -translate-y-1/3 transform {waitingTrains[i] !==
+							undefined
 								? 'animate-pulse'
 								: ''}"
 							style="left: {trainpos}px;"
 							bind:clientWidth={trainWidth[i]}
 						>
-							<img src="/track/train.svg" />
+							<img src="/track/train.svg" alt="Train" />
 						</div>
 					{/each}
 				</td>
 			</tr>
 			<tr class="track" bind:clientWidth={trackWidth}>
 				{#each Array.from({ length: tdCount }) as _}
-					<td><img src="/track/straight_v.svg" /></td>
+					<td><img src="/track/straight_v.svg" alt="Track" /></td>
 				{/each}
 			</tr>
 			<tr>
@@ -213,7 +248,7 @@
 			>
 				<Icon icon="fa6-solid:plus" />
 			</button>
-			<img src="/track/train.svg" class="w-10" />
+			<img src="/track/train.svg" class="w-10" alt="Train" />
 			<button
 				onclick={() => {
 					trainPositions.pop();
@@ -224,18 +259,35 @@
 		</div>
 		<div class="flex flex-col">
 			{#each trainPositions as _, i}
-				<div class="flex gap-1">
-					<Icon
-						onclick={() => (movingTrains[i] = !movingTrains[i])}
-						icon={movingTrains[i] ? 'fa6-solid:pause' : 'fa6-solid:play'}
-					/>
-					<input
-						type="range"
-						min="0"
-						max={trackWidth - trainWidth[i]}
-						step="1"
-						bind:value={trainPositions[i]}
-					/>
+				<div class="mt-2 flex flex-col items-center">
+					<div class="flex gap-1">
+						<Icon
+							onclick={() => (movingTrains[i] = !movingTrains[i])}
+							icon={movingTrains[i] ? 'fa6-solid:pause' : 'fa6-solid:play'}
+							class="h-4 w-4 cursor-pointer"
+						/>
+						<input
+							type="range"
+							class="w-full"
+							min="0"
+							max={trackWidth - trainWidth[i]}
+							step="1"
+							bind:value={trainPositions[i]}
+						/>
+					</div>
+					<!-- smaller speed slider, values from .5 to 5 -->
+					<div class="flex w-3/5 justify-between">
+						<input
+							type="range"
+							min=".5"
+							max="5"
+							step=".5"
+							defaultValue="1"
+							class="w-9/12"
+							bind:value={trainSpeeds[i]}
+						/>
+						<span class="w-2/12 text-right">{trainSpeeds[i] ?? 1}x</span>
+					</div>
 				</div>
 			{/each}
 		</div>
