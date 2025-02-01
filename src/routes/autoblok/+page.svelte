@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { dev } from '$app/environment';
-	import AutoblokNavestidlo from '$lib/AutoblokNavestidlo.svelte';
+	import AutoblokNavestidlo from '$lib/components/AutoblokNavestidlo.svelte';
 	import {
 		nazvyNavesti,
 		TypNavestidla,
@@ -8,10 +8,11 @@
 		povoleneNavesti,
 		type Rychlost
 	} from '$lib/navestidlo';
-	import VchodoveNavestidlo from '$lib/VchodoveNavestidlo.svelte';
+	import VchodoveNavestidlo from '$lib/components/HlavneNavestidloJazda.svelte';
 	import Icon from '@iconify/svelte';
 
-	const MIN_FREE_TIME = 500;
+	const MIN_FREE_TIME = 200;
+	const MIN_TRAIN_STOP_TIME = 300;
 
 	let vchodNavest: HlavnaNavest = $state('stoj');
 	let vchodNavestRychlost: Rychlost | null = $state(null);
@@ -52,7 +53,7 @@
 	let trainSpeeds: number[] = $state([]);
 	let trainWidth: number[] = $state([]);
 	let movingTrains: boolean[] = $state([]);
-	let waitingTrains: (number | undefined)[] = $state([]);
+	let waitingTrains: (number | null)[] = $state([]);
 
 	const oddiel: boolean[] = $derived.by(() => {
 		const result = Array(pocetOddielov).fill(false);
@@ -81,6 +82,9 @@
 		return result;
 	});
 
+	let lastWaitingTrains: (number | null)[] = [];
+	let waitingTrainsChangeTime: number[] = $state([]);
+
 	let now = $state(Date.now());
 
 	setInterval(() => {
@@ -92,19 +96,25 @@
 				const nextSection = boundaries.findIndex((b) => b > trainPositions[i] + trainWidth[i]);
 				if (nextSection === -1) {
 					movingTrains[i] = false;
-					waitingTrains[i] = undefined;
+					waitingTrains[i] = null;
+					if (lastWaitingTrains[i] !== null) waitingTrainsChangeTime[i] = now;
 				} else if (
 					trainPositions[i] + speedUnit * 3 + trainWidth[i] >= boundaries[nextSection] &&
 					(oddiel[nextSection] ||
 						now - oddielChangeTime[nextSection] <= MIN_FREE_TIME ||
+						(waitingTrains[i] == nextSection &&
+							now - waitingTrainsChangeTime[i] <= MIN_TRAIN_STOP_TIME) ||
 						waitingTrains.some((w, j) => j < i && w === nextSection))
 				) {
 					// Only continue if the next section is free for more than MIN_FREE_TIME and there is no other train waiting to enter it
+					// If the train stopped, it has to be stopped for at least MIN_TRAIN_STOP_TIME
 					// Of all the trains waiting to enter the next section, the first one has priority
 					waitingTrains[i] = nextSection;
+					if (lastWaitingTrains[i] === null) waitingTrainsChangeTime[i] = now;
 				} else {
-					waitingTrains[i] = undefined;
+					waitingTrains[i] = null;
 					trainPositions[i] = trainPositions[i] + speedUnit;
+					if (lastWaitingTrains[i] !== null) waitingTrainsChangeTime[i] = now;
 				}
 			}
 		}
@@ -113,6 +123,20 @@
 	function onresize(event: UIEvent) {
 		const newWidth = document.getElementById('main')?.clientWidth ?? trackWidth;
 		trainPositions = trainPositions.map((pos, i) => (pos / trackWidth) * newWidth);
+	}
+
+	function addTrain() {
+		trainPositions.push(50);
+		trainSpeeds.push(1);
+		movingTrains.push(false);
+		waitingTrains.push(null);
+	}
+
+	function removeTrain() {
+		trainPositions.pop();
+		trainSpeeds.pop();
+		movingTrains.pop();
+		waitingTrains.pop();
 	}
 </script>
 
@@ -136,13 +160,21 @@
 		</div>
 	{/each}
 	{#each trainPositions as train, i}
+		{@const timeDiff = now - waitingTrainsChangeTime[i]}
 		<div
-			class="absolute top-0 flex h-10 items-center justify-center {waitingTrains[i] !== undefined
+			class="absolute top-0 flex h-10 flex-col items-center justify-center text-sm {waitingTrains[
+				i
+			] !== null
 				? 'animate-pulse bg-violet-500 bg-opacity-60'
 				: 'bg-blue-500 bg-opacity-40'}"
 			style="left: {train}px; width: {trainWidth[i]}px;"
 		>
-			{i}
+			<span>{i}</span>
+			<span
+				>{Math.floor(timeDiff / 60000)}:{Math.floor((timeDiff % 60000) / 1000)
+					.toString()
+					.padStart(2, '0')}.{(timeDiff % 1000).toString().padStart(3, '0')}</span
+			>
 		</div>
 	{/each}
 {/if}
@@ -155,7 +187,7 @@
 					{#each trainPositions as trainpos, i}
 						<div
 							class="absolute top-0 z-10 w-[150%] -translate-y-1/3 transform {waitingTrains[i] !==
-							undefined
+							null
 								? 'animate-pulse'
 								: ''}"
 							style="left: {trainpos}px;"
@@ -175,7 +207,7 @@
 				<td colspan="3"></td>
 				{#each Array.from({ length: pocetOddielov - 1 }) as _, i}
 					<td
-						><div class="navestidlo" bind:this={navestidla[i]}>
+						><div class="navestidlo aspect-[1/3] w-2/5" bind:this={navestidla[i]}>
 							<AutoblokNavestidlo
 								navest={oddiel[i] ? 'stoj' : oddiel[i + 1] ? 'vystraha' : 'volno'}
 							/>
@@ -185,7 +217,7 @@
 				{/each}
 				{#key pocetOddielov}
 					<td
-						><div class="navestidlo" bind:this={navestidla[pocetOddielov - 1]}>
+						><div class="navestidlo aspect-[1/3] w-2/5" bind:this={navestidla[pocetOddielov - 1]}>
 							<AutoblokNavestidlo
 								navest={oddiel[pocetOddielov - 1] ? 'stoj' : poslednyAutoblok}
 								posledne={true}
@@ -195,7 +227,7 @@
 				{/key}
 				<td colspan="3"></td>
 				<td>
-					<div class="navestidlo" bind:this={vchodNavestElement}>
+					<div class="navestidlo aspect-[1/3] w-2/5" bind:this={vchodNavestElement}>
 						<VchodoveNavestidlo
 							navest={vchodNavest}
 							rychlost={vchodNavestRychlost}
@@ -241,19 +273,11 @@
 	</div>
 	<div class="mt-5">
 		<div class="flex justify-between text-3xl">
-			<button
-				onclick={() => {
-					trainPositions.push(50);
-				}}
-			>
+			<button onclick={addTrain}>
 				<Icon icon="fa6-solid:plus" />
 			</button>
 			<img src="/track/train.svg" class="w-10" alt="Train" />
-			<button
-				onclick={() => {
-					trainPositions.pop();
-				}}
-			>
+			<button onclick={removeTrain}>
 				<Icon icon="fa6-solid:minus" />
 			</button>
 		</div>

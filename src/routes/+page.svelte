@@ -1,11 +1,16 @@
 <script lang="ts">
+	import AutoblokNavestidlo from '$lib/components/AutoblokNavestidlo.svelte';
+	import HlavneNavestidlo from '$lib/components/HlavneNavestidlo.svelte';
+	import HlavneNavestidloJazda from '$lib/components/HlavneNavestidloJazda.svelte';
+	import Predzvest from '$lib/components/Predzvest.svelte';
+	import VlozeneNavestidlo from '$lib/components/VlozeneNavestidlo.svelte';
+	import ZriadovacieNavestidlo from '$lib/components/ZriadovacieNavestidlo.svelte';
 	import {
 		TypNavestidla,
-		navestneZnaky,
+		isPredzvest,
+		isSpeed,
 		nazvyNavesti,
-		opakovanieNavesti,
 		povoleneNavesti,
-		privolavaciaNavest,
 		typeOptions,
 		type Navest,
 		type Rychlost
@@ -17,21 +22,9 @@
 	let privolavacia = $state(false);
 	let opakovanie = $state(false);
 	let poslednyAutoblok = $state(false);
+	let predzvestKryjeVyhybky = $state(false);
 
 	let navest: Navest | null = $state(null);
-
-	const aktivneZnaky = $derived.by(() => {
-		let znaky: (string | null)[] = [];
-		if (navest) {
-			const options = navestneZnaky[navest];
-			if (Array.isArray(options)) znaky = options;
-			else znaky = options[typ] ?? options[TypNavestidla.HLAVNE] ?? [null, null, null, null];
-		} else znaky = [null, null, null, null];
-
-		if (privolavacia) znaky = znaky.map((znak, i) => znak ?? '' + (privolavaciaNavest[i] ?? ''));
-		if (opakovanie) znaky = znaky.map((znak, i) => znak ?? '' + (opakovanieNavesti[i] ?? ''));
-		return znaky;
-	});
 
 	const options = $derived(typeOptions[typ]);
 
@@ -40,27 +33,19 @@
 		if (navest === null) return 0;
 		if (navest == 'stoj') return 2;
 		if (opakovanie && navest == 'vystraha') return 2;
-		if (opakovanie && [40, 60, 80, 100].includes(navest)) return 4;
+		if (opakovanie && isSpeed(navest)) return 4;
 		if (navest == 'vystraha') return 1;
 		const l = ['volno', 40, 60, 80, 100];
 		if (l.includes(navest)) return rychlost === null ? 3 : 4;
 	});
 
 	const speedEnabled = $derived(
-		options.speedIndication &&
-			(navest == null || [40, 60, 80, 100, 'volno', 'vystraha'].includes(navest))
+		options.speedIndication && navest && (isPredzvest(navest) || navest == 'volno')
 	);
 
 	$effect(() => {
 		if (navest && !povoleneNavesti[typ].includes(navest)) navest = null;
-		if (!speedEnabled) rychlost = null;
-		opakovanie =
-			opakovanie &&
-			options.repeating &&
-			navest !== null &&
-			[40, 60, 80, 100, 'vystraha'].includes(navest);
-		privolavacia = privolavacia && options.privolavanie;
-		if (typ == TypNavestidla.AUTOBLOK && !poslednyAutoblok && [40, 60, 80, 100].includes(navest))
+		if (typ == TypNavestidla.AUTOBLOK && !poslednyAutoblok && navest && isSpeed(navest))
 			navest = 'volno';
 	});
 </script>
@@ -74,7 +59,7 @@
 				Pred návestidlom
 			</h3>
 			<div
-				class="flex flex-col items-center gap-1 rounded-lg bg-stone-800 p-4"
+				class="flex flex-col items-center gap-1 rounded-lg bg-stone-800 p-4 *:transition-colors *:duration-100"
 				onclick={() => (safetyClicked = !safetyClicked)}
 			>
 				<div
@@ -97,45 +82,20 @@
 			</div>
 		</div>
 	{/if}
-	<div class="flex flex-col items-center">
-		<div
-			class="z-10 -mb-0.5 flex w-20 flex-col items-center justify-between gap-2 rounded-full bg-stone-900 p-3"
-		>
-			{#each Array.from({ length: options.bulbCount }) as _, i}
-				<div class="h-14 w-14 rounded-full {aktivneZnaky[i] || 'bg-stone-800'}"></div>
-			{/each}
-			{#if options.speedIndication}
-				<div class="h-14 w-14 rounded-full {rychlost ? 'bg-yellow-400' : 'bg-stone-800'}"></div>
-				<div class="mb-1 flex h-10 w-14 flex-col justify-center gap-2">
-					<div
-						class="h-2 {rychlost === 60
-							? 'bg-yellow-400'
-							: [80, 100].includes(rychlost ?? -1)
-								? 'bg-green-600'
-								: 'bg-stone-800'}"
-					></div>
-					<div class="h-2 {rychlost === 100 ? 'bg-green-600' : 'bg-stone-800'}"></div>
-				</div>
-			{/if}
-		</div>
-		<div
-			class="label z-10 -mb-0.5 rounded-lg px-2 py-0.5
-			font-bold {options.labelStyleClass || options.poleStyleClass}"
-		>
-			{options.labelExample[(Math.random() * options.labelExample.length) | 0]}
-		</div>
-	</div>
-	<div class="relative flex w-5 flex-col items-center">
-		{#if poslednyAutoblok && typ == TypNavestidla.AUTOBLOK}
-			<div class="relative h-16 w-16 border border-black bg-white p-2">
-				<div class="h-12 w-12 rounded-full bg-black p-2">
-					<div class="h-8 w-8 rounded-full bg-white p-2">
-						<div class="h-4 w-4 rounded-full bg-black"></div>
-					</div>
-				</div>
-			</div>
+	<div class="aspect-[1/5] h-2/5">
+		{#if typ === TypNavestidla.HLAVNE}
+			<HlavneNavestidlo {navest} {privolavacia} {opakovanie} {rychlost} />
+		{:else if typ === TypNavestidla.HLAVNE_IBA_JAZDA}
+			<HlavneNavestidloJazda {navest} {privolavacia} {opakovanie} {rychlost} />
+		{:else if typ === TypNavestidla.AUTOBLOK}
+			<AutoblokNavestidlo {navest} posledne={poslednyAutoblok} />
+		{:else if typ === TypNavestidla.PREDZVEST}
+			<Predzvest {navest} kryjeVyhybky={predzvestKryjeVyhybky} repeating={opakovanie} />
+		{:else if typ === TypNavestidla.ZRIADOVACIE}
+			<ZriadovacieNavestidlo {navest} />
+		{:else if typ === TypNavestidla.VLOZENE}
+			<VlozeneNavestidlo {navest} />
 		{/if}
-		<div class="pole w-full flex-grow {options.poleStyleClass}"></div>
 	</div>
 </div>
 <div class="flex flex-col bg-gray-500 p-5">
@@ -148,55 +108,58 @@
 		</select>
 	</div>
 	<div>
-		<label for="rychlost">Rýchlosť</label>
-		<select
-			bind:value={rychlost}
-			id="rychlost"
-			name="rychlost"
-			class="mt-1 block w-full"
-			disabled={!speedEnabled}
-		>
-			{#each [null, 40, 60, 80, 100] as rychlostOption}
-				<option value={rychlostOption}>{rychlostOption ?? '---'}</option>
-			{/each}
-		</select>
-	</div>
-	<div>
 		<label for="navest">Návesť</label>
 		<select bind:value={navest} id="navest" name="navest" class="mt-1 block w-full">
 			<option value={null}>---</option>
 			{#each povoleneNavesti[typ] as navest}
 				<option
 					value={navest}
-					disabled={typ == TypNavestidla.AUTOBLOK &&
-						!poslednyAutoblok &&
-						[40, 60, 80, 100].includes(navest)}>{nazvyNavesti[navest]}</option
+					disabled={typ == TypNavestidla.AUTOBLOK && !poslednyAutoblok && isSpeed(navest)}
+					>{nazvyNavesti[navest]}</option
 				>
 			{/each}
 		</select>
 	</div>
-	<div>
-		<label for="privolavacia">Privolávacia návesť</label>
-		<input
-			bind:checked={privolavacia}
-			disabled={!options.privolavanie}
-			id="privolavacia"
-			name="privolavacia"
-			type="checkbox"
-			class="mt-1 block"
-		/>
-	</div>
-	<div>
-		<label for="opakovanie">Opakovanie</label>
-		<input
-			bind:checked={opakovanie}
-			disabled={!options.repeating || !navest || ![40, 60, 80, 100, 'vystraha'].includes(navest)}
-			id="opakovanie"
-			name="opakovanie"
-			type="checkbox"
-			class="mt-1 block"
-		/>
-	</div>
+	{#if options.speedIndication}
+		<div>
+			<label for="rychlost">Rýchlosť</label>
+			<select
+				bind:value={rychlost}
+				id="rychlost"
+				name="rychlost"
+				class="mt-1 block w-full"
+				disabled={!speedEnabled}
+			>
+				{#each [null, 40, 60, 80, 100] as rychlostOption}
+					<option value={rychlostOption}>{rychlostOption ?? '---'}</option>
+				{/each}
+			</select>
+		</div>
+	{/if}
+	{#if options.privolavanie}
+		<div>
+			<label for="privolavacia">Privolávacia návesť</label>
+			<input
+				bind:checked={privolavacia}
+				id="privolavacia"
+				name="privolavacia"
+				type="checkbox"
+				class="mt-1 block"
+			/>
+		</div>
+	{/if}
+	{#if options.repeating}
+		<div>
+			<label for="opakovanie">Opakovanie</label>
+			<input
+				bind:checked={opakovanie}
+				id="opakovanie"
+				name="opakovanie"
+				type="checkbox"
+				class="mt-1 block"
+			/>
+		</div>
+	{/if}
 	{#if typ == TypNavestidla.AUTOBLOK}
 		<div>
 			<label for="poslednyAutoblok">Posledné návestidlo automatického bloku</label>
@@ -209,7 +172,20 @@
 			/>
 		</div>
 	{/if}
+	{#if typ == TypNavestidla.PREDZVEST}
+		<div>
+			<label for="predzvestKryjeVyhybky">Hl. návestidlo kryje výhybky</label>
+			<input
+				bind:checked={predzvestKryjeVyhybky}
+				id="predzvestKryjeVyhybky"
+				name="predzvestKryjeVyhybky"
+				type="checkbox"
+				class="mt-1 block"
+			/>
+		</div>
+	{/if}
 	<div class="mt-auto">
+		<a href="/mechanicke" class="block font-bold underline">Mechanické návestidlá</a>
 		<a href="/spadovisko" class="block font-bold underline">Spádovisko</a>
 		<a href="/autoblok" class="block font-bold underline">Autoblok</a>
 	</div>
@@ -219,84 +195,3 @@
 		biele svetlo tam, kde býva štandardne červené.
 	</i>
 </div>
-
-<style lang="scss">
-	.pole {
-		min-height: 24rem;
-		background: gray;
-		&.hlavne {
-			background-image: linear-gradient(
-				to bottom,
-				#f00 25%,
-				#fff 25%,
-				#fff 37.5%,
-				#f00 37.5%,
-				#f00 62.5%,
-				#fff 62.5%,
-				#fff 75%,
-				#f00 75%
-			);
-		}
-		&.hlavne_jazda {
-			background-image: linear-gradient(
-				to bottom,
-				#fff 25%,
-				#f00 25%,
-				#f00 50%,
-				#fff 50%,
-				#fff 75%,
-				#f00 75%
-			);
-		}
-		&.vlozene {
-			background-image: linear-gradient(
-				to bottom,
-				#fff 16%,
-				#00f 16%,
-				#00f 33%,
-				#f00 33%,
-				#f00 50%,
-				#fff 50%,
-				#fff 66%,
-				#f00 66%,
-				#f00 83%,
-				#00f 83%
-			);
-		}
-		&.autoblok {
-			background: white;
-		}
-		&.zriadovacie {
-			background-image: linear-gradient(
-				to bottom,
-				#00f 25%,
-				#fff 25%,
-				#fff 50%,
-				#00f 50%,
-				#00f 75%,
-				#fff 75%
-			);
-		}
-	}
-	.label {
-		outline: 1px solid black;
-		border: 3px solid white;
-
-		&.hlavne {
-			background: #f00;
-			color: #fff;
-		}
-		&.autoblok {
-			background: #fff;
-			color: #000;
-		}
-		&.zriadovacie {
-			background: #00f;
-			color: #fff;
-		}
-		&.predzvest {
-			background: black;
-			color: #fff;
-		}
-	}
-</style>

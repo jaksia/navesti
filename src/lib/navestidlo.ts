@@ -1,3 +1,7 @@
+import {colors, blinking} from './consts';
+const {green: GREEN, yellow: YELLOW, red: RED, blue: BLUE, white: WHITE} = colors;
+const BLINK = ` ${blinking.slow}`, BLINK_FAST = ` ${blinking.fast}`;
+
 
 export enum TypNavestidla {
     HLAVNE = 'Hlavné návestidlo',
@@ -10,9 +14,6 @@ export enum TypNavestidla {
 }
 
 export type Options = {
-    poleStyleClass: string;
-    labelStyleClass?: string;
-    bulbCount: number;
     speedIndication: boolean;
     labelExample: string[];
     
@@ -22,65 +23,62 @@ export type Options = {
 
 export const typeOptions: { [key in TypNavestidla]: Options } = {
     [TypNavestidla.HLAVNE]: {
-        poleStyleClass: 'hlavne',
-        bulbCount: 4,
         speedIndication: true,
         labelExample: ['1L', 'KL', 'L5', 'S2-6'],
         repeating: true,
         privolavanie: true,
     },
     [TypNavestidla.HLAVNE_IBA_JAZDA]: {
-        poleStyleClass: 'hlavne_jazda',
-        labelStyleClass: 'hlavne',
-        bulbCount: 4,
         speedIndication: true,
         labelExample: ['2S', '1MS', 'S3-7', 'L4'],
         repeating: true,
         privolavanie: true,
     },
     [TypNavestidla.VLOZENE]: {
-        poleStyleClass: 'vlozene',
-        labelStyleClass: 'hlavne',
-        bulbCount: 3,
         speedIndication: false,
         labelExample: ['VL5', 'VS2-6'],
         repeating: false,
         privolavanie: false,
     },
     [TypNavestidla.AUTOBLOK]: {
-        poleStyleClass: 'autoblok',
-        bulbCount: 3,
         speedIndication: false,
         labelExample: ['1-487', '2-358'],
         repeating: false,
         privolavanie: false,
     },
     [TypNavestidla.ZRIADOVACIE]: {
-        poleStyleClass: 'zriadovacie',
-        bulbCount: 2,
         speedIndication: false,
         labelExample: ['Se1', 'Se24'],
         repeating: false,
         privolavanie: false,
     },
     [TypNavestidla.PREDZVEST]: {
-        poleStyleClass: 'predzvest',
-        bulbCount: 2,
         speedIndication: false,
         labelExample: ['Pr1L', 'Pr2KS'],
-        repeating: false,
+        repeating: true,
         privolavanie: false,
     }
 }
 
 export type Rychlost = 40 | 60 | 80 | 100;
 
-export type ZriadovacieNavesti = 'p_dovoleny' | 'p_zakazany';
-export type AutoblokNavest = 'volno' | 'vystraha' | 'stoj';
+export type PosunDovoleny = 'p_dovoleny';
+export type PosunZakazany = 'p_zakazany';
 
-export type Predzvest = 'vystraha' | Rychlost;
-export type HlavnaNavest = 'volno' | 'stoj' | Predzvest;
-export type Navest = HlavnaNavest | ZriadovacieNavesti | 'odchod_dovoluje';
+export type Stoj = 'stoj';
+export type Volno = 'volno';
+export type Vystraha = 'vystraha';
+
+export type OdchodoveNavestidloDovolujeJazdu = 'odchod_dovoluje';
+
+export type ZriadovaciaNavest = PosunDovoleny | PosunZakazany;
+export type AutoblokNavest = Volno | Stoj | Vystraha;
+
+export type VlozenaNavest = Stoj | OdchodoveNavestidloDovolujeJazdu | PosunDovoleny | PosunZakazany;
+
+export type Predzvest = Vystraha | Rychlost;
+export type HlavnaNavest = Volno | Stoj | Predzvest;
+export type Navest = HlavnaNavest | ZriadovaciaNavest | OdchodoveNavestidloDovolujeJazdu;
 
 type NavestnyZnak = (string | null)[];
 
@@ -93,7 +91,7 @@ export const povoleneNavesti: { [key in TypNavestidla]: Navest[] } = {
     [TypNavestidla.ZRIADOVACIE]: ['p_dovoleny', 'p_zakazany']
 }
 
-export const nazvyNavesti = {
+export const nazvyNavesti: { [key in Navest]: string } = {
     'volno': 'Voľno',
     'stoj': 'Stoj',
     'vystraha': 'Výstraha',
@@ -107,27 +105,38 @@ export const nazvyNavesti = {
 }
 
 export const navestneZnaky: { [key in Navest]: (NavestnyZnak|Partial<{ [key in TypNavestidla]: NavestnyZnak }>) } = {
-    'volno': [null, 'bg-green-600', null, null],
+    'volno': [null, GREEN, null, null],
     'stoj': {
-        [TypNavestidla.HLAVNE]: [null, null, 'bg-red-600', null],
-        [TypNavestidla.VLOZENE]: ['bg-red-600', null, 'bg-blue-600'],
+        [TypNavestidla.HLAVNE]: [null, null, RED, null],
+        [TypNavestidla.VLOZENE]: [RED, null, BLUE],
     },
-    'vystraha': ['bg-yellow-400', null, null, null],
-    40: ['bg-yellow-400 animate-blink', null, null, null],
-    60: ['bg-yellow-400 animate-blink-fast', null, null, null],
-    80: [null, 'bg-green-600 animate-blink', null, null],
-    100: [null, 'bg-green-600 animate-blink-fast', null, null],
+    'vystraha': [YELLOW, null, null, null],
+    40: [YELLOW + BLINK, null, null, null],
+    60: [YELLOW + BLINK_FAST, null, null, null],
+    80: [null, GREEN + BLINK, null, null],
+    100: [null, GREEN + BLINK_FAST, null, null],
     'p_dovoleny': {
-        [TypNavestidla.HLAVNE]: [null, null, null, 'bg-white'],
-        [TypNavestidla.VLOZENE]: [null, 'bg-white', null],
-        [TypNavestidla.ZRIADOVACIE]: ['bg-white', null],
+        [TypNavestidla.HLAVNE]: [null, null, null, WHITE],
+        [TypNavestidla.VLOZENE]: [null, WHITE, null],
+        [TypNavestidla.ZRIADOVACIE]: [WHITE, null],
     },
     'p_zakazany': {
-        [TypNavestidla.VLOZENE]: [null, null, 'bg-blue-600'],
-        [TypNavestidla.ZRIADOVACIE]: [null, 'bg-blue-600'],
+        [TypNavestidla.VLOZENE]: [null, null, BLUE],
+        [TypNavestidla.ZRIADOVACIE]: [null, BLUE],
     },
-    'odchod_dovoluje': [null, 'bg-white animate-blink', null]
+    'odchod_dovoluje': [null, WHITE + BLINK, null]
 }
 
-export const privolavaciaNavest = [null, null, null, 'bg-white animate-blink'];
-export const opakovanieNavesti = [null, null, null, 'bg-white'];
+export const privolavaciaNavest = [null, null, null, WHITE + BLINK];
+export const opakovanieNavesti = [null, null, null, WHITE];
+
+export const povolenaPrivolavacia: (Navest|null)[] = [null, 'stoj'];
+export const povoleneOpakovanie: (Navest|null)[] = ['vystraha', 40, 60, 80, 100];
+
+export function isSpeed(navest: Navest): navest is Rychlost {
+    return typeof navest === 'number';
+}
+
+export function isPredzvest(navest: Navest): navest is Predzvest {
+    return ['vystraha', 40, 60, 80, 100].includes(navest);
+}

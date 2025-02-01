@@ -19,13 +19,13 @@
 		<tbody>
 			<tr>
 				<td></td>
-				<td><img src="/track/straight.svg" /></td>
+				<td><img src="/track/straight.svg" alt="Track" /></td>
 				<td></td>
 				<td></td>
 			</tr>
 			<tr>
 				<td></td>
-				<td><img src="/track/straight.svg" /></td>
+				<td><img src="/track/straight.svg" alt="Track" /></td>
 				<td class="relative">
 					<div class="absolute bottom-0 left-1/2 -translate-x-1/2 transform">
 						<SpadoviskoveNavestidlo {mode} type="kmenove" label="Sp101" />
@@ -35,7 +35,7 @@
 			</tr>
 			<tr>
 				<td></td>
-				<td><img src="/track/straight.svg" /></td>
+				<td><img src="/track/straight.svg" alt="Track" /></td>
 				<td></td>
 				<td></td>
 			</tr>
@@ -46,19 +46,19 @@
 				<td></td>
 			</tr>
 			<tr>
-				<td><img src="/track/straight.svg" /></td>
+				<td><img src="/track/straight.svg" alt="Track" /></td>
 				<td></td>
-				<td><img src="/track/straight.svg" /></td>
-				<td></td>
-			</tr>
-			<tr>
-				<td><img src="/track/straight.svg" /></td>
-				<td></td>
-				<td><img src="/track/straight.svg" /></td>
+				<td><img src="/track/straight.svg" alt="Track" /></td>
 				<td></td>
 			</tr>
 			<tr>
-				<td><img src="/track/straight.svg" /></td>
+				<td><img src="/track/straight.svg" alt="Track" /></td>
+				<td></td>
+				<td><img src="/track/straight.svg" alt="Track" /></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td><img src="/track/straight.svg" alt="Track" /></td>
 				<td class="relative">
 					<div class="absolute bottom-0 left-1/2 -translate-x-1/2 transform">
 						<SpadoviskoveNavestidlo
@@ -68,7 +68,7 @@
 						/>
 					</div>
 				</td>
-				<td><img src="/track/straight.svg" /></td>
+				<td><img src="/track/straight.svg" alt="Track" /></td>
 				<td class="relative">
 					<div class="absolute bottom-0 left-1/2 -translate-x-1/2 transform">
 						<SpadoviskoveNavestidlo
@@ -80,19 +80,19 @@
 				</td>
 			</tr>
 			<tr>
-				<td><img src="/track/straight.svg" /></td>
+				<td><img src="/track/straight.svg" alt="Track" /></td>
 				<td></td>
-				<td><img src="/track/straight.svg" /></td>
-				<td></td>
-			</tr>
-			<tr>
-				<td><img src="/track/straight.svg" /></td>
-				<td></td>
-				<td><img src="/track/straight.svg" /></td>
+				<td><img src="/track/straight.svg" alt="Track" /></td>
 				<td></td>
 			</tr>
 			<tr>
-				<td><img src="/track/straight.svg" /></td>
+				<td><img src="/track/straight.svg" alt="Track" /></td>
+				<td></td>
+				<td><img src="/track/straight.svg" alt="Track" /></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td><img src="/track/straight.svg" alt="Track" /></td>
 				<td class="relative">
 					<div class="absolute bottom-0 left-1/2 -translate-x-1/2 transform">
 						<SpadoviskoveNavestidlo
@@ -102,7 +102,7 @@
 						/>
 					</div>
 				</td>
-				<td><img src="/track/straight.svg" /></td>
+				<td><img src="/track/straight.svg" alt="Track" /></td>
 				<td class="relative">
 					<div class="absolute bottom-0 left-1/2 -translate-x-1/2 transform">
 						<SpadoviskoveNavestidlo

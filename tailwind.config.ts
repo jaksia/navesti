@@ -24,6 +24,9 @@ export default {
 			padding: {
 				'0.75': '0.1875rem',
 				'0.25': '0.0625rem',
+			},
+			height: {
+				'18': '4.5rem',
 			}
 		}
 	},
