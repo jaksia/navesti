@@ -27,16 +27,16 @@
 		if (speed !== undefined && !speedIndication) {
 			console.warn('Speed indication is disabled, but speed is set.');
 		}
-		if (lightCount !== activeLights.length && activeLights.length !== 0) {
-			console.warn('Light count does not match the number of active lights.');
+		if (activeLights.length !== 0 && activeLights.length < lightCount) {
+			console.warn('Light count is greater than supplied active lights.');
 		}
 	});
 </script>
 
 <div class="relative flex h-full w-full flex-col items-center">
 	<div
-		class="absolute top-0.5 z-10 flex w-full -translate-y-full transform flex-col justify-between gap-2 rounded-full bg-stone-900 px-[15%] py-[20%]
-		[&_*]:transition-colors [&_*]:duration-150"
+		class="absolute top-0.5 z-10 flex w-full -translate-y-full transform flex-col justify-between rounded-full bg-stone-900 px-[15%] py-[20%]
+		*:mb-[5%] *:mt-[5%] [&_*]:transition-colors [&_*]:duration-150"
 	>
 		{#each Array.from({ length: lightCount }) as _, i}
 			<div class="aspect-square rounded-full {activeLights[i] || colors.blank}"></div>

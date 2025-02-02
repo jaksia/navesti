@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { RezimSpadoviska } from '$lib/spadovisko';
-	import SpadoviskoveNavestidlo from '$lib/SpadoviskoveNavestidlo.svelte';
+	import SpadoviskoveNavestidlo from '$lib/components/SpadoviskoveNavestidlo.svelte';
 
 	let track = $state(1);
 	let mode = $state(RezimSpadoviska.ZAKAZANE);

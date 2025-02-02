@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { RezimSpadoviska, spadNavestneZnaky, type TypSpadNavestidla } from '$lib/spadovisko';
-	import { navestneZnaky } from './navestidlo';
 
 	let { mode, type, label }: { mode: RezimSpadoviska; type: TypSpadNavestidla; label: string } =
 		$props();

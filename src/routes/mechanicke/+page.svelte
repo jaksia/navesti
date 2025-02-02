@@ -18,6 +18,9 @@
 	let lightColor = $state(blank);
 	let secondLightColor = $state(blank);
 
+	let predzvestTransform = $state('');
+	let predzvestLightColor = $state(blank);
+
 	$effect(() => {
 		if (navest == 'vystraha' && !yellowArm) navest = 'stoj';
 		if (navest == '40' && !secondArm) navest = 'stoj';
@@ -44,27 +47,42 @@
 			if (yellowArm) (lightColor = colors.yellow), (secondLightColor = colors.yellow);
 			else (lightColor = colors.green), (secondLightColor = colors.green);
 		}
+
+		if (navest == 'stoj') (predzvestTransform = ''), (predzvestLightColor = colors.yellow);
+		else (predzvestTransform = 'rotate3d(1,0,0,88deg)'), (predzvestLightColor = colors.green);
 	});
 </script>
 
 <div
-	class="relative flex flex-grow flex-col items-center justify-end {day
-		? 'bg-green-200'
-		: 'bg-gray-800'}"
+	class="relative flex flex-grow items-end justify-around {day
+		? 'bg-green-200 [&_.light]:bg-opacity-50'
+		: '[&_.arm]:outline-opacity-50 bg-gray-800 [&_.arm>*]:bg-opacity-10 [&_.arm]:border [&_.arm]:border-black [&_.arm]:bg-opacity-10'}"
 >
-	<div
-		class="relative h-4/5 w-4 bg-white
-		{day
-			? ''
-			: 'border border-black bg-opacity-10 [&_.arm>*]:bg-opacity-10 [&_.arm]:border [&_.arm]:border-black [&_.arm]:bg-opacity-10'}"
-	>
+	<div class="relative h-3/5 w-4 bg-white {day ? '' : 'border border-black bg-opacity-10'}">
 		<div
-			class="absolute left-full ml-1 h-8 w-8 -translate-y-1/2 transform rounded-full {lightColor}"
-			style="top: 3rem;"
+			class="light absolute left-full ml-1 h-8 w-8 -translate-y-1/2 transform rounded-full {predzvestLightColor}"
+			style="top: 7.5rem;"
+		></div>
+		<div
+			class="absolute left-1/2 top-0 transition-transform duration-1000 ease-in-out"
+			style="transform: {predzvestTransform};"
+		>
+			<div
+				class="arm absolute h-56 w-56 -translate-x-1/2 -translate-y-1/2 transform rounded-full border bg-white"
+			></div>
+			<div
+				class="arm absolute h-48 w-48 -translate-x-1/2 -translate-y-1/2 transform rounded-full border border-black bg-yellow-300"
+			></div>
+		</div>
+	</div>
+	<div class="relative h-4/5 w-4 bg-white {day ? '' : 'border border-black bg-opacity-10'}">
+		<div
+			class="light absolute left-full ml-1 h-8 w-8 -translate-y-1/2 transform rounded-full {lightColor}"
+			style="top: 5rem;"
 		></div>
 		{#if secondArm}
 			<div
-				class="absolute left-full ml-1 h-8 w-8 -translate-y-1/2 transform rounded-full {secondLightColor}"
+				class="light absolute left-full ml-1 h-8 w-8 -translate-y-1/2 transform rounded-full {secondLightColor}"
 				style="top: 13rem;"
 			></div>
 		{/if}

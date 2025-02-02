@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { dev } from '$app/environment';
-	import AutoblokNavestidlo from '$lib/components/AutoblokNavestidlo.svelte';
+	import AutoblokNavestidlo from '$lib/components/navestidla/AutoblokNavestidlo.svelte';
+	import VchodoveNavestidlo from '$lib/components/navestidla/HlavneNavestidloJazda.svelte';
 	import {
 		nazvyNavesti,
+		typeOptions,
 		TypNavestidla,
 		type HlavnaNavest,
-		povoleneNavesti,
 		type Rychlost
 	} from '$lib/navestidlo';
-	import VchodoveNavestidlo from '$lib/components/HlavneNavestidloJazda.svelte';
 	import Icon from '@iconify/svelte';
 
 	const MIN_FREE_TIME = 200;
@@ -86,13 +86,15 @@
 	let waitingTrainsChangeTime: number[] = $state([]);
 
 	let now = $state(Date.now());
+	let screenWidth = $state(0);
+	let baseSpeed = $derived(screenWidth / 1700);
 
 	setInterval(() => {
 		now = Date.now();
 
 		for (let i = 0; i < trainPositions.length; i++) {
 			if (movingTrains[i]) {
-				const speedUnit = trainSpeeds[i] ?? 1;
+				const speedUnit = baseSpeed * (trainSpeeds[i] ?? 1);
 				const nextSection = boundaries.findIndex((b) => b > trainPositions[i] + trainWidth[i]);
 				if (nextSection === -1) {
 					movingTrains[i] = false;
@@ -179,7 +181,11 @@
 	{/each}
 {/if}
 
-<div class="flex flex-col justify-center overflow-hidden bg-green-200" id="main">
+<div
+	class="flex flex-col justify-center overflow-hidden bg-green-200"
+	id="main"
+	bind:clientWidth={screenWidth}
+>
 	<table cellspacing="0" cellpadding="0" class="h-min w-full">
 		<tbody>
 			<tr>
@@ -247,7 +253,7 @@
 	<div>
 		<label for="vchodovehoNavestidlo">Návesť vchodového návestidla:</label>
 		<select bind:value={vchodNavest} id="vchodovehoNavestidlo">
-			{#each povoleneNavesti[TypNavestidla.HLAVNE_IBA_JAZDA] as navest}
+			{#each typeOptions[TypNavestidla.HLAVNE_IBA_JAZDA].allowedSignals as navest}
 				<option value={navest} disabled={navest !== 'stoj' && vchodNavestPrivolavacia}
 					>{nazvyNavesti[navest]}</option
 				>

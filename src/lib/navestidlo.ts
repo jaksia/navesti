@@ -13,52 +13,18 @@ export enum TypNavestidla {
     PREDZVEST = 'Samostatná predzvesť'
 }
 
-export type Options = {
+export type TypeOptions = {
     speedIndication: boolean;
     labelExample: string[];
+    
+    allowedAdditional: Additional[];
+    allowedSignals: Navest[];
     
     repeating: boolean;
     privolavanie: boolean;
 }
 
-export const typeOptions: { [key in TypNavestidla]: Options } = {
-    [TypNavestidla.HLAVNE]: {
-        speedIndication: true,
-        labelExample: ['1L', 'KL', 'L5', 'S2-6'],
-        repeating: true,
-        privolavanie: true,
-    },
-    [TypNavestidla.HLAVNE_IBA_JAZDA]: {
-        speedIndication: true,
-        labelExample: ['2S', '1MS', 'S3-7', 'L4'],
-        repeating: true,
-        privolavanie: true,
-    },
-    [TypNavestidla.VLOZENE]: {
-        speedIndication: false,
-        labelExample: ['VL5', 'VS2-6'],
-        repeating: false,
-        privolavanie: false,
-    },
-    [TypNavestidla.AUTOBLOK]: {
-        speedIndication: false,
-        labelExample: ['1-487', '2-358'],
-        repeating: false,
-        privolavanie: false,
-    },
-    [TypNavestidla.ZRIADOVACIE]: {
-        speedIndication: false,
-        labelExample: ['Se1', 'Se24'],
-        repeating: false,
-        privolavanie: false,
-    },
-    [TypNavestidla.PREDZVEST]: {
-        speedIndication: false,
-        labelExample: ['Pr1L', 'Pr2KS'],
-        repeating: true,
-        privolavanie: false,
-    }
-}
+export type Additional = 'skupinove' | 'skratena_vzd';
 
 export type Rychlost = 40 | 60 | 80 | 100;
 
@@ -82,13 +48,60 @@ export type Navest = HlavnaNavest | ZriadovaciaNavest | OdchodoveNavestidloDovol
 
 type NavestnyZnak = (string | null)[];
 
-export const povoleneNavesti: { [key in TypNavestidla]: Navest[] } = {
-    [TypNavestidla.HLAVNE]: ['volno', 'stoj', 'vystraha', 40, 60, 80, 100, 'p_dovoleny'],
-    [TypNavestidla.HLAVNE_IBA_JAZDA]: ['volno', 'stoj', 'vystraha', 40, 60, 80, 100],
-    [TypNavestidla.AUTOBLOK]: ['volno', 'stoj', 'vystraha', 40, 60, 80, 100],
-    [TypNavestidla.PREDZVEST]: ['volno', 'vystraha', 40, 60, 80, 100],
-    [TypNavestidla.VLOZENE]: ['stoj', 'odchod_dovoluje', 'p_dovoleny', 'p_zakazany'],
-    [TypNavestidla.ZRIADOVACIE]: ['p_dovoleny', 'p_zakazany']
+export const typeOptions: { [key in TypNavestidla]: TypeOptions } = {
+    [TypNavestidla.HLAVNE]: {
+        speedIndication: true,
+        labelExample: ['1L', 'KL', 'L5', 'S2-6'],
+        allowedAdditional: ['skupinove', 'skratena_vzd'],
+        allowedSignals: ['volno', 'stoj', 'vystraha', 40, 60, 80, 100, 'p_dovoleny'],
+        repeating: true,
+        privolavanie: true,
+    },
+    [TypNavestidla.HLAVNE_IBA_JAZDA]: {
+        speedIndication: true,
+        labelExample: ['2S', '1MS', 'S3-7', 'L4'],
+        allowedAdditional: ['skupinove', 'skratena_vzd'],
+        allowedSignals: ['volno', 'stoj', 'vystraha', 40, 60, 80, 100],
+        repeating: true,
+        privolavanie: true,
+    },
+    [TypNavestidla.VLOZENE]: {
+        speedIndication: false,
+        labelExample: ['VL5', 'VS2-6'],
+        allowedAdditional: [],
+        allowedSignals: ['stoj', 'odchod_dovoluje', 'p_dovoleny', 'p_zakazany'],
+        repeating: false,
+        privolavanie: false,
+    },
+    [TypNavestidla.AUTOBLOK]: {
+        speedIndication: false,
+        labelExample: ['1-487', '2-358'],
+        allowedAdditional: [],
+        allowedSignals: ['volno', 'stoj', 'vystraha', 40, 60, 80, 100],
+        repeating: false,
+        privolavanie: false,
+    },
+    [TypNavestidla.ZRIADOVACIE]: {
+        speedIndication: false,
+        labelExample: ['Se1', 'Se24'],
+        allowedAdditional: [],
+        allowedSignals: ['p_dovoleny', 'p_zakazany'],
+        repeating: false,
+        privolavanie: false,
+    },
+    [TypNavestidla.PREDZVEST]: {
+        speedIndication: false,
+        labelExample: ['Pr1L', 'Pr2KS'],
+        allowedAdditional: ['skratena_vzd'],
+        allowedSignals: ['volno', 'vystraha', 40, 60, 80, 100],
+        repeating: true,
+        privolavanie: false,
+    }
+}
+
+export const additionalNames: { [key in Additional]: string } = {
+    'skupinove': 'Skupinové odchodové návestidlo',
+    'skratena_vzd': 'Skrátená vzdialenosť'
 }
 
 export const nazvyNavesti: { [key in Navest]: string } = {
@@ -132,6 +145,13 @@ export const opakovanieNavesti = [null, null, null, WHITE];
 
 export const povolenaPrivolavacia: (Navest|null)[] = [null, 'stoj'];
 export const povoleneOpakovanie: (Navest|null)[] = ['vystraha', 40, 60, 80, 100];
+
+export function getNavestneZnaky(navest: Navest|null, typ: TypNavestidla): NavestnyZnak {
+    if (navest === null) return [null, null, null, null];
+    const znaky = navestneZnaky[navest];
+    if (Array.isArray(znaky)) return znaky;
+    return znaky[typ] ?? znaky[TypNavestidla.HLAVNE] ?? [null, null, null, null];
+}
 
 export function isSpeed(navest: Navest): navest is Rychlost {
     return typeof navest === 'number';

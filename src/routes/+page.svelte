@@ -1,17 +1,18 @@
 <script lang="ts">
-	import AutoblokNavestidlo from '$lib/components/AutoblokNavestidlo.svelte';
-	import HlavneNavestidlo from '$lib/components/HlavneNavestidlo.svelte';
-	import HlavneNavestidloJazda from '$lib/components/HlavneNavestidloJazda.svelte';
-	import Predzvest from '$lib/components/Predzvest.svelte';
-	import VlozeneNavestidlo from '$lib/components/VlozeneNavestidlo.svelte';
-	import ZriadovacieNavestidlo from '$lib/components/ZriadovacieNavestidlo.svelte';
+	import AutoblokNavestidlo from '$lib/components/navestidla/AutoblokNavestidlo.svelte';
+	import HlavneNavestidlo from '$lib/components/navestidla/HlavneNavestidlo.svelte';
+	import HlavneNavestidloJazda from '$lib/components/navestidla/HlavneNavestidloJazda.svelte';
+	import Predzvest from '$lib/components/navestidla/Predzvest.svelte';
+	import VlozeneNavestidlo from '$lib/components/navestidla/VlozeneNavestidlo.svelte';
+	import ZriadovacieNavestidlo from '$lib/components/navestidla/ZriadovacieNavestidlo.svelte';
 	import {
 		TypNavestidla,
+		additionalNames,
 		isPredzvest,
 		isSpeed,
 		nazvyNavesti,
-		povoleneNavesti,
 		typeOptions,
+		type Additional,
 		type Navest,
 		type Rychlost
 	} from '$lib/navestidlo';
@@ -25,6 +26,7 @@
 	let predzvestKryjeVyhybky = $state(false);
 
 	let navest: Navest | null = $state(null);
+	let additional: Additional | null = $state(null);
 
 	const options = $derived(typeOptions[typ]);
 
@@ -44,7 +46,7 @@
 	);
 
 	$effect(() => {
-		if (navest && !povoleneNavesti[typ].includes(navest)) navest = null;
+		if (navest && !options.allowedSignals.includes(navest)) navest = null;
 		if (typ == TypNavestidla.AUTOBLOK && !poslednyAutoblok && navest && isSpeed(navest))
 			navest = 'volno';
 	});
@@ -84,13 +86,18 @@
 	{/if}
 	<div class="aspect-[1/5] h-2/5">
 		{#if typ === TypNavestidla.HLAVNE}
-			<HlavneNavestidlo {navest} {privolavacia} {opakovanie} {rychlost} />
+			<HlavneNavestidlo {navest} {privolavacia} {opakovanie} {rychlost} {additional} />
 		{:else if typ === TypNavestidla.HLAVNE_IBA_JAZDA}
-			<HlavneNavestidloJazda {navest} {privolavacia} {opakovanie} {rychlost} />
+			<HlavneNavestidloJazda {navest} {privolavacia} {opakovanie} {rychlost} {additional} />
 		{:else if typ === TypNavestidla.AUTOBLOK}
 			<AutoblokNavestidlo {navest} posledne={poslednyAutoblok} />
 		{:else if typ === TypNavestidla.PREDZVEST}
-			<Predzvest {navest} kryjeVyhybky={predzvestKryjeVyhybky} repeating={opakovanie} />
+			<Predzvest
+				{navest}
+				kryjeVyhybky={predzvestKryjeVyhybky}
+				repeating={opakovanie}
+				{additional}
+			/>
 		{:else if typ === TypNavestidla.ZRIADOVACIE}
 			<ZriadovacieNavestidlo {navest} />
 		{:else if typ === TypNavestidla.VLOZENE}
@@ -111,7 +118,7 @@
 		<label for="navest">Návesť</label>
 		<select bind:value={navest} id="navest" name="navest" class="mt-1 block w-full">
 			<option value={null}>---</option>
-			{#each povoleneNavesti[typ] as navest}
+			{#each options.allowedSignals as navest}
 				<option
 					value={navest}
 					disabled={typ == TypNavestidla.AUTOBLOK && !poslednyAutoblok && isSpeed(navest)}
@@ -184,10 +191,22 @@
 			/>
 		</div>
 	{/if}
+	{#if options.allowedAdditional.length > 0}
+		<div>
+			<label for="additional">Doplňujúce značky</label>
+			<select bind:value={additional} id="additional" name="additional" class="mt-1 block w-full">
+				<option value={null}>---</option>
+				{#each options.allowedAdditional as additional}
+					<option value={additional}>{additionalNames[additional]}</option>
+				{/each}
+			</select>
+		</div>
+	{/if}
 	<div class="mt-auto">
 		<a href="/mechanicke" class="block font-bold underline">Mechanické návestidlá</a>
 		<a href="/spadovisko" class="block font-bold underline">Spádovisko</a>
 		<a href="/autoblok" class="block font-bold underline">Autoblok</a>
+		<a href="/svetlo" class="block font-bold underline">Svetlo</a>
 	</div>
 	<i class="mt-4 text-sm">
 		Presný počet a poradie svetiel sa môže líšiť.<br />
