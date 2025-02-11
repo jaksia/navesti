@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { dev } from '$app/environment';
 	import AutoblokNavestidlo from '$lib/components/navestidla/AutoblokNavestidlo.svelte';
-	import VchodoveNavestidlo from '$lib/components/navestidla/HlavneNavestidloJazda.svelte';
+	import HlavneNavestidlo from '$lib/components/navestidla/HlavneNavestidlo.svelte';
+	import { generateLabel } from '$lib/labels';
 	import {
 		nazvyNavesti,
 		typeOptions,
@@ -234,10 +235,12 @@
 				<td colspan="3"></td>
 				<td>
 					<div class="navestidlo aspect-[1/3] w-2/5" bind:this={vchodNavestElement}>
-						<VchodoveNavestidlo
+						<HlavneNavestidlo
+							iba_jazda={true}
 							navest={vchodNavest}
 							rychlost={vchodNavestRychlost}
 							privolavacia={vchodNavestPrivolavacia}
+							label={generateLabel('vchod')}
 						/>
 					</div>
 				</td>

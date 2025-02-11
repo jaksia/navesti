@@ -1,17 +1,13 @@
 <script lang="ts">
-	import {
-		getNavestneZnaky,
-		navestneZnaky,
-		TypNavestidla,
-		type ZriadovaciaNavest
-	} from '$lib/navestidlo';
+	import { generateLabel } from '$lib/labels';
+	import { getNavestneZnaky, TypNavestidla, type AllowedSignals } from '$lib/navestidlo';
 	import Navestidlo from './Navestidlo.svelte';
 
 	let {
 		navest,
-		label
+		label = generateLabel('zriadovacie')
 	}: {
-		navest: ZriadovaciaNavest;
+		navest: AllowedSignals[TypNavestidla.ZRIADOVACIE] | null;
 		label?: string;
 	} = $props();
 

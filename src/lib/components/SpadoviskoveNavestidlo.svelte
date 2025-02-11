@@ -9,18 +9,20 @@
 
 <div class="flex flex-col items-center">
 	<div class="flex flex-col items-center justify-between gap-1 rounded-full bg-stone-900 px-1 py-2">
-		{#each Array.from({ length: 4 }) as _, i}
+		{#each Array.from({ length: type == 'hlavne' ? 4 : 3 }) as _, i}
 			<div class="h-3 w-3 rounded-full {aktivneZnaky[i] || 'bg-stone-800'}"></div>
 		{/each}
 		<div class="relative h-3 w-3 text-nowrap font-black">
 			<span
-				class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 {aktivneZnaky[4] ||
-					'text-stone-800'}">Z</span
+				class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 {mode ===
+				RezimSpadoviska.SPAT
+					? 'z-10 text-white'
+					: 'text-stone-800'}">Z</span
 			>
 			{#if type === 'hlavne' || type == 'zriadovacie'}
 				<span
 					class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rotate-180
-                {mode == RezimSpadoviska.ZAKAZANE || aktivneZnaky[4]
+                {mode == RezimSpadoviska.ZAKAZANE || mode == RezimSpadoviska.SPAT
 						? 'text-stone-800'
 						: 'text-white'}
                 ">U</span

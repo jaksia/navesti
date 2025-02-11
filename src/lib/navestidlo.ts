@@ -8,20 +8,9 @@ export enum TypNavestidla {
     HLAVNE_IBA_JAZDA = 'Hlavné návestidlo (platné iba pre jazdu vlaku)',
     VLOZENE = 'Vložené návestidlo',
     AUTOBLOK = 'Návestidlo automatického bloku',
-    // SPADOVISKO = 'Spádoviskové návestidlo',
+    // SPADOVISKO = 'Spádoviskové návestidlo', // handled separately
     ZRIADOVACIE = 'Zriaďovacie návestidlo',
     PREDZVEST = 'Samostatná predzvesť'
-}
-
-export type TypeOptions = {
-    speedIndication: boolean;
-    labelExample: string[];
-    
-    allowedAdditional: Additional[];
-    allowedSignals: Navest[];
-    
-    repeating: boolean;
-    privolavanie: boolean;
 }
 
 export type Additional = 'skupinove' | 'skratena_vzd';
@@ -37,16 +26,36 @@ export type Vystraha = 'vystraha';
 
 export type OdchodoveNavestidloDovolujeJazdu = 'odchod_dovoluje';
 
-export type ZriadovaciaNavest = PosunDovoleny | PosunZakazany;
-export type AutoblokNavest = Volno | Stoj | Vystraha;
-
-export type VlozenaNavest = Stoj | OdchodoveNavestidloDovolujeJazdu | PosunDovoleny | PosunZakazany;
-
 export type Predzvest = Vystraha | Rychlost;
 export type HlavnaNavest = Volno | Stoj | Predzvest;
+
+export type VlozenaNavest = Stoj | OdchodoveNavestidloDovolujeJazdu | PosunDovoleny | PosunZakazany;
+export type AutoblokNavest = Volno | Stoj | Vystraha;
+export type ZriadovaciaNavest = PosunDovoleny | PosunZakazany;
+
 export type Navest = HlavnaNavest | ZriadovaciaNavest | OdchodoveNavestidloDovolujeJazdu;
 
 type NavestnyZnak = (string | null)[];
+
+export type AllowedSignals = {
+    [TypNavestidla.HLAVNE]: HlavnaNavest | PosunDovoleny;
+    [TypNavestidla.HLAVNE_IBA_JAZDA]: HlavnaNavest;
+    [TypNavestidla.VLOZENE]: VlozenaNavest;
+    [TypNavestidla.AUTOBLOK]: AutoblokNavest | Rychlost;
+    [TypNavestidla.ZRIADOVACIE]: ZriadovaciaNavest;
+    [TypNavestidla.PREDZVEST]: Volno | Predzvest;
+}
+
+type TypeOptions = {
+    speedIndication: boolean;
+    labelExample: string[];
+
+    allowedAdditional: Additional[];
+    allowedSignals: Navest[];
+
+    repeating: boolean;
+    privolavanie: boolean;
+}
 
 export const typeOptions: { [key in TypNavestidla]: TypeOptions } = {
     [TypNavestidla.HLAVNE]: {
@@ -144,7 +153,7 @@ export const privolavaciaNavest = [null, null, null, WHITE + BLINK];
 export const opakovanieNavesti = [null, null, null, WHITE];
 
 export const povolenaPrivolavacia: (Navest|null)[] = [null, 'stoj'];
-export const povoleneOpakovanie: (Navest|null)[] = ['vystraha', 40, 60, 80, 100];
+export const povoleneOpakovanie: (Volno|Navest|null)[] = ['volno', 'vystraha', 40, 60, 80, 100];
 
 export function getNavestneZnaky(navest: Navest|null, typ: TypNavestidla): NavestnyZnak {
     if (navest === null) return [null, null, null, null];
@@ -157,6 +166,6 @@ export function isSpeed(navest: Navest): navest is Rychlost {
     return typeof navest === 'number';
 }
 
-export function isPredzvest(navest: Navest): navest is Predzvest {
-    return ['vystraha', 40, 60, 80, 100].includes(navest);
+export function isPredzvest(navest: Navest): navest is Volno | Predzvest {
+    return ['volno', 'vystraha', 40, 60, 80, 100].includes(navest);
 }

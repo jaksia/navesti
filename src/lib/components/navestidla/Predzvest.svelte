@@ -4,15 +4,14 @@
 	import { colors } from '$lib/consts';
 	import {
 		getNavestneZnaky,
-		povoleneOpakovanie,
 		TypNavestidla,
 		type Additional,
-		type Predzvest,
-		type Volno
+		type AllowedSignals
 	} from '$lib/navestidlo';
 	import Navestidlo from './Navestidlo.svelte';
 	import PredzvestVyhybky from './znacky/PredzvestVyhybky.svelte';
 	import SkratenaVzdialenost from './znacky/SkratenaVzdialenost.svelte';
+	import { generateLabel } from '$lib/labels';
 
 	let {
 		navest,
@@ -21,7 +20,7 @@
 		kryjeVyhybky = false,
 		additional = null
 	}: {
-		navest: Predzvest | Volno | null;
+		navest: AllowedSignals[TypNavestidla.PREDZVEST] | null;
 		label?: string;
 		repeating?: boolean;
 		kryjeVyhybky?: boolean;
@@ -31,16 +30,24 @@
 	const aktivneZnaky = $derived.by(() => {
 		let znaky: (string | null)[] = getNavestneZnaky(navest, TypNavestidla.PREDZVEST);
 
-		if (repeating && povoleneOpakovanie.includes(navest))
-			znaky = znaky.map((znak, i) => (i === 2 ? colors.white : znak)); // Setting directly would affect navestneZnaky
+		if (repeating) znaky = znaky.map((znak, i) => (i === 2 ? colors.white : znak)); // Setting directly would affect navestneZnaky
 		return znaky;
 	});
+
+	function generate(repeating: boolean) {
+		let type = ['vchod', 'odchod', 'oddiel', 'krycie'][Math.floor(Math.random() * 4)];
+		return generateLabel('predzvest', {
+			group: Math.random() < 0.25,
+			nextType: type as any,
+			repeating
+		});
+	}
 </script>
 
 <Navestidlo
 	lightCount={repeating ? 3 : 2}
 	activeLights={aktivneZnaky}
-	{label}
+	label={label ?? generate(repeating)}
 	poleStyleClass="predzvest"
 >
 	{#snippet topSigns()}

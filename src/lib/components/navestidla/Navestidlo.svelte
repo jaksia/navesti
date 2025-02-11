@@ -31,6 +31,8 @@
 			console.warn('Light count is greater than supplied active lights.');
 		}
 	});
+
+	let labelHeight = $state(0);
 </script>
 
 <div class="relative flex h-full w-full flex-col items-center">
@@ -57,13 +59,24 @@
 		{/if}
 	</div>
 	{#if label}
-		<div class="label z-20 -mb-0.5 rounded-lg px-0.5 py-0.5 text-2xs font-bold {labelStyleClass}">
-			{label}
+		<div class="bg-blue relative z-20 aspect-square w-1/4">
+			<div
+				class="label rounded-lg font-bold {labelStyleClass}"
+				bind:clientHeight={labelHeight}
+				style="font-size: {labelHeight * 0.7}px;
+					   line-height: {labelHeight * 0.85}px;
+					   {labelHeight <= 20 ? 'border-width: 2px;' : ''}
+					   min-width: {label.length + 2}ch;"
+			>
+				{label}
+			</div>
 		</div>
 	{/if}
 	<div class="pole relative h-full w-1/4 {poleStyleClass}">
-		{@render topSigns()}
-		<div class="absolute bottom-0 left-1/2 -translate-x-1/2 transform">
+		<div class="absolute left-1/2 w-full" style="top: {label ? labelHeight / 2 + 'px' : '0'};">
+			{@render topSigns()}
+		</div>
+		<div class="absolute bottom-0 left-1/2 -translate-x-1/2">
 			{@render bottomSigns()}
 		</div>
 	</div>
@@ -127,8 +140,19 @@
 		}
 	}
 	.label {
+		position: absolute;
+		left: 50%;
+		top: 0;
+		transform: translateX(-50%);
+		height: 175%;
+		min-height: 15px;
+
+		padding: 5% 25%;
+		text-align: center;
+
 		outline: 1px solid black;
 		border: 3px solid white;
+		font-weight: bold;
 
 		&.hlavne {
 			background: #f00;

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import AutoblokNavestidlo from '$lib/components/navestidla/AutoblokNavestidlo.svelte';
 	import HlavneNavestidlo from '$lib/components/navestidla/HlavneNavestidlo.svelte';
-	import HlavneNavestidloJazda from '$lib/components/navestidla/HlavneNavestidloJazda.svelte';
 	import Predzvest from '$lib/components/navestidla/Predzvest.svelte';
 	import VlozeneNavestidlo from '$lib/components/navestidla/VlozeneNavestidlo.svelte';
 	import ZriadovacieNavestidlo from '$lib/components/navestidla/ZriadovacieNavestidlo.svelte';
@@ -11,8 +10,11 @@
 		isPredzvest,
 		isSpeed,
 		nazvyNavesti,
+		povolenaPrivolavacia,
+		povoleneOpakovanie,
 		typeOptions,
 		type Additional,
+		type AllowedSignals,
 		type Navest,
 		type Rychlost
 	} from '$lib/navestidlo';
@@ -36,9 +38,9 @@
 		if (navest == 'stoj') return 2;
 		if (opakovanie && navest == 'vystraha') return 2;
 		if (opakovanie && isSpeed(navest)) return 4;
-		if (navest == 'vystraha') return 1;
-		const l = ['volno', 40, 60, 80, 100];
-		if (l.includes(navest)) return rychlost === null ? 3 : 4;
+		if (isSpeed(navest) || navest == 'vystraha') return 1;
+		if (navest == 'volno') return rychlost === null ? 3 : 4;
+		return 0;
 	});
 
 	const speedEnabled = $derived(
@@ -49,10 +51,13 @@
 		if (navest && !options.allowedSignals.includes(navest)) navest = null;
 		if (typ == TypNavestidla.AUTOBLOK && !poslednyAutoblok && navest && isSpeed(navest))
 			navest = 'volno';
+		options.allowedSignals.includes('odchod_dovoluje');
 	});
 </script>
 
-<div class="relative flex flex-grow flex-col items-center justify-end bg-green-200">
+<div
+	class="relative flex flex-grow flex-col items-center justify-end bg-gradient-to-t from-lime-300 via-cyan-200 to-cyan-300"
+>
 	{#if [TypNavestidla.HLAVNE, TypNavestidla.HLAVNE_IBA_JAZDA, TypNavestidla.AUTOBLOK].includes(typ)}
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -86,22 +91,38 @@
 	{/if}
 	<div class="aspect-[1/5] h-2/5">
 		{#if typ === TypNavestidla.HLAVNE}
-			<HlavneNavestidlo {navest} {privolavacia} {opakovanie} {rychlost} {additional} />
+			<HlavneNavestidlo
+				navest={navest as AllowedSignals[TypNavestidla.HLAVNE] | null}
+				{privolavacia}
+				{opakovanie}
+				{rychlost}
+				{additional}
+			/>
 		{:else if typ === TypNavestidla.HLAVNE_IBA_JAZDA}
-			<HlavneNavestidloJazda {navest} {privolavacia} {opakovanie} {rychlost} {additional} />
+			<HlavneNavestidlo
+				iba_jazda={true}
+				navest={navest as AllowedSignals[TypNavestidla.HLAVNE_IBA_JAZDA] | null}
+				{privolavacia}
+				{opakovanie}
+				{rychlost}
+				{additional}
+			/>
 		{:else if typ === TypNavestidla.AUTOBLOK}
-			<AutoblokNavestidlo {navest} posledne={poslednyAutoblok} />
+			<AutoblokNavestidlo
+				navest={navest as AllowedSignals[TypNavestidla.AUTOBLOK] | null}
+				posledne={poslednyAutoblok}
+			/>
 		{:else if typ === TypNavestidla.PREDZVEST}
 			<Predzvest
-				{navest}
+				navest={navest as AllowedSignals[TypNavestidla.PREDZVEST] | null}
 				kryjeVyhybky={predzvestKryjeVyhybky}
 				repeating={opakovanie}
 				{additional}
 			/>
 		{:else if typ === TypNavestidla.ZRIADOVACIE}
-			<ZriadovacieNavestidlo {navest} />
+			<ZriadovacieNavestidlo navest={navest as AllowedSignals[TypNavestidla.ZRIADOVACIE] | null} />
 		{:else if typ === TypNavestidla.VLOZENE}
-			<VlozeneNavestidlo {navest} />
+			<VlozeneNavestidlo navest={navest as AllowedSignals[TypNavestidla.VLOZENE] | null} />
 		{/if}
 	</div>
 </div>
@@ -148,6 +169,7 @@
 			<label for="privolavacia">Privolávacia návesť</label>
 			<input
 				bind:checked={privolavacia}
+				disabled={!povolenaPrivolavacia.includes(navest)}
 				id="privolavacia"
 				name="privolavacia"
 				type="checkbox"
@@ -160,6 +182,7 @@
 			<label for="opakovanie">Opakovanie</label>
 			<input
 				bind:checked={opakovanie}
+				disabled={!povoleneOpakovanie.includes(navest) && typ != TypNavestidla.PREDZVEST}
 				id="opakovanie"
 				name="opakovanie"
 				type="checkbox"

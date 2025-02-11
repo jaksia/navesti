@@ -3,21 +3,35 @@
 	import {
 		getNavestneZnaky,
 		isPredzvest,
-		navestneZnaky,
 		opakovanieNavesti,
 		povolenaPrivolavacia,
 		povoleneOpakovanie,
 		privolavaciaNavest,
 		TypNavestidla,
 		type Additional,
-		type HlavnaNavest,
-		type PosunDovoleny,
+		type AllowedSignals,
 		type Rychlost
 	} from '$lib/navestidlo';
 	import Navestidlo from './Navestidlo.svelte';
 	import SkratenaVzdialenost from './znacky/SkratenaVzdialenost.svelte';
+	import { generateLabel } from '$lib/labels';
+
+	type test<T extends boolean> = {
+		iba_jazda?: T;
+		navest:
+			| (T extends true
+					? AllowedSignals[TypNavestidla.HLAVNE_IBA_JAZDA]
+					: AllowedSignals[TypNavestidla.HLAVNE])
+			| null;
+		label?: string;
+		privolavacia?: boolean;
+		opakovanie?: boolean;
+		rychlost?: Rychlost | null;
+		additional?: Additional | null;
+	};
 
 	let {
+		iba_jazda = false,
 		navest,
 		label,
 		privolavacia = false,
@@ -25,7 +39,11 @@
 		rychlost = null,
 		additional = null
 	}: {
-		navest: HlavnaNavest | PosunDovoleny | null;
+		iba_jazda?: boolean;
+		navest:
+			| AllowedSignals[TypNavestidla.HLAVNE_IBA_JAZDA]
+			| AllowedSignals[TypNavestidla.HLAVNE]
+			| null;
 		label?: string;
 		privolavacia?: boolean;
 		opakovanie?: boolean;
@@ -33,8 +51,11 @@
 		additional?: Additional | null;
 	} = $props();
 
+	const type = $derived(iba_jazda ? TypNavestidla.HLAVNE_IBA_JAZDA : TypNavestidla.HLAVNE);
+
 	const aktivneZnaky = $derived.by(() => {
-		let znaky: (string | null)[] = getNavestneZnaky(navest, TypNavestidla.HLAVNE);
+		if (type === TypNavestidla.HLAVNE_IBA_JAZDA && navest === 'p_dovoleny') return [];
+		let znaky: (string | null)[] = getNavestneZnaky(navest, type);
 
 		if (privolavacia && povolenaPrivolavacia.includes(navest))
 			znaky = znaky.map((znak, i) => znak ?? '' + (privolavaciaNavest[i] ?? ''));
@@ -42,16 +63,24 @@
 			znaky = znaky.map((znak, i) => znak ?? '' + (opakovanieNavesti[i] ?? ''));
 		return znaky;
 	});
-	$inspect(aktivneZnaky);
+
+	function generate(additional: Additional | null) {
+		let type =
+			additional === 'skupinove'
+				? 'odchod'
+				: ['vchod', 'odchod', 'oddiel', 'krycie'][Math.floor(Math.random() * 4)];
+		return generateLabel(type as any, { group: additional === 'skupinove' });
+	}
 </script>
 
 <Navestidlo
 	lightCount={4}
 	activeLights={aktivneZnaky}
 	speedIndication={true}
-	speed={navest && (isPredzvest(navest) || navest === 'volno') ? rychlost : null}
-	{label}
-	poleStyleClass="hlavne"
+	speed={navest && isPredzvest(navest) ? rychlost : null}
+	label={label ?? generate(additional)}
+	poleStyleClass="hlavne{iba_jazda ? '_jazda' : ''}"
+	labelStyleClass="hlavne"
 >
 	{#snippet topSigns()}
 		{#if additional === 'skupinove'}

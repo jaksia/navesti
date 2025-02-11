@@ -48,14 +48,15 @@
 			else (lightColor = colors.green), (secondLightColor = colors.green);
 		}
 
-		if (navest == 'stoj') (predzvestTransform = ''), (predzvestLightColor = colors.yellow);
+		if (navest == 'stoj' || navest == '40')
+			(predzvestTransform = ''), (predzvestLightColor = colors.yellow);
 		else (predzvestTransform = 'rotate3d(1,0,0,88deg)'), (predzvestLightColor = colors.green);
 	});
 </script>
 
 <div
 	class="relative flex flex-grow items-end justify-around {day
-		? 'bg-green-200 [&_.light]:bg-opacity-50'
+		? 'bg-gradient-to-t from-lime-300 via-cyan-200 to-cyan-300 [&_.light]:bg-opacity-50'
 		: '[&_.arm]:outline-opacity-50 bg-gray-800 [&_.arm>*]:bg-opacity-10 [&_.arm]:border [&_.arm]:border-black [&_.arm]:bg-opacity-10'}"
 >
 	<div class="relative h-3/5 w-4 bg-white {day ? '' : 'border border-black bg-opacity-10'}">
@@ -145,7 +146,7 @@
 			<option value="stoj">{nazvyNavesti['stoj']}</option>
 			<option value="volno">{nazvyNavesti['volno']}</option>
 			<option value="vystraha" disabled={!yellowArm}>{nazvyNavesti['vystraha']}</option>
-			<option value="40" disabled={!secondArm}>Rýchlosť 40 km/h</option>
+			<option value="40" disabled={!secondArm}>Rýchlosť 40 km/h a Výstraha </option>
 		</select>
 	</div>
 	<a href="/" class="mt-auto font-bold underline">Normálne návestidlá</a>

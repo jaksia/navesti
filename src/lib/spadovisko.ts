@@ -1,3 +1,6 @@
+import { colors, blinking } from "./consts";
+const { red: RED, white: WHITE, blue: BLUE } = colors;
+const BLINK = WHITE + ' ' + blinking.slow;
 
 export enum RezimSpadoviska {
     ZAKAZANE = "Tlačiť zakázané",
@@ -11,31 +14,31 @@ export type TypSpadNavestidla = 'kmenove' | 'opakovacie' | 'hlavne' | 'zriadovac
 
 export const spadNavestneZnaky: { [key in TypSpadNavestidla]: { [key in RezimSpadoviska]: (string|null)[] } } = {
     kmenove: {
-        [RezimSpadoviska.ZAKAZANE]: [null, 'bg-red-500', null, null],
-        [RezimSpadoviska.POMALY]: ['bg-white', null, null, 'bg-white'],
-        [RezimSpadoviska.RYCHLEJSIE]: ['bg-white', null, null, null],
-        [RezimSpadoviska.SPAT]: [null, 'bg-red-500', null, null, 'text-white'],
-        [RezimSpadoviska.PRISUN]: [null, 'bg-red-500', null, null]
+        [RezimSpadoviska.ZAKAZANE]:   [null,  RED,  null],
+        [RezimSpadoviska.POMALY]:     [WHITE, null, WHITE],
+        [RezimSpadoviska.RYCHLEJSIE]: [WHITE, null, null],
+        [RezimSpadoviska.SPAT]:       [null,  RED,  null],
+        [RezimSpadoviska.PRISUN]:     [null,  RED,  null],
     },
     opakovacie: {
-        [RezimSpadoviska.ZAKAZANE]: [null, null, 'bg-blue-500', null],
-        [RezimSpadoviska.POMALY]: ['bg-white', null, null, 'bg-white'],
-        [RezimSpadoviska.RYCHLEJSIE]: ['bg-white', null, null, null],
-        [RezimSpadoviska.SPAT]: [null, null, 'bg-blue-500', null, 'text-white'],
-        [RezimSpadoviska.PRISUN]: ['bg-white animate-blink', null, null, 'bg-white animate-blink']
+        [RezimSpadoviska.ZAKAZANE]:   [null, BLUE, null],
+        [RezimSpadoviska.POMALY]:     [WHITE, null, WHITE],
+        [RezimSpadoviska.RYCHLEJSIE]: [WHITE, null, null],
+        [RezimSpadoviska.SPAT]:       [null, BLUE,  null],
+        [RezimSpadoviska.PRISUN]:     [BLINK, null, BLINK]
     },
     hlavne: {
-        [RezimSpadoviska.ZAKAZANE]: [null, 'bg-red-500', null, null],
-        [RezimSpadoviska.POMALY]: ['bg-white', null, null, 'bg-white'],
-        [RezimSpadoviska.RYCHLEJSIE]: ['bg-white', null, null, null],
-        [RezimSpadoviska.SPAT]: [null, 'bg-red-500', null, null, 'text-white z-10'],
-        [RezimSpadoviska.PRISUN]: ['bg-white animate-blink', null, null, 'bg-white animate-blink']
+        [RezimSpadoviska.ZAKAZANE]:   [null,  RED,  null, null],
+        [RezimSpadoviska.POMALY]:     [WHITE, null, null, WHITE],
+        [RezimSpadoviska.RYCHLEJSIE]: [WHITE, null, null, null],
+        [RezimSpadoviska.SPAT]:       [null,  RED,  null, null],
+        [RezimSpadoviska.PRISUN]:     [BLINK, null, null, BLINK]
     },
     zriadovacie: {
-        [RezimSpadoviska.ZAKAZANE]: [null, null, 'bg-blue-500', null],
-        [RezimSpadoviska.POMALY]: ['bg-white', null, null, 'bg-white'],
-        [RezimSpadoviska.RYCHLEJSIE]: ['bg-white', null, null, null],
-        [RezimSpadoviska.SPAT]: [null, null, 'bg-blue-500', null, 'text-white z-10'],
-        [RezimSpadoviska.PRISUN]: ['bg-white animate-blink', null, null, 'bg-white animate-blink']
+        [RezimSpadoviska.ZAKAZANE]:   [null, BLUE, null],
+        [RezimSpadoviska.POMALY]:     [WHITE, null, WHITE],
+        [RezimSpadoviska.RYCHLEJSIE]: [WHITE, null, null],
+        [RezimSpadoviska.SPAT]:       [null, BLUE,  null],
+        [RezimSpadoviska.PRISUN]:     [BLINK, null, BLINK]
     },
 };

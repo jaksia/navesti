@@ -1,19 +1,19 @@
 <script lang="ts">
 	import PoslednyAutoblok from './znacky/PoslednyAutoblok.svelte';
 
-	import {
-		getNavestneZnaky,
-		TypNavestidla,
-		type AutoblokNavest,
-		type Predzvest
-	} from '$lib/navestidlo';
+	import { getNavestneZnaky, TypNavestidla, type AllowedSignals } from '$lib/navestidlo';
 	import Navestidlo from './Navestidlo.svelte';
+	import { generateLabel } from '$lib/labels';
 
 	let {
 		navest,
 		label,
 		posledne = false
-	}: { navest: AutoblokNavest | Predzvest | null; label?: string; posledne?: boolean } = $props();
+	}: {
+		navest: AllowedSignals[TypNavestidla.AUTOBLOK] | null;
+		label?: string;
+		posledne?: boolean;
+	} = $props();
 
 	const aktivneZnaky = $derived(getNavestneZnaky(navest, TypNavestidla.AUTOBLOK));
 </script>
@@ -22,7 +22,7 @@
 	lightCount={3}
 	activeLights={aktivneZnaky}
 	speedIndication={false}
-	{label}
+	label={label ?? generateLabel('autoblok')}
 	poleStyleClass="autoblok"
 >
 	{#snippet topSigns()}
