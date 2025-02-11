@@ -1,3 +1,45 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+@import 'tailwindcss';
+
+@plugin '@tailwindcss/container-queries';
+
+@theme {
+  --animate-blink: blink 1s infinite;
+  --animate-blink-fast: blink 0.5s infinite;
+
+  --text-2xs: 0.625rem;
+  --text-2_5xs: 0.5875rem;
+  --text-3xs: 0.5rem;
+
+  --padding-0_75: 0.1875rem;
+  --padding-0_25: 0.0625rem;
+
+  --height-18: 4.5rem;
+
+  @keyframes blink {
+    0%,
+    100% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}

@@ -6,7 +6,7 @@
 	let mode = $state(RezimSpadoviska.ZAKAZANE);
 </script>
 
-<div class="relative flex flex-grow items-center justify-center bg-green-200">
+<div class="relative flex grow items-center justify-center bg-green-200">
 	<table cellspacing="0" cellpadding="0">
 		<thead>
 			<tr>

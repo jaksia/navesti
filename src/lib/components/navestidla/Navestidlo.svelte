@@ -38,7 +38,7 @@
 <div class="relative flex h-full w-full flex-col items-center">
 	<div
 		class="absolute top-0.5 z-10 flex w-full -translate-y-full transform flex-col justify-between rounded-full bg-stone-900 px-[15%] py-[20%]
-		*:mb-[5%] *:mt-[5%] [&_*]:transition-colors [&_*]:duration-150"
+		*:mb-[5%] *:mt-[5%] **:transition-colors **:duration-150"
 	>
 		{#each Array.from({ length: lightCount }) as _, i}
 			<div class="aspect-square rounded-full {activeLights[i] || colors.blank}"></div>

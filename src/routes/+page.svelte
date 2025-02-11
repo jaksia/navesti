@@ -56,7 +56,7 @@
 </script>
 
 <div
-	class="relative flex flex-grow flex-col items-center justify-end bg-gradient-to-t from-lime-300 via-cyan-200 to-cyan-300"
+	class="relative flex grow flex-col items-center justify-end bg-linear-to-t from-lime-300 via-cyan-200 to-cyan-300"
 >
 	{#if [TypNavestidla.HLAVNE, TypNavestidla.HLAVNE_IBA_JAZDA, TypNavestidla.AUTOBLOK].includes(typ)}
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -89,7 +89,7 @@
 			</div>
 		</div>
 	{/if}
-	<div class="aspect-[1/5] h-2/5">
+	<div class="aspect-1/5 h-2/5">
 		{#if typ === TypNavestidla.HLAVNE}
 			<HlavneNavestidlo
 				navest={navest as AllowedSignals[TypNavestidla.HLAVNE] | null}

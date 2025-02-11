@@ -214,7 +214,7 @@
 				<td colspan="3"></td>
 				{#each Array.from({ length: pocetOddielov - 1 }) as _, i}
 					<td
-						><div class="navestidlo aspect-[1/3] w-2/5" bind:this={navestidla[i]}>
+						><div class="navestidlo aspect-1/3 w-2/5" bind:this={navestidla[i]}>
 							<AutoblokNavestidlo
 								navest={oddiel[i] ? 'stoj' : oddiel[i + 1] ? 'vystraha' : 'volno'}
 							/>
@@ -224,7 +224,7 @@
 				{/each}
 				{#key pocetOddielov}
 					<td
-						><div class="navestidlo aspect-[1/3] w-2/5" bind:this={navestidla[pocetOddielov - 1]}>
+						><div class="navestidlo aspect-1/3 w-2/5" bind:this={navestidla[pocetOddielov - 1]}>
 							<AutoblokNavestidlo
 								navest={oddiel[pocetOddielov - 1] ? 'stoj' : poslednyAutoblok}
 								posledne={true}
@@ -234,7 +234,7 @@
 				{/key}
 				<td colspan="3"></td>
 				<td>
-					<div class="navestidlo aspect-[1/3] w-2/5" bind:this={vchodNavestElement}>
+					<div class="navestidlo aspect-1/3 w-2/5" bind:this={vchodNavestElement}>
 						<HlavneNavestidlo
 							iba_jazda={true}
 							navest={vchodNavest}

@@ -55,8 +55,8 @@
 </script>
 
 <div
-	class="relative flex flex-grow items-end justify-around {day
-		? 'bg-gradient-to-t from-lime-300 via-cyan-200 to-cyan-300 [&_.light]:bg-opacity-50'
+	class="relative flex grow items-end justify-around {day
+		? 'bg-linear-to-t from-lime-300 via-cyan-200 to-cyan-300 [&_.light]:bg-opacity-50'
 		: '[&_.arm]:outline-opacity-50 bg-gray-800 [&_.arm>*]:bg-opacity-10 [&_.arm]:border [&_.arm]:border-black [&_.arm]:bg-opacity-10'}"
 >
 	<div class="relative h-3/5 w-4 bg-white {day ? '' : 'border border-black bg-opacity-10'}">
