@@ -56,27 +56,33 @@
 
 <div
 	class="relative flex grow items-end justify-around {day
-		? 'bg-linear-to-t from-lime-300 via-cyan-200 to-cyan-300 [&_.light]:bg-opacity-50'
-		: '[&_.arm]:outline-opacity-50 bg-gray-800 [&_.arm>*]:bg-opacity-10 [&_.arm]:border [&_.arm]:border-black [&_.arm]:bg-opacity-10'}"
+		? 'bg-linear-to-t from-lime-300 via-cyan-200 to-cyan-300 [&_.light]:opacity-50'
+		: 'bg-radial-[at_95%_5%] from-gray-600 to-gray-800 to-20% [&_.arm]:border [&_.arm]:border-black'}"
+	style="--arm-opacity: {day ? '100%' : '10%'};"
 >
-	<div class="relative h-3/5 w-4 bg-white {day ? '' : 'border border-black bg-opacity-10'}">
+	{#if !day}
+		<div
+			class="absolute top-[5%] left-[95%] h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/90 drop-shadow-2xl"
+		></div>
+	{/if}
+	<div class="relative h-3/5 w-4 bg-white {day ? '' : 'bg-opacity-10 border border-black'}">
 		<div
 			class="light absolute left-full ml-1 h-8 w-8 -translate-y-1/2 transform rounded-full {predzvestLightColor}"
 			style="top: 7.5rem;"
 		></div>
 		<div
-			class="absolute left-1/2 top-0 transition-transform duration-1000 ease-in-out"
+			class="absolute top-0 left-1/2 transition-transform duration-1000 ease-in-out"
 			style="transform: {predzvestTransform};"
 		>
 			<div
-				class="arm absolute h-56 w-56 -translate-x-1/2 -translate-y-1/2 transform rounded-full border bg-white"
+				class="arm absolute h-56 w-56 -translate-x-1/2 -translate-y-1/2 transform rounded-full border bg-white/(--arm-opacity)"
 			></div>
 			<div
-				class="arm absolute h-48 w-48 -translate-x-1/2 -translate-y-1/2 transform rounded-full border border-black bg-yellow-300"
+				class="arm absolute h-48 w-48 -translate-x-1/2 -translate-y-1/2 transform rounded-full border border-black bg-yellow-300/(--arm-opacity)"
 			></div>
 		</div>
 	</div>
-	<div class="relative h-4/5 w-4 bg-white {day ? '' : 'border border-black bg-opacity-10'}">
+	<div class="relative h-4/5 w-4 bg-white {day ? '' : 'bg-opacity-10 border border-black'}">
 		<div
 			class="light absolute left-full ml-1 h-8 w-8 -translate-y-1/2 transform rounded-full {lightColor}"
 			style="top: 5rem;"
@@ -93,10 +99,10 @@
 				style="top: 3rem;"
 			>
 				<div
-					class="arm absolute aspect-[4] w-48 -translate-x-[15%] -translate-y-[50%] transform bg-yellow-300"
+					class="arm absolute aspect-[4] w-48 -translate-x-[15%] -translate-y-[50%] transform bg-yellow-300/(--arm-opacity)"
 				>
-					<div class="absolute left-[30%] top-0 h-1/5 w-[70%] bg-white"></div>
-					<div class="absolute left-[30%] top-[80%] h-1/5 w-[70%] bg-white"></div>
+					<div class="absolute top-0 left-[30%] h-1/5 w-[70%] bg-white/(--arm-opacity)"></div>
+					<div class="absolute top-[80%] left-[30%] h-1/5 w-[70%] bg-white/(--arm-opacity)"></div>
 				</div>
 			</div>
 		{/if}
@@ -105,9 +111,9 @@
 			style="top: {3}rem;"
 		>
 			<div
-				class="arm absolute aspect-[4] w-48 -translate-x-[15%] -translate-y-[50%] transform bg-red-600"
+				class="arm absolute aspect-[4] w-48 -translate-x-[15%] -translate-y-[50%] transform bg-red-600/(--arm-opacity)"
 			>
-				<div class="absolute left-[30%] top-1/3 h-1/3 w-[70%] bg-white"></div>
+				<div class="absolute top-1/3 left-[30%] h-1/3 w-[70%] bg-white/(--arm-opacity)"></div>
 			</div>
 		</div>
 		{#if secondArm}
@@ -116,9 +122,9 @@
 				style="top: {13}rem;"
 			>
 				<div
-					class="arm absolute aspect-[4] w-48 -translate-x-[15%] -translate-y-[50%] transform bg-red-600"
+					class="arm absolute aspect-[4] w-48 -translate-x-[15%] -translate-y-[50%] transform bg-red-600/(--arm-opacity)"
 				>
-					<div class="absolute left-[30%] top-1/3 h-1/3 w-[70%] bg-white"></div>
+					<div class="absolute top-1/3 left-[30%] h-1/3 w-[70%] bg-white/(--arm-opacity)"></div>
 				</div>
 			</div>
 		{/if}
