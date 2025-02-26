@@ -149,11 +149,11 @@
 	{#each Array.from({ length: pocetOddielov }) as _, i}
 		{@const timeDiff = now - oddielChangeTime[i]}
 		<div
-			class="absolute top-0 flex h-10 bg-opacity-40 {oddiel[i]
-				? 'bg-red-500'
+			class="absolute top-0 flex h-10 {oddiel[i]
+				? 'bg-red-500/40'
 				: now - oddielChangeTime[i] <= MIN_FREE_TIME
-					? 'bg-yellow-500'
-					: 'bg-green-500'}
+					? 'bg-yellow-500/40'
+					: 'bg-green-500/40'}
 				border-x border-dotted border-black"
 			style="left: {boundaries[i]}px; Width: {boundaries[i + 1] - boundaries[i]}px;"
 		>
@@ -168,8 +168,8 @@
 			class="absolute top-0 flex h-10 flex-col items-center justify-center text-sm {waitingTrains[
 				i
 			] !== null
-				? 'animate-pulse bg-violet-500 bg-opacity-60'
-				: 'bg-blue-500 bg-opacity-40'}"
+				? 'animate-pulse bg-violet-500/60'
+				: 'bg-blue-500/40'}"
 			style="left: {train}px; width: {trainWidth[i]}px;"
 		>
 			<span>{i}</span>

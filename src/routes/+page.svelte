@@ -18,6 +18,7 @@
 		type Navest,
 		type Rychlost
 	} from '$lib/navestidlo';
+	import Icon from '@iconify/svelte';
 
 	let typ = $state(TypNavestidla.HLAVNE);
 	let rychlost: Rychlost | null = $state(null);
@@ -30,12 +31,13 @@
 	let navest: Navest | null = $state(null);
 	let additional: Additional | null = $state(null);
 
+	let day = $state(true);
+
 	const options = $derived(typeOptions[typ]);
 
-	let safetyClicked = $state(false);
 	const safetySignal = $derived.by(() => {
 		if (navest === null) return 0;
-		if (navest == 'stoj') return 2;
+		if (navest == 'stoj' || navest == 'p_dovoleny') return 2;
 		if (opakovanie && navest == 'vystraha') return 2;
 		if (opakovanie && isSpeed(navest)) return 4;
 		if (isSpeed(navest) || navest == 'vystraha') return 1;
@@ -43,31 +45,42 @@
 		return 0;
 	});
 
-	const speedEnabled = $derived(
-		options.speedIndication && navest && (isPredzvest(navest) || navest == 'volno')
-	);
+	const speedEnabled = $derived(options.speedIndication && navest && isPredzvest(navest));
 
 	$effect(() => {
 		if (navest && !options.allowedSignals.includes(navest)) navest = null;
 		if (typ == TypNavestidla.AUTOBLOK && !poslednyAutoblok && navest && isSpeed(navest))
 			navest = 'volno';
-		options.allowedSignals.includes('odchod_dovoluje');
 	});
+
+	let lastInteract = $state(0),
+		now = $state(Date.now());
+	setInterval(() => (now = Date.now()), 0);
 </script>
 
+<svelte:window onclick={() => (lastInteract = now)} onkeypress={() => (lastInteract = now)} />
+
 <div
-	class="relative flex grow flex-col items-center justify-end bg-linear-to-t from-lime-300 via-cyan-200 to-cyan-300"
+	class="relative flex grow items-end justify-center {day
+		? 'day bg-linear-to-t from-lime-300 via-cyan-200 to-cyan-300'
+		: 'night bg-radial-[at_95%_5%] from-gray-600 to-gray-800 to-20%'}"
 >
+	{#if !day}
+		<div
+			class="absolute top-[5%] left-[95%] h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/90 drop-shadow-2xl"
+		></div>
+	{/if}
 	{#if [TypNavestidla.HLAVNE, TypNavestidla.HLAVNE_IBA_JAZDA, TypNavestidla.AUTOBLOK].includes(typ)}
-		<!-- svelte-ignore a11y_click_events_have_key_events -->
-		<!-- svelte-ignore a11y_no_static_element_interactions -->
-		<div class="absolute left-4 top-4 flex items-center">
-			<h3 class="mr-0.5 text-lg font-bold text-stone-800 [writing-mode:sideways-lr]">
+		<div class="absolute top-4 left-4 flex items-center">
+			<h3
+				class="mr-0.5 text-lg font-bold [writing-mode:sideways-lr] {day
+					? 'text-stone-800 '
+					: 'text-stone-600'}"
+			>
 				Pred návestidlom
 			</h3>
 			<div
 				class="flex flex-col items-center gap-1 rounded-lg bg-stone-800 p-4 *:transition-colors *:duration-100"
-				onclick={() => (safetyClicked = !safetyClicked)}
 			>
 				<div
 					class="h-6 w-6 rounded-full {safetySignal == 1 ? 'bg-yellow-400' : 'bg-stone-900'}"
@@ -84,7 +97,9 @@
 					<div class="h-3.5 w-3.5 transform rounded-full bg-stone-900"></div>
 				</div>
 				<div
-					class="mt-3 h-6 w-6 rounded-full {safetyClicked ? 'bg-sky-500' : 'bg-stone-900'}"
+					class="mt-3 h-6 w-6 cursor-pointer rounded-full {now - lastInteract <= 2500
+						? 'bg-sky-500'
+						: 'bg-stone-900'}"
 				></div>
 			</div>
 		</div>
@@ -127,9 +142,21 @@
 	</div>
 </div>
 <div class="flex flex-col bg-gray-500 p-5">
+	<button onclick={() => (day = !day)} class="ml-auto cursor-pointer rounded-md p-1">
+		{#if day}
+			<Icon icon="bi:moon-stars-fill" class="h-6 w-6" />
+		{:else}
+			<Icon icon="bi:sun-fill" class="h-6 w-6" />
+		{/if}
+	</button>
 	<div>
 		<label for="typ">Typ návestidla</label>
-		<select bind:value={typ} id="typ" name="typ" class="mt-1 block w-full">
+		<select
+			bind:value={typ}
+			id="typ"
+			name="typ"
+			class="mt-1 block w-full rounded-l bg-gray-100 p-1"
+		>
 			{#each Object.values(TypNavestidla) as typNavestidla}
 				<option value={typNavestidla}>{typNavestidla}</option>
 			{/each}
@@ -137,7 +164,12 @@
 	</div>
 	<div>
 		<label for="navest">Návesť</label>
-		<select bind:value={navest} id="navest" name="navest" class="mt-1 block w-full">
+		<select
+			bind:value={navest}
+			id="navest"
+			name="navest"
+			class="mt-1 block w-full rounded-l bg-gray-100 p-1"
+		>
 			<option value={null}>---</option>
 			{#each options.allowedSignals as navest}
 				<option
@@ -155,7 +187,7 @@
 				bind:value={rychlost}
 				id="rychlost"
 				name="rychlost"
-				class="mt-1 block w-full"
+				class="mt-1 block w-full rounded-l bg-gray-100 p-1 disabled:bg-gray-400"
 				disabled={!speedEnabled}
 			>
 				{#each [null, 40, 60, 80, 100] as rychlostOption}
@@ -217,7 +249,12 @@
 	{#if options.allowedAdditional.length > 0}
 		<div>
 			<label for="additional">Doplňujúce značky</label>
-			<select bind:value={additional} id="additional" name="additional" class="mt-1 block w-full">
+			<select
+				bind:value={additional}
+				id="additional"
+				name="additional"
+				class="mt-1 block w-full rounded-l bg-gray-100 p-1"
+			>
 				<option value={null}>---</option>
 				{#each options.allowedAdditional as additional}
 					<option value={additional}>{additionalNames[additional]}</option>

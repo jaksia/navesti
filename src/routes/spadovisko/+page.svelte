@@ -40,9 +40,21 @@
 				<td></td>
 			</tr>
 			<tr>
-				<td></td>
-				<td class="text-center font-bold">Spojenie koľají</td>
-				<td></td>
+				<td class="relative"
+					><img
+						src="/track/straight.svg"
+						alt="Track"
+						class="absolute top-0 left-1/2 -skew-x-[45deg]"
+					/></td
+				>
+				<td class="relative"
+					><img
+						src="/track/straight.svg"
+						alt="Track"
+						class="absolute top-0 left-1/2 skew-x-[45deg]"
+					/></td
+				>
+				<td><img src="/track/straight.svg" alt="Track" class="opacity-0" /></td>
 				<td></td>
 			</tr>
 			<tr>
@@ -125,11 +137,11 @@
 <div class="flex flex-col bg-gray-500 p-5">
 	<div>
 		<label for="track">Koľaj</label>
-		<input type="number" bind:value={track} min="1" max="2" />
+		<input type="number" bind:value={track} min="1" max="2" class="rounded-l bg-gray-100 p-1" />
 	</div>
 	<div>
 		<label for="mode">Režim spádoviska</label>
-		<select bind:value={mode}>
+		<select bind:value={mode} class="rounded-l bg-gray-100 p-1">
 			{#each Object.values(RezimSpadoviska) as value}
 				<option {value}>{value}</option>
 			{/each}

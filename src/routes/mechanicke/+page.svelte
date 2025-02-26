@@ -2,8 +2,9 @@
 	import { colors } from '$lib/consts';
 	import { nazvyNavesti } from '$lib/navestidlo';
 	import Icon from '@iconify/svelte';
+	import { fade } from 'svelte/transition';
 
-	const blank = colors.blank + ' bg-opacity-80';
+	const blank = colors.blank;
 
 	let day = $state(true);
 
@@ -56,7 +57,7 @@
 
 <div
 	class="relative flex grow items-end justify-around {day
-		? 'bg-linear-to-t from-lime-300 via-cyan-200 to-cyan-300 [&_.light]:opacity-50'
+		? 'bg-linear-to-t from-lime-300 via-cyan-200 to-cyan-300 [&_.light]:opacity-40'
 		: 'bg-radial-[at_95%_5%] from-gray-600 to-gray-800 to-20% [&_.arm]:border [&_.arm]:border-black'}"
 	style="--arm-opacity: {day ? '100%' : '10%'};"
 >
@@ -65,9 +66,9 @@
 			class="absolute top-[5%] left-[95%] h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/90 drop-shadow-2xl"
 		></div>
 	{/if}
-	<div class="relative h-3/5 w-4 bg-white {day ? '' : 'bg-opacity-10 border border-black'}">
+	<div class="relative h-3/5 w-4 {day ? 'bg-white' : 'border border-black bg-stone-600/80'}">
 		<div
-			class="light absolute left-full ml-1 h-8 w-8 -translate-y-1/2 transform rounded-full {predzvestLightColor}"
+			class="light absolute left-full ml-1 h-8 w-8 -translate-y-1/2 rounded-full transition-colors duration-500 {predzvestLightColor}"
 			style="top: 7.5rem;"
 		></div>
 		<div
@@ -75,31 +76,33 @@
 			style="transform: {predzvestTransform};"
 		>
 			<div
-				class="arm absolute h-56 w-56 -translate-x-1/2 -translate-y-1/2 transform rounded-full border bg-white/(--arm-opacity)"
+				class="arm absolute h-56 w-56 -translate-x-1/2 -translate-y-1/2 rounded-full border bg-white/(--arm-opacity)"
 			></div>
 			<div
-				class="arm absolute h-48 w-48 -translate-x-1/2 -translate-y-1/2 transform rounded-full border border-black bg-yellow-300/(--arm-opacity)"
+				class="arm absolute h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full border border-black bg-yellow-300/(--arm-opacity)"
 			></div>
 		</div>
 	</div>
-	<div class="relative h-4/5 w-4 bg-white {day ? '' : 'bg-opacity-10 border border-black'}">
+	<div class="relative h-4/5 w-4 {day ? 'bg-white' : 'border border-black bg-stone-600/80'}">
 		<div
-			class="light absolute left-full ml-1 h-8 w-8 -translate-y-1/2 transform rounded-full {lightColor}"
+			class="light absolute left-full ml-1 h-8 w-8 -translate-y-1/2 rounded-full transition-colors duration-500 {lightColor}"
 			style="top: 5rem;"
 		></div>
 		{#if secondArm}
 			<div
-				class="light absolute left-full ml-1 h-8 w-8 -translate-y-1/2 transform rounded-full {secondLightColor}"
-				style="top: 13rem;"
+				class="light absolute left-full ml-1 h-8 w-8 -translate-y-1/2 rounded-full transition-colors duration-500 {secondLightColor}"
+				style="top: 15rem; {secondLightColor === colors.blank && day ? 'opacity: 15%;' : ''}"
+				transition:fade={{ duration: 500 }}
 			></div>
 		{/if}
 		{#if yellowArm}
 			<div
-				class="absolute left-1/2 transform transition-transform duration-1000 ease-in-out {yellowRotation}"
+				class="absolute left-1/2 transition-transform duration-1000 ease-in-out {yellowRotation}"
 				style="top: 3rem;"
+				transition:fade={{ duration: 500 }}
 			>
 				<div
-					class="arm absolute aspect-[4] w-48 -translate-x-[15%] -translate-y-[50%] transform bg-yellow-300/(--arm-opacity)"
+					class="arm absolute aspect-[4] w-48 -translate-x-[15%] -translate-y-[50%] bg-yellow-300/(--arm-opacity)"
 				>
 					<div class="absolute top-0 left-[30%] h-1/5 w-[70%] bg-white/(--arm-opacity)"></div>
 					<div class="absolute top-[80%] left-[30%] h-1/5 w-[70%] bg-white/(--arm-opacity)"></div>
@@ -107,22 +110,23 @@
 			</div>
 		{/if}
 		<div
-			class="absolute left-1/2 transform transition-transform duration-1000 ease-in-out {armRotation}"
+			class="absolute left-1/2 transition-transform duration-1000 ease-in-out {armRotation}"
 			style="top: {3}rem;"
 		>
 			<div
-				class="arm absolute aspect-[4] w-48 -translate-x-[15%] -translate-y-[50%] transform bg-red-600/(--arm-opacity)"
+				class="arm absolute aspect-[4] w-48 -translate-x-[15%] -translate-y-[50%] bg-red-600/(--arm-opacity)"
 			>
 				<div class="absolute top-1/3 left-[30%] h-1/3 w-[70%] bg-white/(--arm-opacity)"></div>
 			</div>
 		</div>
 		{#if secondArm}
 			<div
-				class="absolute left-1/2 transform transition-transform duration-1000 ease-in-out {secondArmRotation}"
+				class="absolute left-1/2 transition-transform duration-1000 ease-in-out {secondArmRotation}"
 				style="top: {13}rem;"
+				transition:fade={{ duration: 500 }}
 			>
 				<div
-					class="arm absolute aspect-[4] w-48 -translate-x-[15%] -translate-y-[50%] transform bg-red-600/(--arm-opacity)"
+					class="arm absolute aspect-[4] w-48 -translate-x-[15%] -translate-y-[50%] bg-red-600/(--arm-opacity)"
 				>
 					<div class="absolute top-1/3 left-[30%] h-1/3 w-[70%] bg-white/(--arm-opacity)"></div>
 				</div>
@@ -131,7 +135,7 @@
 	</div>
 </div>
 <div class="flex flex-col bg-gray-500 p-5">
-	<button onclick={() => (day = !day)} class="ml-auto rounded-md p-1">
+	<button onclick={() => (day = !day)} class="ml-auto cursor-pointer rounded-md p-1">
 		{#if day}
 			<Icon icon="bi:moon-stars-fill" class="h-6 w-6" />
 		{:else}
@@ -148,7 +152,7 @@
 	</div>
 	<div>
 		<label for="navest">Návesť:</label>
-		<select id="navest" bind:value={navest} class="mt-1 block">
+		<select id="navest" bind:value={navest} class="mt-1 block rounded-l bg-gray-100 p-1">
 			<option value="stoj">{nazvyNavesti['stoj']}</option>
 			<option value="volno">{nazvyNavesti['volno']}</option>
 			<option value="vystraha" disabled={!yellowArm}>{nazvyNavesti['vystraha']}</option>

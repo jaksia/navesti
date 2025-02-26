@@ -37,8 +37,8 @@
 
 <div class="relative flex h-full w-full flex-col items-center">
 	<div
-		class="absolute top-0.5 z-10 flex w-full -translate-y-full transform flex-col justify-between rounded-full bg-stone-900 px-[15%] py-[20%]
-		*:mb-[5%] *:mt-[5%] **:transition-colors **:duration-150"
+		class="absolute top-0.5 z-10 flex w-full -translate-y-full transform flex-col justify-between rounded-full bg-stone-900 px-[15%] py-[15%]
+		*:mt-[6%] *:mb-[6%] **:transition-colors **:duration-150"
 	>
 		{#each Array.from({ length: lightCount }) as _, i}
 			<div class="aspect-square rounded-full {activeLights[i] || colors.blank}"></div>
@@ -84,6 +84,7 @@
 
 <style lang="scss">
 	.pole {
+		position: relative;
 		background: gray;
 		&.hlavne {
 			background-image: linear-gradient(
@@ -150,8 +151,11 @@
 		padding: 5% 25%;
 		text-align: center;
 
-		outline: 1px solid black;
-		border: 3px solid white;
+		--outline-size: 1px;
+		--border-size: 3px;
+
+		outline: var(--outline-size) solid black;
+		border: var(--border-size) solid white;
 		font-weight: bold;
 
 		&.hlavne {
@@ -169,6 +173,38 @@
 		&.predzvest {
 			background: black;
 			color: #fff;
+		}
+	}
+
+	:global(.night) {
+		.pole::before,
+		.label::before {
+			content: '';
+			position: absolute;
+			top: calc(var(--border-size, 0) * -1);
+			left: calc(var(--border-size, 0) * -1);
+			min-width: 100%;
+			min-height: 100%;
+			width: calc(100% + var(--border-size, 0) * 2);
+			height: calc(100% + var(--border-size, 0) * 2);
+
+			border-radius: inherit;
+			outline: inherit;
+
+			background: #00000080;
+			outline-color: #00000080;
+		}
+
+		.pole > * {
+			:global(> *)::after {
+				content: '';
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: #00000080;
+			}
 		}
 	}
 </style>
