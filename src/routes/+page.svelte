@@ -266,6 +266,7 @@
 		<a href="/mechanicke" class="block font-bold underline">Mechanické návestidlá</a>
 		<a href="/spadovisko" class="block font-bold underline">Spádovisko</a>
 		<a href="/autoblok" class="block font-bold underline">Autoblok</a>
+		<a href="/custom" class="block font-bold underline">Vlastné návestidlo</a>
 		<a href="/svetlo" class="block font-bold underline">Svetlo</a>
 	</div>
 	<i class="mt-4 text-sm">

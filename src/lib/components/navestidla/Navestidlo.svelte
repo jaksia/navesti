@@ -2,18 +2,19 @@
 	import { colors } from '$lib/consts';
 
 	let {
-		lightCount,
-		activeLights,
+		lightCount = 0,
+		activeLights = [],
 		speedIndication = false,
 		speed = undefined,
 		label = undefined,
 		poleStyleClass = '',
 		labelStyleClass = poleStyleClass,
 		topSigns = () => {},
-		bottomSigns = () => {}
+		bottomSigns = () => {},
+		renderLights
 	}: {
-		lightCount: number;
-		activeLights: (string | null)[];
+		lightCount?: number;
+		activeLights?: (string | null)[];
 		speedIndication?: boolean;
 		speed?: number | null;
 		label?: string;
@@ -21,6 +22,7 @@
 		labelStyleClass?: string;
 		topSigns?: () => any;
 		bottomSigns?: () => any;
+		renderLights?: () => any;
 	} = $props();
 
 	$effect(() => {
@@ -40,22 +42,26 @@
 		class="absolute top-0.5 z-10 flex w-full -translate-y-full transform flex-col justify-between rounded-full bg-stone-900 px-[15%] py-[15%]
 		*:mt-[6%] *:mb-[6%] **:transition-colors **:duration-150"
 	>
-		{#each Array.from({ length: lightCount }) as _, i}
-			<div class="aspect-square rounded-full {activeLights[i] || colors.blank}"></div>
-		{/each}
-		{#if speedIndication}
-			<div class="aspect-square rounded-full {speed ? colors.yellow : colors.blank}"></div>
-			<div class="-mt-0.5 mb-1 flex w-full flex-col justify-around">
-				<div
-					class="aspect-[6] {speed === 60
-						? colors.yellow
-						: [80, 100].includes(speed ?? -1)
-							? colors.green
-							: colors.blank}"
-				></div>
-				<div class="aspect-[7]"></div>
-				<div class="aspect-[6] {speed === 100 ? colors.green : colors.blank}"></div>
-			</div>
+		{#if renderLights}
+			{@render renderLights()}
+		{:else}
+			{#each Array.from({ length: lightCount }) as _, i}
+				<div class="aspect-square rounded-full {activeLights[i] || colors.blank}"></div>
+			{/each}
+			{#if speedIndication}
+				<div class="aspect-square rounded-full {speed ? colors.yellow : colors.blank}"></div>
+				<div class="-mt-0.5 mb-1 flex w-full flex-col justify-around">
+					<div
+						class="aspect-[6] {speed === 60
+							? colors.yellow
+							: [80, 100].includes(speed ?? -1)
+								? colors.green
+								: colors.blank}"
+					></div>
+					<div class="aspect-[7]"></div>
+					<div class="aspect-[6] {speed === 100 ? colors.green : colors.blank}"></div>
+				</div>
+			{/if}
 		{/if}
 	</div>
 	{#if label}
@@ -158,13 +164,12 @@
 		border: var(--border-size) solid white;
 		font-weight: bold;
 
+		background: #fff;
+		color: #000;
+
 		&.hlavne {
 			background: #f00;
 			color: #fff;
-		}
-		&.autoblok {
-			background: #fff;
-			color: #000;
 		}
 		&.zriadovacie {
 			background: #00f;
