@@ -22,6 +22,8 @@
 	import Icon from '@iconify/svelte';
 	import DayNight from '$lib/components/DayNight.svelte';
 
+	let lightSelector = $state(false);
+
 	let typ = $state(TypNavestidla.HLAVNE);
 	let rychlost: Rychlost | null = $state(null);
 
@@ -132,7 +134,7 @@
 		{/if}
 	</div>
 </DayNight>
-<div class="flex flex-col bg-gray-500 p-5">
+<div class="flex w-1/5 flex-col bg-gray-500 p-5">
 	<button onclick={() => (store.day = !store.day)} class="ml-auto cursor-pointer rounded-md p-1">
 		{#if store.day}
 			<Icon icon="bi:moon-stars-fill" class="h-6 w-6" />
@@ -140,129 +142,160 @@
 			<Icon icon="bi:sun-fill" class="h-6 w-6" />
 		{/if}
 	</button>
-	<div>
-		<label for="typ">Typ návestidla</label>
-		<select
-			bind:value={typ}
-			id="typ"
-			name="typ"
-			class="mt-1 block w-full rounded-l bg-gray-100 p-1"
-		>
-			{#each Object.values(TypNavestidla) as typNavestidla}
-				<option value={typNavestidla}>{typNavestidla}</option>
-			{/each}
-		</select>
-	</div>
-	<div>
-		<label for="navest">Návesť</label>
-		<select
-			bind:value={navest}
-			id="navest"
-			name="navest"
-			class="mt-1 block w-full rounded-l bg-gray-100 p-1"
-		>
-			<option value={null}>---</option>
-			{#each options.allowedSignals as navest}
-				<option
-					value={navest}
-					disabled={typ == TypNavestidla.AUTOBLOK && !poslednyAutoblok && isSpeed(navest)}
-					>{nazvyNavesti[navest]}</option
-				>
-			{/each}
-		</select>
-	</div>
-	{#if options.speedIndication}
-		<div>
-			<label for="rychlost">Rýchlosť</label>
-			<select
-				bind:value={rychlost}
-				id="rychlost"
-				name="rychlost"
-				class="mt-1 block w-full rounded-l bg-gray-100 p-1 disabled:bg-gray-400"
-				disabled={!speedEnabled}
+	{#if lightSelector}
+		<div class="my-auto flex flex-col text-center">
+			<a href="/svetlo/cervena" class="rounded-t-lg bg-red-500 py-6 text-xl hover:bg-red-600"
+				>Červená</a
 			>
-				{#each [null, 40, 60, 80, 100] as rychlostOption}
-					<option value={rychlostOption}>{rychlostOption ?? '---'}</option>
+			<a href="/svetlo/zelena" class="bg-green-500 py-6 text-xl hover:bg-green-600">Zelená</a>
+			<a href="/svetlo/modra" class="bg-blue-700 py-6 text-xl hover:bg-blue-800">Modrá</a>
+			<a href="/svetlo/biela" class="bg-white py-6 text-xl hover:bg-gray-200">Biela</a>
+			<a href="/svetlo/zlta" class="bg-yellow-400 py-6 text-xl hover:bg-yellow-500">Žltá</a>
+			<a
+				href="/svetlo/privolavacia"
+				class="rounded-b-lg bg-linear-to-tr from-yellow-400 to-green-500 py-6 text-xl hover:from-yellow-500 hover:to-green-600"
+				>Privolávacia</a
+			>
+		</div>
+
+		<div class="mt-auto">
+			<a
+				href="/"
+				class="block font-bold underline"
+				onclick={(e) => (e.preventDefault(), (lightSelector = false))}
+			>
+				Zrušiť
+			</a>
+		</div>
+	{:else}
+		<div>
+			<label for="typ">Typ návestidla</label>
+			<select
+				bind:value={typ}
+				id="typ"
+				name="typ"
+				class="mt-1 block w-full rounded-l bg-gray-100 p-1"
+			>
+				{#each Object.values(TypNavestidla) as typNavestidla}
+					<option value={typNavestidla}>{typNavestidla}</option>
 				{/each}
 			</select>
 		</div>
-	{/if}
-	{#if options.privolavanie}
 		<div>
-			<label for="privolavacia">Privolávacia návesť</label>
-			<input
-				bind:checked={privolavacia}
-				disabled={!povolenaPrivolavacia.includes(navest)}
-				id="privolavacia"
-				name="privolavacia"
-				type="checkbox"
-				class="mt-1 block"
-			/>
-		</div>
-	{/if}
-	{#if options.repeating}
-		<div>
-			<label for="opakovanie">Opakovanie</label>
-			<input
-				bind:checked={opakovanie}
-				disabled={!povoleneOpakovanie.includes(navest) && typ != TypNavestidla.PREDZVEST}
-				id="opakovanie"
-				name="opakovanie"
-				type="checkbox"
-				class="mt-1 block"
-			/>
-		</div>
-	{/if}
-	{#if typ == TypNavestidla.AUTOBLOK}
-		<div>
-			<label for="poslednyAutoblok">Posledné návestidlo automatického bloku</label>
-			<input
-				bind:checked={poslednyAutoblok}
-				id="poslednyAutoblok"
-				name="poslednyAutoblok"
-				type="checkbox"
-				class="mt-1 block"
-			/>
-		</div>
-	{/if}
-	{#if typ == TypNavestidla.PREDZVEST}
-		<div>
-			<label for="predzvestKryjeVyhybky">Hl. návestidlo kryje výhybky</label>
-			<input
-				bind:checked={predzvestKryjeVyhybky}
-				id="predzvestKryjeVyhybky"
-				name="predzvestKryjeVyhybky"
-				type="checkbox"
-				class="mt-1 block"
-			/>
-		</div>
-	{/if}
-	{#if options.allowedAdditional.length > 0}
-		<div>
-			<label for="additional">Doplňujúce značky</label>
+			<label for="navest">Návesť</label>
 			<select
-				bind:value={additional}
-				id="additional"
-				name="additional"
+				bind:value={navest}
+				id="navest"
+				name="navest"
 				class="mt-1 block w-full rounded-l bg-gray-100 p-1"
 			>
 				<option value={null}>---</option>
-				{#each options.allowedAdditional as additional}
-					<option value={additional}>{additionalNames[additional]}</option>
+				{#each options.allowedSignals as navest}
+					<option
+						value={navest}
+						disabled={typ == TypNavestidla.AUTOBLOK && !poslednyAutoblok && isSpeed(navest)}
+						>{nazvyNavesti[navest]}</option
+					>
 				{/each}
 			</select>
 		</div>
+		{#if options.speedIndication}
+			<div>
+				<label for="rychlost">Rýchlosť</label>
+				<select
+					bind:value={rychlost}
+					id="rychlost"
+					name="rychlost"
+					class="mt-1 block w-full rounded-l bg-gray-100 p-1 disabled:bg-gray-400"
+					disabled={!speedEnabled}
+				>
+					{#each [null, 40, 60, 80, 100] as rychlostOption}
+						<option value={rychlostOption}>{rychlostOption ?? '---'}</option>
+					{/each}
+				</select>
+			</div>
+		{/if}
+		{#if options.privolavanie}
+			<div>
+				<label for="privolavacia">Privolávacia návesť</label>
+				<input
+					bind:checked={privolavacia}
+					disabled={!povolenaPrivolavacia.includes(navest)}
+					id="privolavacia"
+					name="privolavacia"
+					type="checkbox"
+					class="mt-1 block"
+				/>
+			</div>
+		{/if}
+		{#if options.repeating}
+			<div>
+				<label for="opakovanie">Opakovanie</label>
+				<input
+					bind:checked={opakovanie}
+					disabled={!povoleneOpakovanie.includes(navest) && typ != TypNavestidla.PREDZVEST}
+					id="opakovanie"
+					name="opakovanie"
+					type="checkbox"
+					class="mt-1 block"
+				/>
+			</div>
+		{/if}
+		{#if typ == TypNavestidla.AUTOBLOK}
+			<div>
+				<label for="poslednyAutoblok">Posledné návestidlo automatického bloku</label>
+				<input
+					bind:checked={poslednyAutoblok}
+					id="poslednyAutoblok"
+					name="poslednyAutoblok"
+					type="checkbox"
+					class="mt-1 block"
+				/>
+			</div>
+		{/if}
+		{#if typ == TypNavestidla.PREDZVEST}
+			<div>
+				<label for="predzvestKryjeVyhybky">Hl. návestidlo kryje výhybky</label>
+				<input
+					bind:checked={predzvestKryjeVyhybky}
+					id="predzvestKryjeVyhybky"
+					name="predzvestKryjeVyhybky"
+					type="checkbox"
+					class="mt-1 block"
+				/>
+			</div>
+		{/if}
+		{#if options.allowedAdditional.length > 0}
+			<div>
+				<label for="additional">Doplňujúce značky</label>
+				<select
+					bind:value={additional}
+					id="additional"
+					name="additional"
+					class="mt-1 block w-full rounded-l bg-gray-100 p-1"
+				>
+					<option value={null}>---</option>
+					{#each options.allowedAdditional as additional}
+						<option value={additional}>{additionalNames[additional]}</option>
+					{/each}
+				</select>
+			</div>
+		{/if}
+
+		<div class="mt-auto">
+			<a href="/mechanicke" class="block font-bold underline">Mechanické návestidlá</a>
+			<a href="/spadovisko" class="block font-bold underline">Spádovisko</a>
+			<a href="/autoblok" class="block font-bold underline">Autoblok</a>
+			<a href="/custom" class="block font-bold underline">Vlastné návestidlo</a>
+			<a
+				href="/svetlo"
+				class="block font-bold underline"
+				onclick={(e) => (e.preventDefault(), (lightSelector = true))}>Svetlo</a
+			>
+		</div>
 	{/if}
-	<div class="mt-auto">
-		<a href="/mechanicke" class="block font-bold underline">Mechanické návestidlá</a>
-		<a href="/spadovisko" class="block font-bold underline">Spádovisko</a>
-		<a href="/autoblok" class="block font-bold underline">Autoblok</a>
-		<a href="/custom" class="block font-bold underline">Vlastné návestidlo</a>
-		<a href="/svetlo" class="block font-bold underline">Svetlo</a>
-	</div>
 	<i class="mt-4 text-sm">
-		Presný počet a poradie svetiel sa môže líšiť.<br />
-		Napr. opakovacie hlavné návestidlá môžu mať <br />
-		biele svetlo tam, kde býva štandardne červené.
+		Presný počet a poradie svetiel sa môže líšiť. Na vyskúšanie ľubovoľnej kombinácie svetiel a
+		značiek využite <a href="/custom" class="underline">vlastné návestidlo</a>.
 	</i>
 </div>

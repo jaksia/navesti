@@ -13,6 +13,7 @@
 	} from '$lib/navestidlo';
 	import store from '$lib/store.svelte';
 	import Icon from '@iconify/svelte';
+	import { Tween } from 'svelte/motion';
 
 	const MIN_FREE_TIME = 200;
 	const MIN_TRAIN_STOP_TIME = 300;
@@ -24,7 +25,7 @@
 	const tdCount = $derived(3 + (pocetOddielov - 1) * 5 + 5);
 
 	const poslednyAutoblok = $derived.by(() => {
-		if (vchodNavest === 'stoj') return 'vystraha';
+		if (vchodNavest === 'stoj' || behindVchod) return 'vystraha';
 		else if (vchodNavestRychlost !== null) return vchodNavestRychlost;
 		else return 'volno';
 	});
@@ -53,7 +54,7 @@
 	});
 
 	let trainPositions: number[] = $state([]);
-	let trainSpeeds: number[] = $state([]);
+	let trainSpeeds: Tween<number>[] = $state([]);
 	let trainWidth: number[] = $state([]);
 	let movingTrains: boolean[] = $state([]);
 	let waitingTrains: (number | null)[] = $state([]);
@@ -70,6 +71,10 @@
 			}
 		}
 		return result;
+	});
+	const behindVchod = $derived.by(() => {
+		const lastBoundary = boundaries[boundaries.length - 1];
+		return trainPositions.some((pos, i) => pos > lastBoundary - trainWidth[i] + 2);
 	});
 
 	let lastOddiel: boolean[] = [];
@@ -97,12 +102,21 @@
 
 		for (let i = 0; i < trainPositions.length; i++) {
 			if (movingTrains[i]) {
-				const speedUnit = baseSpeed * (trainSpeeds[i] ?? 1);
+				const speedUnit = baseSpeed * (trainSpeeds[i].current ?? 1);
 				const nextSection = boundaries.findIndex((b) => b > trainPositions[i] + trainWidth[i]);
-				if (nextSection === -1) {
+				const isBehindVchod =
+					trainPositions[i] > boundaries[boundaries.length - 1] - trainWidth[i] + 2;
+
+				if (trainPositions[i] + trainWidth[i] >= screenWidth) {
 					movingTrains[i] = false;
 					waitingTrains[i] = null;
-					if (lastWaitingTrains[i] !== null) waitingTrainsChangeTime[i] = now;
+				} else if (nextSection === -1) {
+					if ((behindVchod && !isBehindVchod) || vchodNavest == 'stoj') {
+						waitingTrains[i] = -1;
+					} else {
+						waitingTrains[i] = null;
+						trainPositions[i] = trainPositions[i] + speedUnit;
+					}
 				} else if (
 					trainPositions[i] + speedUnit * 3 + trainWidth[i] >= boundaries[nextSection] &&
 					(oddiel[nextSection] ||
@@ -115,12 +129,11 @@
 					// If the train stopped, it has to be stopped for at least MIN_TRAIN_STOP_TIME
 					// Of all the trains waiting to enter the next section, the first one has priority
 					waitingTrains[i] = nextSection;
-					if (lastWaitingTrains[i] === null) waitingTrainsChangeTime[i] = now;
 				} else {
 					waitingTrains[i] = null;
 					trainPositions[i] = trainPositions[i] + speedUnit;
-					if (lastWaitingTrains[i] !== null) waitingTrainsChangeTime[i] = now;
 				}
+				if (waitingTrains[i] === lastWaitingTrains[i]) waitingTrainsChangeTime[i] = now;
 			}
 		}
 	}, 1000 / 60);
@@ -132,7 +145,7 @@
 
 	function addTrain() {
 		trainPositions.push(50);
-		trainSpeeds.push(1);
+		trainSpeeds.push(new Tween(1));
 		movingTrains.push(false);
 		waitingTrains.push(null);
 	}
@@ -143,70 +156,95 @@
 		movingTrains.pop();
 		waitingTrains.pop();
 	}
+
+	let dragTrain: number | null = null;
+
+	function ondragover(event: DragEvent) {
+		event.preventDefault();
+		movingTrains[dragTrain ?? -1] = false;
+		trainPositions[dragTrain ?? -1] = event.clientX - trainWidth[dragTrain ?? -1] / 2;
+	}
+
+	function ondrop(event: DragEvent) {
+		event.preventDefault();
+		dragTrain = null;
+	}
 </script>
 
 <svelte:window {onresize} />
-
-{#if dev}
-	{#each Array.from({ length: pocetOddielov }) as _, i}
-		{@const timeDiff = now - oddielChangeTime[i]}
-		<div
-			class="absolute top-0 flex h-10 {oddiel[i]
-				? 'bg-red-500/40'
-				: now - oddielChangeTime[i] <= MIN_FREE_TIME
-					? 'bg-yellow-500/40'
-					: 'bg-green-500/40'}
-				border-x border-dotted border-black"
-			style="left: {boundaries[i]}px; Width: {boundaries[i + 1] - boundaries[i]}px;"
-		>
-			{Math.floor(timeDiff / 60000)}:{Math.floor((timeDiff % 60000) / 1000)
-				.toString()
-				.padStart(2, '0')}.{(timeDiff % 1000).toString().padStart(3, '0')}
-		</div>
-	{/each}
-	{#each trainPositions as train, i}
-		{@const timeDiff = now - waitingTrainsChangeTime[i]}
-		<div
-			class="absolute top-0 flex h-10 flex-col items-center justify-center text-sm {waitingTrains[
-				i
-			] !== null
-				? 'animate-pulse bg-violet-500/60'
-				: 'bg-blue-500/40'}"
-			style="left: {train}px; width: {trainWidth[i]}px;"
-		>
-			<span>{i}</span>
-			<span
-				>{Math.floor(timeDiff / 60000)}:{Math.floor((timeDiff % 60000) / 1000)
-					.toString()
-					.padStart(2, '0')}.{(timeDiff % 1000).toString().padStart(3, '0')}</span
-			>
-		</div>
-	{/each}
-{/if}
+<svelte:body {ondragover} {ondrop} />
 
 <div class="flex" id="main" bind:clientWidth={screenWidth}>
-	<DayNight class="flex flex-col justify-end overflow-hidden" style="--ground: 30%">
-		<table cellspacing="0" cellpadding="0" class="mb-[25%] h-min w-full">
+	<DayNight class="flex overflow-hidden" style="--ground: 30%">
+		{#if dev}
+			{#each Array.from({ length: pocetOddielov }) as _, i}
+				{@const timeDiff = now - oddielChangeTime[i]}
+				<div
+					class="absolute top-0 flex h-10 {oddiel[i]
+						? 'bg-red-500/40'
+						: now - oddielChangeTime[i] <= MIN_FREE_TIME
+							? 'bg-yellow-500/40'
+							: 'bg-green-500/40'}
+						border-x border-dotted border-black"
+					style="left: {boundaries[i]}px; Width: {boundaries[i + 1] - boundaries[i]}px;"
+				>
+					{Math.floor(timeDiff / 60000)}:{Math.floor((timeDiff % 60000) / 1000)
+						.toString()
+						.padStart(2, '0')}.{(timeDiff % 1000).toString().padStart(3, '0')}
+				</div>
+			{/each}
+			<div
+				class="absolute top-0 flex h-10 {behindVchod
+					? 'bg-red-500/40'
+					: 'bg-green-500/40'} border-x border-dotted border-black"
+				style="left: {boundaries[boundaries.length - 1]}px; width: {screenWidth -
+					boundaries[boundaries.length - 1]}px;"
+			></div>
+			{#each trainPositions as train, i}
+				{@const timeDiff = now - waitingTrainsChangeTime[i]}
+				<div
+					class="absolute top-0 flex h-10 flex-col items-center justify-center text-sm {waitingTrains[
+						i
+					] !== null
+						? 'animate-pulse bg-violet-500/60'
+						: 'bg-blue-500/40'}"
+					style="left: {train}px; width: {trainWidth[i]}px;"
+				>
+					<span>{i}</span>
+					<span
+						>{Math.floor(timeDiff / 60000)}:{Math.floor((timeDiff % 60000) / 1000)
+							.toString()
+							.padStart(2, '0')}.{(timeDiff % 1000).toString().padStart(3, '0')}</span
+					>
+				</div>
+			{/each}
+		{/if}
+
+		<table cellspacing="0" cellpadding="0" class="mt-auto mb-[20%] w-full">
 			<tbody>
 				<tr>
 					<td>
 						{#each trainPositions as trainpos, i}
 							<div
-								class="absolute top-0 z-10 w-[150%] -translate-y-1/3 transform {waitingTrains[i] !==
-								null
+								class="absolute top-0 z-10 w-[150%] -translate-y-1/3 {waitingTrains[i] !== null
 									? 'animate-pulse'
 									: ''}"
 								style="left: {trainpos}px;"
 								bind:clientWidth={trainWidth[i]}
 							>
-								<img src="/track/train.svg" alt="Train" />
+								<img
+									src="/track/train.svg"
+									alt="Train"
+									draggable="true"
+									ondragstart={() => (dragTrain = i)}
+								/>
 							</div>
 						{/each}
 					</td>
 				</tr>
 				<tr class="track" bind:clientWidth={trackWidth}>
 					{#each Array.from({ length: tdCount }) as _}
-						<td><img src="/track/straight_v.svg" alt="Track" /></td>
+						<td><img src="/track/straight_v.svg" alt="Track" draggable="false" /></td>
 					{/each}
 				</tr>
 				<tr>
@@ -236,7 +274,7 @@
 						<div class="navestidlo aspect-1/3 w-2/5" bind:this={vchodNavestElement}>
 							<HlavneNavestidlo
 								iba_jazda={true}
-								navest={vchodNavest}
+								navest={behindVchod ? 'stoj' : vchodNavest}
 								rychlost={vchodNavestRychlost}
 								privolavacia={vchodNavestPrivolavacia}
 								label={generateLabel('vchod')}
@@ -248,7 +286,7 @@
 		</table>
 	</DayNight>
 </div>
-<div class="flex flex-col bg-gray-500 p-5">
+<div class="flex w-1/5 flex-col bg-gray-500 p-5">
 	<button onclick={() => (store.day = !store.day)} class="ml-auto cursor-pointer rounded-md p-1">
 		{#if store.day}
 			<Icon icon="bi:moon-stars-fill" class="h-6 w-6" />
@@ -263,7 +301,11 @@
 	</div>
 	<div>
 		<label for="vchodovehoNavestidlo">Návesť vchodového návestidla:</label>
-		<select bind:value={vchodNavest} id="vchodovehoNavestidlo">
+		<select
+			bind:value={vchodNavest}
+			id="vchodovehoNavestidlo"
+			class="mt-1 block w-full rounded-l bg-gray-100 p-1"
+		>
 			{#each typeOptions[TypNavestidla.HLAVNE_IBA_JAZDA].allowedSignals as navest}
 				<option value={navest} disabled={navest !== 'stoj' && vchodNavestPrivolavacia}
 					>{nazvyNavesti[navest]}</option
@@ -277,6 +319,7 @@
 			bind:value={vchodNavestRychlost}
 			id="vchodNavestRychlost"
 			disabled={vchodNavest === 'stoj'}
+			class="mt-1 block w-full rounded-l bg-gray-100 p-1"
 		>
 			<option value={null}>---</option>
 			{#each [40, 60, 80, 100] as rychlost}
@@ -290,11 +333,11 @@
 	</div>
 	<div class="mt-5">
 		<div class="flex justify-between text-3xl">
-			<button onclick={addTrain}>
+			<button onclick={addTrain} class="cursor-pointer">
 				<Icon icon="fa6-solid:plus" />
 			</button>
-			<img src="/track/train.svg" class="w-10" alt="Train" />
-			<button onclick={removeTrain}>
+			<img src="/track/train.svg" class="w-12" alt="Train" />
+			<button onclick={removeTrain} class="cursor-pointer">
 				<Icon icon="fa6-solid:minus" />
 			</button>
 		</div>
@@ -325,9 +368,9 @@
 							step=".5"
 							defaultValue="1"
 							class="w-9/12"
-							bind:value={trainSpeeds[i]}
+							bind:value={trainSpeeds[i].target}
 						/>
-						<span class="w-2/12 text-right">{trainSpeeds[i] ?? 1}x</span>
+						<span class="w-2/12 text-right">{trainSpeeds[i].target ?? 1}x</span>
 					</div>
 				</div>
 			{/each}

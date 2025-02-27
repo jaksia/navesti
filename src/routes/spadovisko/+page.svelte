@@ -134,7 +134,7 @@
 		</tbody>
 	</table>
 </div>
-<div class="flex flex-col bg-gray-500 p-5">
+<div class="flex w-1/5 flex-col bg-gray-500 p-5">
 	<div>
 		<label for="track">Koľaj</label>
 		<input type="number" bind:value={track} min="1" max="2" class="rounded-l bg-gray-100 p-1" />

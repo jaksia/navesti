@@ -135,7 +135,7 @@
 		{/if}
 	</div>
 </DayNight>
-<div class="flex flex-col bg-gray-500 p-5">
+<div class="flex w-1/5 flex-col bg-gray-500 p-5">
 	<button onclick={() => (store.day = !store.day)} class="ml-auto cursor-pointer rounded-md p-1">
 		{#if store.day}
 			<Icon icon="bi:moon-stars-fill" class="h-6 w-6" />

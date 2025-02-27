@@ -53,6 +53,11 @@
 		);
 	}
 
+	.day-bg,
+	.night-bg {
+		pointer-events: none;
+	}
+
 	:global .night .light {
 		transition-property: all;
 		filter: drop-shadow(0 0 45px var(--shadow-color)) drop-shadow(0 0 30px var(--shadow-color))
@@ -85,12 +90,12 @@
 	:global(.label)::before {
 		content: '';
 		position: absolute;
-		top: calc(var(--border-size, 0) * -1);
-		left: calc(var(--border-size, 0) * -1);
+		top: calc(var(--label-border-size, 0) * -1);
+		left: calc(var(--label-border-size, 0) * -1);
 		min-width: 100%;
 		min-height: 100%;
-		width: calc(100% + var(--border-size, 0) * 2);
-		height: calc(100% + var(--border-size, 0) * 2);
+		width: calc(100% + var(--label-border-size, 0) * 2);
+		height: calc(100% + var(--label-border-size, 0) * 2);
 
 		border-radius: inherit;
 		outline: inherit;

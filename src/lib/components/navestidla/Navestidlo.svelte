@@ -35,6 +35,7 @@
 	});
 
 	let labelHeight = $state(0);
+	let labelSpacerHeight = $state(0);
 </script>
 
 <div class="relative flex h-full w-full flex-col items-center">
@@ -80,19 +81,30 @@
 		{/if}
 	</div>
 	{#if label}
-		<div class="relative aspect-square w-1/4 bg-blue-500"></div>
+		<div class="relative aspect-square w-1/4" bind:clientHeight={labelSpacerHeight}></div>
 	{/if}
 	<div class="pole relative -z-10 h-full w-1/4 {poleStyleClass}">
-		<div class="absolute left-1/2 w-full" style="top: {label ? labelHeight / 2 + 'px' : '0'};">
+		<div
+			class="signs absolute left-1/2 w-full"
+			style="top: {label
+				? `calc(${labelHeight - labelSpacerHeight}px + var(--label-outline-size) + var(--label-border-size))`
+				: '0'}"
+		>
 			{@render topSigns()}
 		</div>
-		<div class="absolute bottom-0 left-1/2 -translate-x-1/2">
+		<div class="signs absolute bottom-0 left-1/2 -translate-x-1/2">
 			{@render bottomSigns()}
 		</div>
 	</div>
 </div>
 
 <style lang="scss">
+	.label,
+	.signs {
+		--label-outline-size: 1px;
+		--label-border-size: 3px;
+	}
+
 	.pole {
 		position: relative;
 		background: gray;
@@ -161,11 +173,8 @@
 		padding: 5% 25%;
 		text-align: center;
 
-		--outline-size: 1px;
-		--border-size: 3px;
-
-		outline: var(--outline-size) solid black;
-		border: var(--border-size) solid white;
+		outline: var(--label-outline-size) solid black;
+		border: var(--label-border-size) solid white;
 		font-weight: bold;
 
 		background: #fff;
