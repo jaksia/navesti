@@ -1,12 +1,12 @@
 <script lang="ts">
+	import DayNight from '$lib/components/DayNight.svelte';
 	import { colors } from '$lib/consts';
 	import { nazvyNavesti } from '$lib/navestidlo';
+	import store from '$lib/store.svelte';
 	import Icon from '@iconify/svelte';
 	import { fade } from 'svelte/transition';
 
 	const blank = colors.blank;
-
-	let day = $state(true);
 
 	let navest = $state('stoj');
 
@@ -55,18 +55,15 @@
 	});
 </script>
 
-<div
-	class="relative flex grow items-end justify-around {day
-		? 'bg-linear-to-t from-lime-300 via-cyan-200 to-cyan-300 [&_.light]:opacity-40'
-		: 'bg-radial-[at_95%_5%] from-gray-600 to-gray-800 to-20% [&_.arm]:border [&_.arm]:border-black'}"
-	style="--arm-opacity: {day ? '100%' : '10%'};"
+<DayNight
+	class="flex grow items-end justify-around"
+	style="--arm-opacity: {store.day ? '100%' : '10%'};"
 >
-	{#if !day}
-		<div
-			class="absolute top-[5%] left-[95%] h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/90 drop-shadow-2xl"
-		></div>
-	{/if}
-	<div class="relative h-3/5 w-4 {day ? 'bg-white' : 'border border-black bg-stone-600/80'}">
+	<div
+		class="relative h-3/5 w-4 border {store.day
+			? 'border-white bg-white'
+			: 'border-black bg-stone-600/80'} transition-colors duration-500"
+	>
 		<div
 			class="light absolute left-full ml-1 h-8 w-8 -translate-y-1/2 rounded-full transition-colors duration-500 {predzvestLightColor}"
 			style="top: 7.5rem;"
@@ -76,14 +73,18 @@
 			style="transform: {predzvestTransform};"
 		>
 			<div
-				class="arm absolute h-56 w-56 -translate-x-1/2 -translate-y-1/2 rounded-full border bg-white/(--arm-opacity)"
+				class="arm absolute h-56 w-56 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/(--arm-opacity) bg-white/(--arm-opacity) transition-colors duration-500"
 			></div>
 			<div
-				class="arm absolute h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full border border-black bg-yellow-300/(--arm-opacity)"
+				class="arm absolute h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full border border-black bg-yellow-300/(--arm-opacity) transition-colors duration-500"
 			></div>
 		</div>
 	</div>
-	<div class="relative h-4/5 w-4 {day ? 'bg-white' : 'border border-black bg-stone-600/80'}">
+	<div
+		class="relative h-4/5 w-4 border {store.day
+			? 'border-white bg-white'
+			: 'border-black bg-stone-600/80'} transition-colors duration-500"
+	>
 		<div
 			class="light absolute left-full ml-1 h-8 w-8 -translate-y-1/2 rounded-full transition-colors duration-500 {lightColor}"
 			style="top: 5rem;"
@@ -91,13 +92,13 @@
 		{#if secondArm}
 			<div
 				class="light absolute left-full ml-1 h-8 w-8 -translate-y-1/2 rounded-full transition-colors duration-500 {secondLightColor}"
-				style="top: 15rem; {secondLightColor === colors.blank && day ? 'opacity: 15%;' : ''}"
+				style="top: 15rem; {secondLightColor === colors.blank && store.day ? 'opacity: 15%;' : ''}"
 				transition:fade={{ duration: 500 }}
 			></div>
 		{/if}
 		{#if yellowArm}
 			<div
-				class="absolute left-1/2 transition-transform duration-1000 ease-in-out {yellowRotation}"
+				class="absolute left-1/2 transition-transform duration-1000 ease-in-out {yellowRotation} **:transition-colors **:duration-500"
 				style="top: 3rem;"
 				transition:fade={{ duration: 500 }}
 			>
@@ -110,7 +111,7 @@
 			</div>
 		{/if}
 		<div
-			class="absolute left-1/2 transition-transform duration-1000 ease-in-out {armRotation}"
+			class="absolute left-1/2 transition-transform duration-1000 ease-in-out {armRotation} **:transition-colors **:duration-500"
 			style="top: {3}rem;"
 		>
 			<div
@@ -121,7 +122,7 @@
 		</div>
 		{#if secondArm}
 			<div
-				class="absolute left-1/2 transition-transform duration-1000 ease-in-out {secondArmRotation}"
+				class="absolute left-1/2 transition-transform duration-1000 ease-in-out {secondArmRotation} **:transition-colors **:duration-500"
 				style="top: {13}rem;"
 				transition:fade={{ duration: 500 }}
 			>
@@ -133,10 +134,10 @@
 			</div>
 		{/if}
 	</div>
-</div>
+</DayNight>
 <div class="flex flex-col bg-gray-500 p-5">
-	<button onclick={() => (day = !day)} class="ml-auto cursor-pointer rounded-md p-1">
-		{#if day}
+	<button onclick={() => (store.day = !store.day)} class="ml-auto cursor-pointer rounded-md p-1">
+		{#if store.day}
 			<Icon icon="bi:moon-stars-fill" class="h-6 w-6" />
 		{:else}
 			<Icon icon="bi:sun-fill" class="h-6 w-6" />

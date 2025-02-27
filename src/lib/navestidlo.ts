@@ -149,6 +149,8 @@ export const navestneZnaky: { [key in Navest]: (NavestnyZnak|Partial<{ [key in T
     'odchod_dovoluje': [null, WHITE + BLINK, null]
 }
 
+export const vsetkyNavesti: Navest[] = ['volno', 'stoj', 'vystraha', 40, 60, 80, 100, 'p_dovoleny', 'p_zakazany', 'odchod_dovoluje'];
+
 export const privolavaciaNavest = [null, null, null, WHITE + BLINK];
 export const opakovanieNavesti = [null, null, null, WHITE];
 

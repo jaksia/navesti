@@ -39,33 +39,33 @@
 
 <div class="relative flex h-full w-full flex-col items-center">
 	<div
-		class="absolute top-0.5 z-10 flex w-full -translate-y-full transform flex-col justify-between rounded-full bg-stone-900 px-[15%] py-[15%]
-		*:mt-[6%] *:mb-[6%] **:transition-colors **:duration-150"
+		class="absolute top-0.5 z-20 flex w-full -translate-y-full transform flex-col justify-between rounded-full bg-stone-900 px-[15%] py-[15%]
+		*:mt-[6%] *:mb-[6%] **:transition-all **:duration-300"
 	>
 		{#if renderLights}
 			{@render renderLights()}
 		{:else}
 			{#each Array.from({ length: lightCount }) as _, i}
-				<div class="aspect-square rounded-full {activeLights[i] || colors.blank}"></div>
+				<div class="light aspect-square rounded-full {activeLights[i] || colors.blank}"></div>
 			{/each}
 			{#if speedIndication}
-				<div class="aspect-square rounded-full {speed ? colors.yellow : colors.blank}"></div>
+				<div class="light aspect-square rounded-full {speed ? colors.yellow : colors.blank}"></div>
 				<div class="-mt-0.5 mb-1 flex w-full flex-col justify-around">
 					<div
-						class="aspect-[6] {speed === 60
+						class="light aspect-[6] {speed === 60
 							? colors.yellow
 							: [80, 100].includes(speed ?? -1)
 								? colors.green
 								: colors.blank}"
 					></div>
 					<div class="aspect-[7]"></div>
-					<div class="aspect-[6] {speed === 100 ? colors.green : colors.blank}"></div>
+					<div class="light aspect-[6] {speed === 100 ? colors.green : colors.blank}"></div>
 				</div>
 			{/if}
 		{/if}
 	</div>
 	{#if label}
-		<div class="bg-blue relative z-20 aspect-square w-1/4">
+		<div class="relative z-10 aspect-square w-1/4">
 			<div
 				class="label rounded-lg font-bold {labelStyleClass}"
 				bind:clientHeight={labelHeight}
@@ -178,38 +178,6 @@
 		&.predzvest {
 			background: black;
 			color: #fff;
-		}
-	}
-
-	:global(.night) {
-		.pole::before,
-		.label::before {
-			content: '';
-			position: absolute;
-			top: calc(var(--border-size, 0) * -1);
-			left: calc(var(--border-size, 0) * -1);
-			min-width: 100%;
-			min-height: 100%;
-			width: calc(100% + var(--border-size, 0) * 2);
-			height: calc(100% + var(--border-size, 0) * 2);
-
-			border-radius: inherit;
-			outline: inherit;
-
-			background: #00000080;
-			outline-color: #00000080;
-		}
-
-		.pole > * {
-			:global(> *)::after {
-				content: '';
-				position: absolute;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 100%;
-				background: #00000080;
-			}
 		}
 	}
 </style>

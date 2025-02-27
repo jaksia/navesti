@@ -1,22 +1,43 @@
 <script lang="ts">
 	import { dev } from '$app/environment';
-	import { colors } from '$lib/consts';
-	import { customColorClasses, CustomLightColor, Mode, maxLightCounts } from '$lib/custom';
+	import { blinking, colors } from '$lib/consts';
+	import {
+		customColorClasses,
+		CustomLightColor,
+		Mode,
+		maxLightCounts,
+		generatePattern,
+		type LightMode,
+		availableSignals as availableSignalsF,
+		canRepeat,
+		canPrivolavacia,
+		modeNames
+	} from '$lib/custom';
 	import Icon from '@iconify/svelte';
 	import { untrack } from 'svelte';
 	import Navestidlo from '$lib/components/navestidla/Navestidlo.svelte';
-
-	let day = $state(true);
+	import { nazvyNavesti, vsetkyNavesti, type Navest } from '$lib/navestidlo';
+	import DayNight from '$lib/components/DayNight.svelte';
+	import store from '$lib/store.svelte';
 
 	let mode: Mode = $state(Mode.BUILD);
+
+	let lights: CustomLightColor[] = $state([]);
+	let activeLights: LightMode[] = $state([]);
+	let lightElements: HTMLElement[] = $state([]);
+
+	let signal: Navest | null = $state(null);
+	let availableSignals: Navest[] = $derived(availableSignalsF(lights));
+
+	let repeating = $state(false);
+	let repeatingAvailable = $derived(canRepeat(lights, signal));
+
+	let privolavacia = $state(false);
+	let privolavaciaAvailable = $derived(canPrivolavacia(lights, signal));
 
 	let label = $state('');
 	let labelStyleClass: string | null = $state(null);
 	let poleStyleClass: string | null = $state(null);
-
-	let lights: CustomLightColor[] = $state([]);
-	let activeLights: boolean[] = $state([]);
-	let lightElements: HTMLElement[] = $state([]);
 
 	$effect(() => {
 		const [oldLE] = untrack(() => [lightElements]);
@@ -27,7 +48,18 @@
 		} else if (mode === Mode.MANUAL) {
 			// Do nothing
 		} else if (mode === Mode.SIGNAL) {
-			// TODO: Implement
+			let pattern;
+			if (signal) pattern = generatePattern(lights, signal);
+			if (!signal || !pattern) {
+				pattern = lights.map(() => false);
+			}
+			if (repeating && repeatingAvailable) {
+				pattern[lights.indexOf(CustomLightColor.WHITE)] = true;
+			}
+			if (privolavacia && privolavaciaAvailable) {
+				pattern[lights.indexOf(CustomLightColor.WHITE)] = blinking.slow as LightMode;
+			}
+			activeLights = pattern;
 		}
 	});
 
@@ -46,7 +78,6 @@
 	let devMouse: number[] | null = $state(null);
 
 	function dragover(event: DragEvent) {
-		if (!isValidDrag(event)) return;
 		event.preventDefault();
 		activeDropBox = lightElements.findIndex((el, i) => {
 			const rect = el.getBoundingClientRect();
@@ -59,8 +90,9 @@
 
 	function drop(event: DragEvent, i: number, insert: boolean) {
 		event.preventDefault();
-		if (!isValidDrag(event)) return;
-		const data = event.dataTransfer?.getData('text').split(';') ?? [];
+		event.stopPropagation();
+		if (!event.dataTransfer || !event.dataTransfer.getData('light')) return;
+		const data = event.dataTransfer.getData('light').split(';') ?? [];
 		const color = data[0] as CustomLightColor,
 			origPos = parseInt(data[1]);
 
@@ -83,18 +115,10 @@
 		(activeDropBox = null), (trashActive = false), (devMouse = null);
 	}
 
-	function isValidDrag(event: DragEvent) {
-		if (
-			!event.dataTransfer?.types.includes('text') &&
-			!event.dataTransfer?.types.includes('text/plain')
-		)
-			return false;
-		const data = event.dataTransfer?.getData('text').split(';');
-		if (data?.length !== 2) return false;
-		if (!Object.values(CustomLightColor).includes(data[0] as CustomLightColor)) return false;
-		if (data[1] === '-1') return true;
-		const pos = parseInt(data[1]);
-		return pos >= 0 && pos < lights.length;
+	function cycleLight(i: number) {
+		const list = [false, true, blinking.slow, blinking.fast] as LightMode[];
+		const index = list.indexOf(activeLights[i]);
+		activeLights[i] = list[(index + 1) % list.length];
 	}
 </script>
 
@@ -109,19 +133,17 @@
 		class="pointer-events-none fixed z-50 w-14 -translate-x-1/2 border-t-2 border-dotted border-black"
 		style="top:{devMouse[1]}px; left:{devMouse[0]}px;"
 	></div>
+	<div
+		class="pointer-events-none fixed z-50 h-14 -translate-y-1/2 border-r-2 border-dotted border-black"
+		style="top:{devMouse[1]}px; left:{devMouse[0]}px;"
+	></div>
+	<div
+		class="pointer-events-none fixed z-50 size-14 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-dotted border-black"
+		style="top:{devMouse[1]}px; left:{devMouse[0]}px;"
+	></div>
 {/if}
 
-<div
-	class="relative flex grow flex-col items-center justify-between {day
-		? 'day bg-linear-to-t from-lime-300 via-cyan-200 to-cyan-300'
-		: 'night bg-radial-[at_95%_5%] from-gray-600 to-gray-800 to-20%'}"
->
-	{#if !day}
-		<div
-			class="absolute top-[5%] left-[95%] h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/90 drop-shadow-2xl"
-		></div>
-	{/if}
-
+<DayNight class="flex grow flex-col items-center justify-between">
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div class="mt-10 flex gap-1">
 		{#each Object.values(CustomLightColor) as color}
@@ -130,18 +152,19 @@
 					color
 				]} {colorCount[color] >= maxLightCounts[color] || mode !== Mode.BUILD ? 'disabled' : ''}"
 				draggable={colorCount[color] >= maxLightCounts[color] ? 'false' : 'true'}
-				ondragstart={(e) => e.dataTransfer?.setData('text', `${color};-1`)}
+				ondragstart={(e) => e.dataTransfer?.setData('light', `${color};-1`)}
 			>
 				{maxLightCounts[color] - (colorCount[color] ?? 0)}
 			</div>
 		{/each}
 
 		<div
-			ondragover={(e) =>
-				isValidDrag(e) && (e.preventDefault(), (trashActive = true), (activeDropBox = null))}
-			ondragleave={(e) => isValidDrag(e) && (trashActive = false)}
+			ondragover={(e) => (e.preventDefault(), (trashActive = true), (activeDropBox = null))}
+			ondragleave={(e) => (trashActive = false)}
 			ondrop={(e) => drop(e, -1, true)}
-			class="ml-2 {mode !== Mode.BUILD ? 'disabled' : ''}"
+			class="ml-2 {mode !== Mode.BUILD ? 'disabled' : ''} transition-colors duration-500 {store.day
+				? 'text-stone-800'
+				: 'text-stone-600'} rounded-full"
 		>
 			{#if trashActive}
 				<Icon icon="mdi:trash-can-empty" class="size-14 cursor-pointer text-red-700" />
@@ -155,9 +178,10 @@
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<div
 		class="flex aspect-1/5 h-2/5 flex-col"
-		ondragend={(e) => isValidDrag(e) && (activeDropBox = null)}
-		ondragleave={(e) => isValidDrag(e) && (activeDropBox = null)}
+		ondragend={(e) => (activeDropBox = null)}
+		ondragleave={(e) => (activeDropBox = null)}
 		ondragover={dragover}
+		ondrop={(e) => drop(e, activeDropBox ?? lights.length, true)}
 	>
 		<Navestidlo
 			{label}
@@ -167,21 +191,27 @@
 			{#snippet renderLights()}
 				{#each lights as light, i}
 					<div
-						class="size-14 rounded-full border-3 border-dashed border-amber-300 {activeDropBox === i
+						class="aspect-square rounded-full border-3 border-dotted border-amber-300 {activeDropBox ===
+						i
 							? ''
 							: 'hidden'}"
-						ondragover={(e) => isValidDrag(e) && (e.preventDefault(), (activeDropBox = i))}
+						ondragover={(e) => (e.preventDefault(), (activeDropBox = i))}
 						ondrop={(e) => drop(e, i, true)}
 					></div>
 					<div
-						class="relative mt-[6%] mb-[6%] size-14 rounded-full {activeLights[i]
+						class="light relative mt-[6%] mb-[6%] aspect-square rounded-full {activeLights[i] !==
+						false
 							? customColorClasses[light]
-							: colors.blank} {mode === Mode.MANUAL ? 'cursor-pointer' : ''}"
+							: colors.blank} {mode === Mode.MANUAL ? 'cursor-pointer' : ''} {typeof activeLights[
+							i
+						] === 'string'
+							? activeLights[i]
+							: ''}"
 						draggable="true"
-						ondragstart={(e) => e.dataTransfer?.setData('text', `${light};${i}`)}
+						ondragstart={(e) => e.dataTransfer?.setData('light', `${light};${i}`)}
 						bind:this={lightElements[i]}
-						ondrop={(e) => isValidDrag(e) && activeDropBox && drop(e, activeDropBox, true)}
-						onclick={() => mode === Mode.MANUAL && (activeLights[i] = !activeLights[i])}
+						ondrop={(e) => activeDropBox && drop(e, activeDropBox, true)}
+						onclick={() => mode === Mode.MANUAL && cycleLight(i)}
 					>
 						{#if dev}
 							<div class="absolute top-1/3 w-full border-t-2 border-dotted border-black"></div>
@@ -190,23 +220,21 @@
 					</div>
 				{/each}
 				<div
-					class="size-14 rounded-full border-3 border-dashed border-amber-300 {activeDropBox ===
-					lights.length
-						? ''
+					class="aspect-square rounded-full border-3 border-dotted {activeDropBox === lights.length
+						? 'border-amber-300'
 						: lights.length === 0
-							? ''
+							? 'border-gray-600'
 							: 'hidden'}"
-					ondragover={(e) =>
-						isValidDrag(e) && (e.preventDefault(), (activeDropBox = lights.length))}
+					ondragover={(e) => (e.preventDefault(), (activeDropBox = lights.length))}
 					ondrop={(e) => drop(e, lights.length, true)}
 				></div>
 			{/snippet}
 		</Navestidlo>
 	</div>
-</div>
-<div class="flex flex-col bg-gray-500 p-5">
-	<button onclick={() => (day = !day)} class="ml-auto cursor-pointer rounded-md p-1">
-		{#if day}
+</DayNight>
+<div class="flex w-1/5 flex-col bg-gray-500 p-5">
+	<button onclick={() => (store.day = !store.day)} class="ml-auto cursor-pointer rounded-md p-1">
+		{#if store.day}
 			<Icon icon="bi:moon-stars-fill" class="h-6 w-6" />
 		{:else}
 			<Icon icon="bi:sun-fill" class="h-6 w-6" />
@@ -258,7 +286,7 @@
 		</select>
 	</div>
 	<div>
-		<label for="lightsMode">Režim svetiel</label>
+		<label for="lightsMode">Režim</label>
 		<select
 			bind:value={mode}
 			id="lightsMode"
@@ -266,16 +294,58 @@
 			class="mt-1 block w-full rounded-l bg-gray-100 p-1"
 		>
 			{#each Object.values(Mode) as value}
-				<option {value}>{value}</option>
+				<option {value}>{modeNames[value]}</option>
 			{/each}
 		</select>
 	</div>
 	{#if mode === Mode.BUILD}
-		<!-- TODO: some text -->
+		<i class="text-sm">
+			Svetlá je možné umiestniť na návestidlo potiahnutím.Svetlá na návestidle je možné potiahnuť na
+			iné miesto alebo vymazať potiahnutím na ikonu koša.
+		</i>
 	{:else if mode === Mode.MANUAL}
-		<i class="text-xs">Kliknutím na svetlo ho zapneš/vypneš</i>
+		<i class="text-sm"
+			>Kliknutím na svetlo prepneš jeho režim. Režimy idú v poradí: vypnuté, zapnuté, pomalé
+			blikanie, rýchle blikanie.</i
+		>
 	{:else if mode === Mode.SIGNAL}
-		Not yet implemented
+		<label for="signal">Návesť</label>
+		<select
+			bind:value={signal}
+			id="signal"
+			name="signal"
+			class="mt-1 block
+			w-full rounded-l bg-gray-100 p-1"
+		>
+			<option value={null}>---</option>
+			{#each vsetkyNavesti as navest}
+				<option value={navest} disabled={!availableSignals.includes(navest)}
+					>{nazvyNavesti[navest]}</option
+				>
+			{/each}
+		</select>
+		<div>
+			<label for="repeating">Opakovanie</label>
+			<input
+				bind:checked={repeating}
+				disabled={!repeatingAvailable}
+				id="repeating"
+				name="repeating"
+				type="checkbox"
+				class="mt-1 block"
+			/>
+		</div>
+		<div>
+			<label for="privolavacia">Privolávacia návesť</label>
+			<input
+				bind:checked={privolavacia}
+				disabled={!privolavaciaAvailable}
+				id="privolavacia"
+				name="privolavacia"
+				type="checkbox"
+				class="mt-1 block"
+			/>
+		</div>
 	{/if}
 	<a href="/" class="mt-auto font-bold underline">Normálne návestidlá</a>
 </div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import store from '$lib/store.svelte';
 	import AutoblokNavestidlo from '$lib/components/navestidla/AutoblokNavestidlo.svelte';
 	import HlavneNavestidlo from '$lib/components/navestidla/HlavneNavestidlo.svelte';
 	import Predzvest from '$lib/components/navestidla/Predzvest.svelte';
@@ -19,6 +20,7 @@
 		type Rychlost
 	} from '$lib/navestidlo';
 	import Icon from '@iconify/svelte';
+	import DayNight from '$lib/components/DayNight.svelte';
 
 	let typ = $state(TypNavestidla.HLAVNE);
 	let rychlost: Rychlost | null = $state(null);
@@ -30,8 +32,6 @@
 
 	let navest: Navest | null = $state(null);
 	let additional: Additional | null = $state(null);
-
-	let day = $state(true);
 
 	const options = $derived(typeOptions[typ]);
 
@@ -60,20 +60,11 @@
 
 <svelte:window onclick={() => (lastInteract = now)} onkeypress={() => (lastInteract = now)} />
 
-<div
-	class="relative flex grow items-end justify-center {day
-		? 'day bg-linear-to-t from-lime-300 via-cyan-200 to-cyan-300'
-		: 'night bg-radial-[at_95%_5%] from-gray-600 to-gray-800 to-20%'}"
->
-	{#if !day}
-		<div
-			class="absolute top-[5%] left-[95%] h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/90 drop-shadow-2xl"
-		></div>
-	{/if}
+<DayNight class="flex grow items-end justify-center">
 	{#if [TypNavestidla.HLAVNE, TypNavestidla.HLAVNE_IBA_JAZDA, TypNavestidla.AUTOBLOK].includes(typ)}
 		<div class="absolute top-4 left-4 flex items-center">
 			<h3
-				class="mr-0.5 text-lg font-bold [writing-mode:sideways-lr] {day
+				class="mr-0.5 text-lg font-bold [writing-mode:sideways-lr] {store.day
 					? 'text-stone-800 '
 					: 'text-stone-600'}"
 			>
@@ -140,10 +131,10 @@
 			<VlozeneNavestidlo navest={navest as AllowedSignals[TypNavestidla.VLOZENE] | null} />
 		{/if}
 	</div>
-</div>
+</DayNight>
 <div class="flex flex-col bg-gray-500 p-5">
-	<button onclick={() => (day = !day)} class="ml-auto cursor-pointer rounded-md p-1">
-		{#if day}
+	<button onclick={() => (store.day = !store.day)} class="ml-auto cursor-pointer rounded-md p-1">
+		{#if store.day}
 			<Icon icon="bi:moon-stars-fill" class="h-6 w-6" />
 		{:else}
 			<Icon icon="bi:sun-fill" class="h-6 w-6" />
