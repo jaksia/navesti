@@ -16,9 +16,19 @@
 	import Icon from '@iconify/svelte';
 	import { untrack } from 'svelte';
 	import Navestidlo from '$lib/components/navestidla/Navestidlo.svelte';
-	import { nazvyNavesti, vsetkyNavesti, type Navest } from '$lib/navestidlo';
+	import {
+		additionalNames,
+		nazvyNavesti,
+		vsetkyNavesti,
+		type Additional,
+		type Navest
+	} from '$lib/navestidlo';
 	import DayNight from '$lib/components/DayNight.svelte';
 	import store from '$lib/store.svelte';
+	import SkratenaVzdialenost from '$lib/components/navestidla/znacky/SkratenaVzdialenost.svelte';
+	import Skupina from '$lib/components/navestidla/znacky/Skupina.svelte';
+	import PredzvestVyhybky from '$lib/components/navestidla/znacky/PredzvestVyhybky.svelte';
+	import PredzvestBezVyhybiek from '$lib/components/navestidla/znacky/PredzvestBezVyhybiek.svelte';
 
 	let mode: Mode = $state(Mode.BUILD);
 
@@ -38,6 +48,19 @@
 	let label = $state('');
 	let labelStyleClass: string | null = $state(null);
 	let poleStyleClass: string | null = $state(null);
+
+	const availableSigns: (Additional | 'predzvest_k' | 'predzvest_nk')[] = [
+		'skratena_vzd',
+		'skupinove',
+		'predzvest_k',
+		'predzvest_nk'
+	];
+	const signNames = {
+		...additionalNames,
+		predzvest_k: 'Hl. návestidlo kryje výhybky',
+		predzvest_nk: 'Hl. návestidlo nekryje výhybky'
+	};
+	let selectedSigns: (Additional | 'predzvest_k' | 'predzvest_nk')[] = $state([]);
 
 	$effect(() => {
 		const [oldLE] = untrack(() => [lightElements]);
@@ -207,6 +230,22 @@
 					ondrop={(e) => drop(e, lights.length, true)}
 				></div>
 			{/snippet}
+			{#snippet topSigns()}
+				{#if selectedSigns.includes('skratena_vzd')}
+					<SkratenaVzdialenost />
+				{/if}
+				{#if selectedSigns.includes('skupinove')}
+					<Skupina />
+				{/if}
+			{/snippet}
+			{#snippet bottomSigns()}
+				{#if selectedSigns.includes('predzvest_k')}
+					<PredzvestVyhybky />
+				{/if}
+				{#if selectedSigns.includes('predzvest_nk')}
+					<PredzvestBezVyhybiek />
+				{/if}
+			{/snippet}
 		</Navestidlo>
 	</div>
 </DayNight>
@@ -263,6 +302,23 @@
 			<option value="zriadovacie">Zriaďovacie</option>
 		</select>
 	</div>
+
+	<!-- multi select for signs -->
+	<div>
+		<label for="signs">Značky</label>
+		<select
+			bind:value={selectedSigns}
+			id="signs"
+			name="signs"
+			class="mt-1 block w-full rounded-l bg-gray-100 p-1"
+			multiple
+		>
+			{#each availableSigns as sign}
+				<option value={sign}>{signNames[sign]}</option>
+			{/each}
+		</select>
+	</div>
+
 	<div>
 		<label for="lightsMode">Režim</label>
 		<select
