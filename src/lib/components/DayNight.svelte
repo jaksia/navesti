@@ -28,12 +28,8 @@
 	}
 </script>
 
-<div
-	class="relative {classProp} z-0 bg-linear-to-t from-lime-300 via-cyan-200 to-cyan-300 {store.day
-		? 'day'
-		: 'night'}"
-	style={styleProp}
->
+<div class="relative {classProp} z-0 {store.day ? 'day' : 'night'}" style={styleProp}>
+	<div class="day-bg absolute inset-0 -z-20"></div>
 	{#if !store.day}
 		<div
 			transition:radialMask={{ origin: '95% 5%', duration: 500 }}
@@ -48,6 +44,15 @@
 </div>
 
 <style lang="scss">
+	.day-bg {
+		background-image: linear-gradient(
+			to top,
+			var(--color-lime-300) var(--ground, 0%),
+			var(--color-cyan-200) calc((var(--ground, 0%) + 100%) / 2),
+			var(--color-cyan-300) 100%
+		);
+	}
+
 	:global .night .light {
 		transition-property: all;
 		filter: drop-shadow(0 0 45px var(--shadow-color)) drop-shadow(0 0 30px var(--shadow-color))

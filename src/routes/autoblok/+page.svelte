@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { dev } from '$app/environment';
+	import DayNight from '$lib/components/DayNight.svelte';
 	import AutoblokNavestidlo from '$lib/components/navestidla/AutoblokNavestidlo.svelte';
 	import HlavneNavestidlo from '$lib/components/navestidla/HlavneNavestidlo.svelte';
 	import { generateLabel } from '$lib/labels';
@@ -10,6 +11,7 @@
 		type HlavnaNavest,
 		type Rychlost
 	} from '$lib/navestidlo';
+	import store from '$lib/store.svelte';
 	import Icon from '@iconify/svelte';
 
 	const MIN_FREE_TIME = 200;
@@ -182,73 +184,79 @@
 	{/each}
 {/if}
 
-<div
-	class="flex flex-col justify-center overflow-hidden bg-green-200"
-	id="main"
-	bind:clientWidth={screenWidth}
->
-	<table cellspacing="0" cellpadding="0" class="h-min w-full">
-		<tbody>
-			<tr>
-				<td>
-					{#each trainPositions as trainpos, i}
-						<div
-							class="absolute top-0 z-10 w-[150%] -translate-y-1/3 transform {waitingTrains[i] !==
-							null
-								? 'animate-pulse'
-								: ''}"
-							style="left: {trainpos}px;"
-							bind:clientWidth={trainWidth[i]}
-						>
-							<img src="/track/train.svg" alt="Train" />
-						</div>
+<div class="flex" id="main" bind:clientWidth={screenWidth}>
+	<DayNight class="flex flex-col justify-end overflow-hidden" style="--ground: 30%">
+		<table cellspacing="0" cellpadding="0" class="mb-[25%] h-min w-full">
+			<tbody>
+				<tr>
+					<td>
+						{#each trainPositions as trainpos, i}
+							<div
+								class="absolute top-0 z-10 w-[150%] -translate-y-1/3 transform {waitingTrains[i] !==
+								null
+									? 'animate-pulse'
+									: ''}"
+								style="left: {trainpos}px;"
+								bind:clientWidth={trainWidth[i]}
+							>
+								<img src="/track/train.svg" alt="Train" />
+							</div>
+						{/each}
+					</td>
+				</tr>
+				<tr class="track" bind:clientWidth={trackWidth}>
+					{#each Array.from({ length: tdCount }) as _}
+						<td><img src="/track/straight_v.svg" alt="Track" /></td>
 					{/each}
-				</td>
-			</tr>
-			<tr class="track" bind:clientWidth={trackWidth}>
-				{#each Array.from({ length: tdCount }) as _}
-					<td><img src="/track/straight_v.svg" alt="Track" /></td>
-				{/each}
-			</tr>
-			<tr>
-				<td colspan="3"></td>
-				{#each Array.from({ length: pocetOddielov - 1 }) as _, i}
-					<td
-						><div class="navestidlo aspect-1/3 w-2/5" bind:this={navestidla[i]}>
-							<AutoblokNavestidlo
-								navest={oddiel[i] ? 'stoj' : oddiel[i + 1] ? 'vystraha' : 'volno'}
+				</tr>
+				<tr>
+					<td colspan="3"></td>
+					{#each Array.from({ length: pocetOddielov - 1 }) as _, i}
+						<td
+							><div class="navestidlo aspect-1/3 w-2/5" bind:this={navestidla[i]}>
+								<AutoblokNavestidlo
+									navest={oddiel[i] ? 'stoj' : oddiel[i + 1] ? 'vystraha' : 'volno'}
+								/>
+							</div></td
+						>
+						<td colspan="4"></td>
+					{/each}
+					{#key pocetOddielov}
+						<td
+							><div class="navestidlo aspect-1/3 w-2/5" bind:this={navestidla[pocetOddielov - 1]}>
+								<AutoblokNavestidlo
+									navest={oddiel[pocetOddielov - 1] ? 'stoj' : poslednyAutoblok}
+									posledne={true}
+								/>
+							</div></td
+						>
+					{/key}
+					<td colspan="3"></td>
+					<td>
+						<div class="navestidlo aspect-1/3 w-2/5" bind:this={vchodNavestElement}>
+							<HlavneNavestidlo
+								iba_jazda={true}
+								navest={vchodNavest}
+								rychlost={vchodNavestRychlost}
+								privolavacia={vchodNavestPrivolavacia}
+								label={generateLabel('vchod')}
 							/>
-						</div></td
-					>
-					<td colspan="4"></td>
-				{/each}
-				{#key pocetOddielov}
-					<td
-						><div class="navestidlo aspect-1/3 w-2/5" bind:this={navestidla[pocetOddielov - 1]}>
-							<AutoblokNavestidlo
-								navest={oddiel[pocetOddielov - 1] ? 'stoj' : poslednyAutoblok}
-								posledne={true}
-							/>
-						</div></td
-					>
-				{/key}
-				<td colspan="3"></td>
-				<td>
-					<div class="navestidlo aspect-1/3 w-2/5" bind:this={vchodNavestElement}>
-						<HlavneNavestidlo
-							iba_jazda={true}
-							navest={vchodNavest}
-							rychlost={vchodNavestRychlost}
-							privolavacia={vchodNavestPrivolavacia}
-							label={generateLabel('vchod')}
-						/>
-					</div>
-				</td>
-			</tr>
-		</tbody>
-	</table>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</DayNight>
 </div>
 <div class="flex flex-col bg-gray-500 p-5">
+	<button onclick={() => (store.day = !store.day)} class="ml-auto cursor-pointer rounded-md p-1">
+		{#if store.day}
+			<Icon icon="bi:moon-stars-fill" class="h-6 w-6" />
+		{:else}
+			<Icon icon="bi:sun-fill" class="h-6 w-6" />
+		{/if}
+	</button>
+
 	<div>
 		<label for="pocetOddielov">Počet oddielov:</label>
 		<input type="range" min="4" max="10" step="1" bind:value={pocetOddielov} id="pocetOddielov" />

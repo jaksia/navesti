@@ -39,7 +39,7 @@
 
 <div class="relative flex h-full w-full flex-col items-center">
 	<div
-		class="absolute top-0.5 z-20 flex w-full -translate-y-full transform flex-col justify-between rounded-full bg-stone-900 px-[15%] py-[15%]
+		class="absolute top-0.5 z-10 flex w-full -translate-y-full flex-col justify-between rounded-full bg-stone-900 px-[15%] py-[15%]
 		*:mt-[6%] *:mb-[6%] **:transition-all **:duration-300"
 	>
 		{#if renderLights}
@@ -50,35 +50,39 @@
 			{/each}
 			{#if speedIndication}
 				<div class="light aspect-square rounded-full {speed ? colors.yellow : colors.blank}"></div>
-				<div class="-mt-0.5 mb-1 flex w-full flex-col justify-around">
-					<div
-						class="light aspect-[6] {speed === 60
-							? colors.yellow
-							: [80, 100].includes(speed ?? -1)
-								? colors.green
-								: colors.blank}"
-					></div>
-					<div class="aspect-[7]"></div>
-					<div class="light aspect-[6] {speed === 100 ? colors.green : colors.blank}"></div>
-				</div>
+				<div
+					class="light !m-0 aspect-[6] {speed === 60
+						? colors.yellow
+						: [80, 100].includes(speed ?? -1)
+							? colors.green
+							: colors.blank}"
+				></div>
+				<div class="!m-0 aspect-[7]"></div>
+				<div class="light !m-0 aspect-[6] {speed === 100 ? colors.green : colors.blank}"></div>
+				<div></div>
 			{/if}
+		{/if}
+		{#if label}
+			<div
+				class="absolute bottom-0 left-1/2 -z-10 aspect-square w-1/4 -translate-x-1/2 translate-y-full"
+			>
+				<div
+					class="label rounded-lg font-bold {labelStyleClass}"
+					bind:clientHeight={labelHeight}
+					style="font-size: {labelHeight * 0.7}px;
+						   line-height: {labelHeight * 0.85}px;
+						   {labelHeight <= 20 ? 'border-width: 2px;' : ''}
+						   min-width: {label.length + 2}ch;"
+				>
+					{label}
+				</div>
+			</div>
 		{/if}
 	</div>
 	{#if label}
-		<div class="relative z-10 aspect-square w-1/4">
-			<div
-				class="label rounded-lg font-bold {labelStyleClass}"
-				bind:clientHeight={labelHeight}
-				style="font-size: {labelHeight * 0.7}px;
-					   line-height: {labelHeight * 0.85}px;
-					   {labelHeight <= 20 ? 'border-width: 2px;' : ''}
-					   min-width: {label.length + 2}ch;"
-			>
-				{label}
-			</div>
-		</div>
+		<div class="relative aspect-square w-1/4 bg-blue-500"></div>
 	{/if}
-	<div class="pole relative h-full w-1/4 {poleStyleClass}">
+	<div class="pole relative -z-10 h-full w-1/4 {poleStyleClass}">
 		<div class="absolute left-1/2 w-full" style="top: {label ? labelHeight / 2 + 'px' : '0'};">
 			{@render topSigns()}
 		</div>

@@ -75,7 +75,6 @@
 
 	let activeDropBox: number | null = $state(null);
 	let trashActive = $state(false);
-	let devMouse: number[] | null = $state(null);
 
 	function dragover(event: DragEvent) {
 		event.preventDefault();
@@ -112,7 +111,7 @@
 	}
 
 	function dragend() {
-		(activeDropBox = null), (trashActive = false), (devMouse = null);
+		(activeDropBox = null), (trashActive = false);
 	}
 
 	function cycleLight(i: number) {
@@ -125,37 +124,22 @@
 <svelte:body
 	ondragend={dragend}
 	ondragstart={(event) => mode !== Mode.BUILD && event.preventDefault()}
-	ondragover={(event) => ((devMouse = [event.clientX, event.clientY]), event.preventDefault())}
-	ondrop={(event) => (event.preventDefault(), (devMouse = null))}
+	ondragover={(event) => event.preventDefault()}
+	ondrop={(event) => event.preventDefault()}
 />
-{#if dev && devMouse}
-	<div
-		class="pointer-events-none fixed z-50 w-14 -translate-x-1/2 border-t-2 border-dotted border-black"
-		style="top:{devMouse[1]}px; left:{devMouse[0]}px;"
-	></div>
-	<div
-		class="pointer-events-none fixed z-50 h-14 -translate-y-1/2 border-r-2 border-dotted border-black"
-		style="top:{devMouse[1]}px; left:{devMouse[0]}px;"
-	></div>
-	<div
-		class="pointer-events-none fixed z-50 size-14 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-dotted border-black"
-		style="top:{devMouse[1]}px; left:{devMouse[0]}px;"
-	></div>
-{/if}
 
 <DayNight class="flex grow flex-col items-center justify-between">
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div class="mt-10 flex gap-1">
 		{#each Object.values(CustomLightColor) as color}
 			<div
-				class="flex size-14 items-center justify-center rounded-full text-2xl {customColorClasses[
-					color
-				]} {colorCount[color] >= maxLightCounts[color] || mode !== Mode.BUILD ? 'disabled' : ''}"
+				class="size-14 rounded-full text-2xl {customColorClasses[color]} {colorCount[color] >=
+					maxLightCounts[color] || mode !== Mode.BUILD
+					? 'disabled'
+					: ''}"
 				draggable={colorCount[color] >= maxLightCounts[color] ? 'false' : 'true'}
 				ondragstart={(e) => e.dataTransfer?.setData('light', `${color};-1`)}
-			>
-				{maxLightCounts[color] - (colorCount[color] ?? 0)}
-			</div>
+			></div>
 		{/each}
 
 		<div
@@ -199,8 +183,7 @@
 						ondrop={(e) => drop(e, i, true)}
 					></div>
 					<div
-						class="light relative mt-[6%] mb-[6%] aspect-square rounded-full {activeLights[i] !==
-						false
+						class="light mt-[6%] mb-[6%] aspect-square rounded-full {activeLights[i] !== false
 							? customColorClasses[light]
 							: colors.blank} {mode === Mode.MANUAL ? 'cursor-pointer' : ''} {typeof activeLights[
 							i
@@ -212,12 +195,7 @@
 						bind:this={lightElements[i]}
 						ondrop={(e) => activeDropBox && drop(e, activeDropBox, true)}
 						onclick={() => mode === Mode.MANUAL && cycleLight(i)}
-					>
-						{#if dev}
-							<div class="absolute top-1/3 w-full border-t-2 border-dotted border-black"></div>
-							<div class="absolute top-2/3 w-full border-t-2 border-dotted border-black"></div>
-						{/if}
-					</div>
+					></div>
 				{/each}
 				<div
 					class="aspect-square rounded-full border-3 border-dotted {activeDropBox === lights.length
