@@ -52,14 +52,16 @@
 			{#if speedIndication}
 				<div class="light aspect-square rounded-full {speed ? colors.yellow : colors.blank}"></div>
 				<div
-					class="light !m-0 aspect-[6] {speed === 60
+					class="light stripe !m-0 aspect-[6] {speed === 60
 						? colors.yellow
 						: [80, 100].includes(speed ?? -1)
 							? colors.green
 							: colors.blank}"
 				></div>
 				<div class="!m-0 aspect-[7]"></div>
-				<div class="light !m-0 aspect-[6] {speed === 100 ? colors.green : colors.blank}"></div>
+				<div
+					class="light stripe !m-0 aspect-[6] {speed === 100 ? colors.green : colors.blank}"
+				></div>
 				<div></div>
 			{/if}
 		{/if}

@@ -24,7 +24,7 @@
 
 	let lightSelector = $state(false);
 
-	let typ = $state(TypNavestidla.HLAVNE);
+	let typ = $state(TypNavestidla.HLAVNE) as TypNavestidla;
 	let rychlost: Rychlost | null = $state(null);
 
 	let privolavacia = $state(false);
@@ -40,8 +40,8 @@
 	const safetySignal = $derived.by(() => {
 		if (navest === null) return 0;
 		if (navest == 'stoj' || navest == 'p_dovoleny') return 2;
-		if (opakovanie && navest == 'vystraha') return 2;
-		if (opakovanie && isSpeed(navest)) return 4;
+		if (options.repeating && opakovanie && navest == 'vystraha') return 2;
+		if (options.repeating && opakovanie && isSpeed(navest)) return 4;
 		if (isSpeed(navest) || navest == 'vystraha') return 1;
 		if (navest == 'volno') return rychlost === null ? 3 : 4;
 		return 0;
@@ -60,15 +60,16 @@
 	setInterval(() => (now = Date.now()), 0);
 </script>
 
+<svelte:head>
+	<title>Vlakové návestidlá</title>
+</svelte:head>
 <svelte:window onclick={() => (lastInteract = now)} onkeypress={() => (lastInteract = now)} />
 
 <DayNight class="flex grow items-end justify-center">
 	{#if [TypNavestidla.HLAVNE, TypNavestidla.HLAVNE_IBA_JAZDA, TypNavestidla.AUTOBLOK].includes(typ)}
 		<div class="absolute top-4 left-4 flex items-center">
 			<h3
-				class="mr-0.5 text-lg font-bold [writing-mode:sideways-lr] {store.day
-					? 'text-stone-800 '
-					: 'text-stone-600'}"
+				class="mr-0.5 text-lg font-bold text-stone-800 [writing-mode:sideways-lr] dark:text-stone-600"
 			>
 				Pred návestidlom
 			</h3>

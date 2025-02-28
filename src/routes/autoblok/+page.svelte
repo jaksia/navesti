@@ -3,7 +3,6 @@
 	import DayNight from '$lib/components/DayNight.svelte';
 	import AutoblokNavestidlo from '$lib/components/navestidla/AutoblokNavestidlo.svelte';
 	import HlavneNavestidlo from '$lib/components/navestidla/HlavneNavestidlo.svelte';
-	import { generateLabel } from '$lib/labels';
 	import {
 		nazvyNavesti,
 		typeOptions,
@@ -17,6 +16,10 @@
 
 	const MIN_FREE_TIME = 200;
 	const MIN_TRAIN_STOP_TIME = 300;
+
+	let trackNumber = $state(Math.round(Math.random()) + 1);
+	let firstHectometer = $state(Math.floor(Math.random() * 150) + 200);
+	let hectometerInterval = $state(Math.floor(Math.random() * 100) + 100);
 
 	let vchodNavest: HlavnaNavest = $state('stoj');
 	let vchodNavestRychlost: Rychlost | null = $state(null);
@@ -174,13 +177,13 @@
 <svelte:window {onresize} />
 <svelte:body {ondragover} {ondrop} />
 
-<div class="flex" id="main" bind:clientWidth={screenWidth}>
-	<DayNight class="flex overflow-hidden" style="--ground: 30%">
+<DayNight class="flex" style="--ground: 30%">
+	<div class="flex overflow-hidden" id="main" bind:clientWidth={screenWidth}>
 		{#if dev}
 			{#each Array.from({ length: pocetOddielov }) as _, i}
 				{@const timeDiff = now - oddielChangeTime[i]}
 				<div
-					class="absolute top-0 flex h-10 {oddiel[i]
+					class="absolute bottom-0 flex h-10 {oddiel[i]
 						? 'bg-red-500/40'
 						: now - oddielChangeTime[i] <= MIN_FREE_TIME
 							? 'bg-yellow-500/40'
@@ -194,7 +197,7 @@
 				</div>
 			{/each}
 			<div
-				class="absolute top-0 flex h-10 {behindVchod
+				class="absolute bottom-0 flex h-10 {behindVchod
 					? 'bg-red-500/40'
 					: 'bg-green-500/40'} border-x border-dotted border-black"
 				style="left: {boundaries[boundaries.length - 1]}px; width: {screenWidth -
@@ -203,7 +206,7 @@
 			{#each trainPositions as train, i}
 				{@const timeDiff = now - waitingTrainsChangeTime[i]}
 				<div
-					class="absolute top-0 flex h-10 flex-col items-center justify-center text-sm {waitingTrains[
+					class="absolute bottom-0 flex h-10 flex-col items-center justify-center text-sm {waitingTrains[
 						i
 					] !== null
 						? 'animate-pulse bg-violet-500/60'
@@ -251,9 +254,10 @@
 					<td colspan="3"></td>
 					{#each Array.from({ length: pocetOddielov - 1 }) as _, i}
 						<td
-							><div class="navestidlo aspect-1/3 w-2/5" bind:this={navestidla[i]}>
+							><div class="navestidlo aspect-1/3 w-1/2" bind:this={navestidla[i]}>
 								<AutoblokNavestidlo
 									navest={oddiel[i] ? 'stoj' : oddiel[i + 1] ? 'vystraha' : 'volno'}
+									label={trackNumber + '-' + (firstHectometer + i * hectometerInterval)}
 								/>
 							</div></td
 						>
@@ -261,31 +265,34 @@
 					{/each}
 					{#key pocetOddielov}
 						<td
-							><div class="navestidlo aspect-1/3 w-2/5" bind:this={navestidla[pocetOddielov - 1]}>
+							><div class="navestidlo aspect-1/3 w-1/2" bind:this={navestidla[pocetOddielov - 1]}>
 								<AutoblokNavestidlo
 									navest={oddiel[pocetOddielov - 1] ? 'stoj' : poslednyAutoblok}
 									posledne={true}
+									label={trackNumber +
+										'-' +
+										(firstHectometer + (pocetOddielov - 1) * hectometerInterval)}
 								/>
 							</div></td
 						>
 					{/key}
 					<td colspan="3"></td>
 					<td>
-						<div class="navestidlo aspect-1/3 w-2/5" bind:this={vchodNavestElement}>
+						<div class="navestidlo aspect-1/3 w-1/2" bind:this={vchodNavestElement}>
 							<HlavneNavestidlo
 								iba_jazda={true}
 								navest={behindVchod ? 'stoj' : vchodNavest}
 								rychlost={vchodNavestRychlost}
 								privolavacia={vchodNavestPrivolavacia}
-								label={generateLabel('vchod')}
+								label={trackNumber + (Math.random() > 0.5 ? 'S' : 'L')}
 							/>
 						</div>
 					</td>
 				</tr>
 			</tbody>
 		</table>
-	</DayNight>
-</div>
+	</div>
+</DayNight>
 <div class="flex w-1/5 flex-col bg-gray-500 p-5">
 	<button onclick={() => (store.day = !store.day)} class="ml-auto cursor-pointer rounded-md p-1">
 		{#if store.day}

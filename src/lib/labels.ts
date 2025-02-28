@@ -33,7 +33,7 @@ export function generateLabel(type: LabelType, options: Partial<LabelOptions> = 
     } else {
         if(type === 'autoblok') {
             const track = Math.round(Math.random()) + 1;
-            const number = Math.floor(Math.random() * 3000);
+            const number = Math.floor(Math.random() * 3000) + 200;
             label = `${track}-${number}`;
         } else if(type === 'zriadovacie') {
             const number = Math.floor(Math.random() * 50) + 1;

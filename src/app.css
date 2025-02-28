@@ -2,6 +2,8 @@
 
 @plugin '@tailwindcss/container-queries';
 
+@custom-variant dark (&:where(.night, .night *));
+
 @theme {
   --animate-blink: blink 1s infinite;
   --animate-blink-fast: blink 0.5s infinite;

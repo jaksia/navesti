@@ -35,9 +35,18 @@
 	let lights: CustomLightColor[] = $state([]);
 	let activeLights: LightMode[] = $state([]);
 	let lightElements: HTMLElement[] = $state([]);
+	let speedLight = $state(false);
+	let speedStripes = $state(false);
+
+	const signalModeAvailable = $derived(
+		Object.values(CustomLightColor).every(
+			(color) => lights.filter((l) => l === color).length <= maxLightCounts[color]
+		)
+	);
 
 	let signal: Navest | null = $state(null);
 	let availableSignals: Navest[] = $derived(availableSignalsF(lights));
+	let speed: number | null = $state(null);
 
 	let repeating = $state(false);
 	let repeatingAvailable = $derived(canRepeat(lights, signal));
@@ -84,6 +93,8 @@
 			}
 			activeLights = pattern;
 		}
+
+		if (!speedLight) (speed = null), (speedStripes = false);
 	});
 
 	const colorCount = $derived.by(() => {
@@ -97,50 +108,75 @@
 	});
 
 	let activeDropBox: number | null = $state(null);
+	let dragData: string | null = $state(null);
 	let trashActive = $state(false);
 
 	function dragover(event: DragEvent) {
 		event.preventDefault();
-		activeDropBox = lightElements.findIndex((el, i) => {
-			const rect = el.getBoundingClientRect();
-			const thirdY =
-				i == activeDropBox ? rect.top + (rect.height * 2) / 3 : rect.top + rect.height / 3;
-			return event.clientY <= thirdY;
-		});
-		if (activeDropBox === -1) activeDropBox = lights.length;
+		if (mode !== Mode.BUILD || !dragData) return;
+		const [type, ...data] = dragData.split(';');
+		if (type === 'light') {
+			activeDropBox = lightElements.findIndex((el, i) => {
+				const rect = el.getBoundingClientRect();
+				const thirdY =
+					i == activeDropBox ? rect.top + (rect.height * 2) / 3 : rect.top + rect.height / 3;
+				return event.clientY <= thirdY;
+			});
+			if (activeDropBox === -1) activeDropBox = lights.length;
+		} else if (type === 'speed') {
+			if ((data[0] === 'stripes' && speedStripes) || (data[0] === 'light' && speedLight)) return;
+			activeDropBox = lights.length + (data[0] === 'light' ? 0 : 1);
+		}
 	}
 
 	function drop(event: DragEvent, i: number, insert: boolean) {
 		event.preventDefault();
 		event.stopPropagation();
-		if (!event.dataTransfer || !event.dataTransfer.getData('light')) return;
-		const data = event.dataTransfer.getData('light').split(';') ?? [];
-		const color = data[0] as CustomLightColor,
-			origPos = parseInt(data[1]);
+		if (!dragData) return;
+		const [type, ...data] = dragData.split(';');
+		dragData = null;
+		if (type === 'light') {
+			const color = data[0] as CustomLightColor,
+				origPos = parseInt(data[1]);
 
-		(activeDropBox = null), (trashActive = false);
+			(activeDropBox = null), (trashActive = false);
 
-		if (origPos !== -1) {
-			lights = [...lights.slice(0, origPos), ...lights.slice(origPos + 1)];
-			activeLights = [...activeLights.slice(0, origPos), ...activeLights.slice(origPos + 1)];
-		}
-		if (i === -1) return;
-		if (insert) {
-			lights = [...lights.slice(0, i), color, ...lights.slice(i)];
-			activeLights = [...activeLights.slice(0, i), false, ...activeLights.slice(i)];
-		} else {
-			lights[i] = color;
+			if (origPos !== -1) {
+				lights = [...lights.slice(0, origPos), ...lights.slice(origPos + 1)];
+				activeLights = [...activeLights.slice(0, origPos), ...activeLights.slice(origPos + 1)];
+			}
+			if (i === -1) return;
+			if (insert) {
+				lights = [...lights.slice(0, i), color, ...lights.slice(i)];
+				activeLights = [...activeLights.slice(0, i), false, ...activeLights.slice(i)];
+			} else {
+				lights[i] = color;
+			}
+		} else if (type === 'speed') {
+			const speedType = data[0];
+			if (speedType === 'light') {
+				speedLight = i !== -1;
+			} else if (speedType === 'stripes') {
+				speedStripes = i !== -1;
+			}
 		}
 	}
 
 	function dragend() {
-		(activeDropBox = null), (trashActive = false);
+		(activeDropBox = null), (trashActive = false), (dragData = null);
 	}
 
 	function cycleLight(i: number) {
 		const list = [false, true, blinking.slow, blinking.fast] as LightMode[];
 		const index = list.indexOf(activeLights[i]);
 		activeLights[i] = list[(index + 1) % list.length];
+	}
+
+	function cycleSpeed() {
+		if (!speedLight) return;
+		const list = speedStripes ? [null, 40, 60, 80, 100] : [null, 40];
+		const index = list.indexOf(speed);
+		speed = list[(index + 1) % list.length];
 	}
 </script>
 
@@ -151,38 +187,68 @@
 	ondrop={(event) => event.preventDefault()}
 />
 
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
 <DayNight class="flex grow flex-col items-center justify-between">
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<div class="mt-10 flex gap-1">
-		{#each Object.values(CustomLightColor) as color}
-			<div
-				class="size-14 rounded-full text-2xl {customColorClasses[color]} {colorCount[color] >=
-					maxLightCounts[color] || mode !== Mode.BUILD
-					? 'disabled'
-					: ''}"
-				draggable={colorCount[color] >= maxLightCounts[color] ? 'false' : 'true'}
-				ondragstart={(e) => e.dataTransfer?.setData('light', `${color};-1`)}
-			></div>
-		{/each}
-
-		<div
-			ondragover={(e) => (e.preventDefault(), (trashActive = true), (activeDropBox = null))}
-			ondragleave={(e) => (trashActive = false)}
-			ondrop={(e) => drop(e, -1, true)}
-			class="ml-2 {mode !== Mode.BUILD ? 'disabled' : ''} transition-colors duration-500 {store.day
-				? 'text-stone-800'
-				: 'text-stone-600'} rounded-full"
-		>
-			{#if trashActive}
-				<Icon icon="mdi:trash-can-empty" class="size-14 cursor-pointer text-red-700" />
-			{:else}
-				<Icon icon="mdi:trash" class="size-14 cursor-pointer" />
-			{/if}
-		</div>
+	<div class="mt-10 flex gap-1 text-center">
+		{#if mode === Mode.BUILD}
+			<table class="border-separate border-spacing-2 dark:text-white">
+				<thead>
+					<tr>
+						<th colspan={Object.values(CustomLightColor).length}>Svetlá</th>
+						<th></th>
+						<th colspan="2">Rýchlosť</th>
+						<th></th>
+						<th>Kôš</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						{#each Object.values(CustomLightColor) as color}
+							<td
+								class="size-14 rounded-full text-2xl {customColorClasses[color]}"
+								draggable="true"
+								ondragstart={() => (dragData = `light;${color};-1`)}
+							></td>
+						{/each}
+						<td class="px-1"></td>
+						<td
+							class="size-14 rounded-full text-2xl {colors.yellow} {speedLight ? 'disabled' : ''}"
+							draggable={!speedLight}
+							ondragstart={() => (dragData = `speed;light`)}
+						></td>
+						<td
+							class="flex size-14 flex-col justify-center {!speedStripes && speedLight
+								? ''
+								: 'disabled'}"
+							draggable={!speedStripes && speedLight}
+							ondragstart={() => (dragData = `speed;stripes`)}
+						>
+							<div class="aspect-[6] {colors.yellow}"></div>
+							<div class="aspect-[7]"></div>
+							<div class="aspect-[6] {colors.green}"></div>
+						</td>
+						<td class="px-1"></td>
+						<td
+							ondragover={(e) => (e.preventDefault(), (trashActive = true), (activeDropBox = null))}
+							ondragleave={(e) => (trashActive = false)}
+							ondrop={(e) => drop(e, -1, true)}
+							class="transition-colors duration-500 {store.day
+								? 'text-stone-800'
+								: 'text-stone-600'} rounded-full"
+						>
+							{#if trashActive}
+								<Icon icon="mdi:trash-can-empty" class="size-14 cursor-pointer text-red-700" />
+							{:else}
+								<Icon icon="mdi:trash" class="size-14 cursor-pointer" />
+							{/if}
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		{/if}
 	</div>
 
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<div
 		class="flex aspect-1/5 h-2/5 flex-col"
 		ondragend={(e) => (activeDropBox = null)}
@@ -202,7 +268,6 @@
 						i
 							? ''
 							: 'hidden'}"
-						ondragover={(e) => (e.preventDefault(), (activeDropBox = i))}
 						ondrop={(e) => drop(e, i, true)}
 					></div>
 					<div
@@ -214,7 +279,7 @@
 							? activeLights[i]
 							: ''}"
 						draggable="true"
-						ondragstart={(e) => e.dataTransfer?.setData('light', `${light};${i}`)}
+						ondragstart={() => (dragData = `light;${light};${i}`)}
 						bind:this={lightElements[i]}
 						ondrop={(e) => activeDropBox && drop(e, activeDropBox, true)}
 						onclick={() => mode === Mode.MANUAL && cycleLight(i)}
@@ -223,11 +288,50 @@
 				<div
 					class="aspect-square rounded-full border-3 border-dotted {activeDropBox === lights.length
 						? 'border-amber-300'
-						: lights.length === 0
+						: lights.length === 0 && !speedLight
 							? 'border-gray-600'
 							: 'hidden'}"
-					ondragover={(e) => (e.preventDefault(), (activeDropBox = lights.length))}
 					ondrop={(e) => drop(e, lights.length, true)}
+				></div>
+				{#if speedLight}
+					<div
+						class="light aspect-square rounded-full {speedLight
+							? speed != null || mode === Mode.BUILD
+								? colors.yellow
+								: colors.blank
+							: 'hidden'}"
+						onclick={() => mode === Mode.MANUAL && cycleSpeed()}
+						draggable="true"
+						ondragstart={() => (dragData = `speed;light`)}
+					></div>
+				{/if}
+				{#if speedStripes}
+					<div draggable="true" ondragstart={() => (dragData = `speed;stripes`)}>
+						<div
+							class="light stripe !m-0 aspect-[6] {(speedStripes && speed === 60) ||
+							mode == Mode.BUILD
+								? colors.yellow
+								: [80, 100].includes(speed ?? -1)
+									? colors.green
+									: colors.blank}"
+							onclick={() => mode === Mode.MANUAL && cycleSpeed()}
+						></div>
+						<div class="!m-0 aspect-[7]"></div>
+						<div
+							class="light stripe !mt-0 aspect-[6] {(speedStripes && speed === 100) ||
+							mode == Mode.BUILD
+								? colors.green
+								: colors.blank}"
+							onclick={() => mode === Mode.MANUAL && cycleSpeed()}
+						></div>
+					</div>
+				{/if}
+				<div
+					class="aspect-[2] border-3 border-dotted border-amber-300 {activeDropBox ===
+					lights.length + 1
+						? ''
+						: 'hidden'}"
+					ondrop={(e) => drop(e, lights.length + 1, true)}
 				></div>
 			{/snippet}
 			{#snippet topSigns()}
@@ -328,15 +432,22 @@
 			class="mt-1 block w-full rounded-l bg-gray-100 p-1"
 		>
 			{#each Object.values(Mode) as value}
-				<option {value}>{modeNames[value]}</option>
+				<option {value} disabled={!signalModeAvailable && value === Mode.SIGNAL}
+					>{modeNames[value]}</option
+				>
 			{/each}
 		</select>
 	</div>
 	{#if mode === Mode.BUILD}
 		<i class="text-sm">
-			Svetlá je možné umiestniť na návestidlo potiahnutím.Svetlá na návestidle je možné potiahnuť na
-			iné miesto alebo vymazať potiahnutím na ikonu koša.
+			Svetlá je možné umiestniť na návestidlo potiahnutím. Svetlá na návestidle je možné potiahnuť
+			na iné miesto alebo vymazať potiahnutím na ikonu koša.
 		</i>
+		{#if !signalModeAvailable}
+			<i class="text-sm text-red-700">
+				Režim "podľa návesti" nie je možné použiť v aktuálnom nastavení svetiel.
+			</i>
+		{/if}
 	{:else if mode === Mode.MANUAL}
 		<i class="text-sm"
 			>Kliknutím na svetlo prepneš jeho režim. Režimy idú v poradí: vypnuté, zapnuté, pomalé
@@ -348,8 +459,7 @@
 			bind:value={signal}
 			id="signal"
 			name="signal"
-			class="mt-1 block
-			w-full rounded-l bg-gray-100 p-1"
+			class="mt-1 block w-full rounded-l bg-gray-100 p-1"
 		>
 			<option value={null}>---</option>
 			{#each vsetkyNavesti as navest}
@@ -358,6 +468,22 @@
 				>
 			{/each}
 		</select>
+		<div>
+			<label for="speed">Rýchlosť</label>
+			<select
+				bind:value={speed}
+				id="speed"
+				name="speed"
+				disabled={!speedLight}
+				class="mt-1 block w-full rounded-l bg-gray-100 p-1"
+			>
+				<option value={null}>---</option>
+				<option value={40}>40 km/h</option>
+				<option value={60} disabled={!speedStripes}>60 km/h</option>
+				<option value={80} disabled={!speedStripes}>80 km/h</option>
+				<option value={100} disabled={!speedStripes}>100 km/h</option>
+			</select>
+		</div>
 		<div>
 			<label for="repeating">Opakovanie</label>
 			<input

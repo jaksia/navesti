@@ -55,14 +55,9 @@
 	});
 </script>
 
-<DayNight
-	class="flex grow items-end justify-around"
-	style="--arm-opacity: {store.day ? '100%' : '10%'};"
->
+<DayNight class="flex grow items-end justify-around">
 	<div
-		class="relative h-3/5 w-4 border {store.day
-			? 'border-white bg-white'
-			: 'border-black bg-stone-600/80'} transition-colors duration-500"
+		class="relative h-3/5 w-4 border border-white bg-white transition-colors duration-500 dark:border-black dark:bg-stone-600/80"
 	>
 		<div
 			class="light absolute left-full ml-1 h-8 w-8 -translate-y-1/2 rounded-full transition-colors duration-500 {predzvestLightColor}"
@@ -73,17 +68,15 @@
 			style="transform: {predzvestTransform};"
 		>
 			<div
-				class="arm absolute h-56 w-56 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/(--arm-opacity) bg-white/(--arm-opacity) transition-colors duration-500"
+				class="arm absolute h-56 w-56 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white bg-white transition-colors duration-500 dark:border-white/10 dark:bg-white/10"
 			></div>
 			<div
-				class="arm absolute h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full border border-black bg-yellow-300/(--arm-opacity) transition-colors duration-500"
+				class="arm absolute h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full border border-black bg-yellow-300 transition-colors duration-500 dark:border-black/50 dark:bg-yellow-300/10"
 			></div>
 		</div>
 	</div>
 	<div
-		class="relative h-4/5 w-4 border {store.day
-			? 'border-white bg-white'
-			: 'border-black bg-stone-600/80'} transition-colors duration-500"
+		class="relative h-4/5 w-4 border border-white bg-white transition-colors duration-500 dark:border-black dark:bg-stone-600/80"
 	>
 		<div
 			class="light absolute left-full ml-1 h-8 w-8 -translate-y-1/2 rounded-full transition-colors duration-500 {lightColor}"
@@ -92,7 +85,7 @@
 		{#if secondArm}
 			<div
 				class="light absolute left-full ml-1 h-8 w-8 -translate-y-1/2 rounded-full transition-colors duration-500 {secondLightColor}"
-				style="top: 15rem; {secondLightColor === colors.blank && store.day ? 'opacity: 15%;' : ''}"
+				style="top: 15rem;"
 				transition:fade={{ duration: 500 }}
 			></div>
 		{/if}
@@ -103,10 +96,10 @@
 				transition:fade={{ duration: 500 }}
 			>
 				<div
-					class="arm absolute aspect-[4] w-48 -translate-x-[15%] -translate-y-[50%] bg-yellow-300/(--arm-opacity)"
+					class="arm absolute aspect-[4] w-48 -translate-x-[15%] -translate-y-[50%] bg-yellow-300 dark:bg-yellow-300/10"
 				>
-					<div class="absolute top-0 left-[30%] h-1/5 w-[70%] bg-white/(--arm-opacity)"></div>
-					<div class="absolute top-[80%] left-[30%] h-1/5 w-[70%] bg-white/(--arm-opacity)"></div>
+					<div class="absolute top-0 left-[30%] h-1/5 w-[70%] bg-white dark:bg-white/10"></div>
+					<div class="absolute top-[80%] left-[30%] h-1/5 w-[70%] bg-white dark:bg-white/10"></div>
 				</div>
 			</div>
 		{/if}
@@ -115,9 +108,9 @@
 			style="top: {3}rem;"
 		>
 			<div
-				class="arm absolute aspect-[4] w-48 -translate-x-[15%] -translate-y-[50%] bg-red-600/(--arm-opacity)"
+				class="arm absolute aspect-[4] w-48 -translate-x-[15%] -translate-y-[50%] bg-red-600 dark:bg-red-600/10"
 			>
-				<div class="absolute top-1/3 left-[30%] h-1/3 w-[70%] bg-white/(--arm-opacity)"></div>
+				<div class="absolute top-1/3 left-[30%] h-1/3 w-[70%] bg-white dark:bg-white/10"></div>
 			</div>
 		</div>
 		{#if secondArm}
@@ -127,9 +120,9 @@
 				transition:fade={{ duration: 500 }}
 			>
 				<div
-					class="arm absolute aspect-[4] w-48 -translate-x-[15%] -translate-y-[50%] bg-red-600/(--arm-opacity)"
+					class="arm absolute aspect-[4] w-48 -translate-x-[15%] -translate-y-[50%] bg-red-600 dark:bg-red-600/10"
 				>
-					<div class="absolute top-1/3 left-[30%] h-1/3 w-[70%] bg-white/(--arm-opacity)"></div>
+					<div class="absolute top-1/3 left-[30%] h-1/3 w-[70%] bg-white dark:bg-white/10"></div>
 				</div>
 			</div>
 		{/if}
