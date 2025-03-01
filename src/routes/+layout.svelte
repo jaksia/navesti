@@ -1,9 +1,11 @@
 <script lang="ts">
 	import '../app.css';
 	let { children } = $props();
+
+	let mobileAlert = $state(true);
 </script>
 
-<div class="flex h-screen w-screen select-none">
+<div class="flex h-screen w-screen overflow-hidden select-none">
 	{@render children()}
 </div>
 
@@ -19,3 +21,21 @@
 		</div>
 	</div>
 </noscript>
+
+{#if mobileAlert}
+	<div
+		class="fixed inset-0 z-10 flex flex-col justify-center bg-black/80 p-2 text-center md:hidden"
+	>
+		<h1 class="text-2xl font-bold text-white">Úzka obrazovka</h1>
+		<h4 class="text-sm text-white">
+			Táto stránka nie je optimalizovaná pre zariadenia s úzkou obrazovkou, niektoré časti sa nebudú
+			zobrazovať správne, prípadne nebudú vôbec fungovať.
+		</h4>
+		<button
+			class="mx-auto mt-4 cursor-pointer rounded-lg bg-white/80 px-4 py-2 text-black hover:bg-white"
+			onclick={() => (mobileAlert = false)}
+		>
+			Pokračovať
+		</button>
+	</div>
+{/if}

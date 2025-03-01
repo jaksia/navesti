@@ -178,13 +178,70 @@
 		const index = list.indexOf(speed);
 		speed = list[(index + 1) % list.length];
 	}
+
+	const secrets = {
+		all: () => {
+			lights = Object.values(CustomLightColor);
+			speedLight = speedStripes = true;
+		},
+		reset() {
+			lights = [];
+			speedLight = speedStripes = false;
+		},
+		default: () => {
+			lights = [
+				CustomLightColor.YELLOW,
+				CustomLightColor.GREEN,
+				CustomLightColor.RED,
+				CustomLightColor.WHITE
+			];
+			speedLight = speedStripes = true;
+		},
+		wave: () => {
+			mode = Mode.MANUAL;
+			activeLights = lights.map(() => false);
+			let i = 0;
+			const interval = setInterval(() => {
+				activeLights[i] = blinking.slow as LightMode;
+				i += 1;
+				if (i >= lights.length) clearInterval(interval);
+			}, 1000 / lights.length);
+		},
+		sync: () => {
+			const oldActiveLights = activeLights;
+			activeLights = lights.map(() => false);
+			setTimeout(() => {
+				activeLights = oldActiveLights;
+			}, 100);
+		}
+	};
+
+	let word = $state('');
 </script>
 
+<svelte:head>
+	<title>Vlastné návestidlo</title>
+</svelte:head>
 <svelte:body
 	ondragend={dragend}
 	ondragstart={(event) => mode !== Mode.BUILD && event.preventDefault()}
 	ondragover={(event) => event.preventDefault()}
 	ondrop={(event) => event.preventDefault()}
+	onkeydown={(event) => {
+		if (event.key.match(/^[a-zA-Z0-9]$/)) {
+			word += event.key.toLowerCase();
+
+			let maxLen = 0;
+			for (const [secret, action] of Object.entries(secrets)) {
+				maxLen = Math.max(maxLen, secret.length);
+				if (word.endsWith(secret)) {
+					action();
+					word = '';
+				}
+			}
+			if (word.length > maxLen) word = word.slice(-maxLen);
+		}
+	}}
 />
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -356,9 +413,9 @@
 <div class="flex w-1/5 flex-col bg-gray-500 p-5">
 	<button onclick={() => (store.day = !store.day)} class="ml-auto cursor-pointer rounded-md p-1">
 		{#if store.day}
-			<Icon icon="bi:moon-stars-fill" class="h-6 w-6" />
+			<Icon icon="bi:moon-stars-fill" class="size-6" />
 		{:else}
-			<Icon icon="bi:sun-fill" class="h-6 w-6" />
+			<Icon icon="bi:sun-fill" class="size-6" />
 		{/if}
 	</button>
 

@@ -145,7 +145,7 @@
 	</div>
 	<div>
 		<label for="mode">Režim spádoviska</label>
-		<select bind:value={mode} class="rounded-l bg-gray-100 p-1">
+		<select bind:value={mode} class="w-full rounded-l bg-gray-100 p-1">
 			{#each Object.values(RezimSpadoviska) as value}
 				<option {value}>{value}</option>
 			{/each}

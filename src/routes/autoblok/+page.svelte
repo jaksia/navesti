@@ -136,7 +136,8 @@
 					waitingTrains[i] = null;
 					trainPositions[i] = trainPositions[i] + speedUnit;
 				}
-				if (waitingTrains[i] === lastWaitingTrains[i]) waitingTrainsChangeTime[i] = now;
+				if (waitingTrains[i] !== lastWaitingTrains[i]) waitingTrainsChangeTime[i] = now;
+				lastWaitingTrains[i] = waitingTrains[i];
 			}
 		}
 	}, 1000 / 60);
@@ -174,10 +175,13 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Autoblok</title>
+</svelte:head>
 <svelte:window {onresize} />
 <svelte:body {ondragover} {ondrop} />
 
-<DayNight class="flex" style="--ground: 30%">
+<DayNight class="flex" --ground="30%">
 	<div class="flex overflow-hidden" id="main" bind:clientWidth={screenWidth}>
 		{#if dev}
 			{#each Array.from({ length: pocetOddielov }) as _, i}
@@ -223,7 +227,7 @@
 			{/each}
 		{/if}
 
-		<table cellspacing="0" cellpadding="0" class="mt-auto mb-[20%] w-full">
+		<table cellspacing="0" cellpadding="0" class="mt-auto mb-[25%] w-full">
 			<tbody>
 				<tr>
 					<td>
@@ -296,9 +300,9 @@
 <div class="flex w-1/5 flex-col bg-gray-500 p-5">
 	<button onclick={() => (store.day = !store.day)} class="ml-auto cursor-pointer rounded-md p-1">
 		{#if store.day}
-			<Icon icon="bi:moon-stars-fill" class="h-6 w-6" />
+			<Icon icon="bi:moon-stars-fill" class="size-6" />
 		{:else}
-			<Icon icon="bi:sun-fill" class="h-6 w-6" />
+			<Icon icon="bi:sun-fill" class="size-6" />
 		{/if}
 	</button>
 
@@ -355,7 +359,7 @@
 						<Icon
 							onclick={() => (movingTrains[i] = !movingTrains[i])}
 							icon={movingTrains[i] ? 'fa6-solid:pause' : 'fa6-solid:play'}
-							class="h-4 w-4 cursor-pointer"
+							class="size-4 cursor-pointer"
 						/>
 						<input
 							type="range"
@@ -388,7 +392,7 @@
 
 <style lang="scss">
 	.track {
-		transform: perspective(1000px) rotateX(45deg);
+		transform: perspective(500px) rotateX(45deg);
 	}
 
 	td {

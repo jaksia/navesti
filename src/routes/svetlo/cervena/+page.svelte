@@ -5,6 +5,6 @@
 
 <div class="relative h-screen w-screen bg-red-500">
 	<a href="/svetlo" class="absolute top-0 right-0 m-5" onclick={backButton}>
-		<Icon icon="bi:arrow-left" class="h-10 w-10 text-white" />
+		<Icon icon="bi:arrow-left" class="size-10 text-white" />
 	</a>
 </div>

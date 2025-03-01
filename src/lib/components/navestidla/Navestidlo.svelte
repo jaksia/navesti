@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { colors } from '$lib/consts';
+	import Label from './parts/Label.svelte';
 
 	let {
 		lightCount = 0,
@@ -69,16 +70,7 @@
 			<div
 				class="absolute bottom-0 left-1/2 -z-10 aspect-square w-1/4 -translate-x-1/2 translate-y-full"
 			>
-				<div
-					class="label rounded-lg font-bold {labelStyleClass}"
-					bind:clientHeight={labelHeight}
-					style="font-size: {labelHeight * 0.7}px;
-						   line-height: {labelHeight * 0.85}px;
-						   {labelHeight <= 20 ? 'border-width: 2px;' : ''}
-						   min-width: {label.length + 2}ch;"
-				>
-					{label}
-				</div>
+				<Label {labelStyleClass} {label} bind:labelHeight />
 			</div>
 		{/if}
 	</div>
@@ -101,7 +93,6 @@
 </div>
 
 <style lang="scss">
-	.label,
 	.signs {
 		--label-outline-size: 1px;
 		--label-border-size: 3px;
@@ -162,37 +153,6 @@
 				#00f 75%,
 				#fff 75%
 			);
-		}
-	}
-	.label {
-		position: absolute;
-		left: 50%;
-		top: 0;
-		transform: translateX(-50%);
-		height: 175%;
-		min-height: 15px;
-
-		padding: 5% 25%;
-		text-align: center;
-
-		outline: var(--label-outline-size) solid black;
-		border: var(--label-border-size) solid white;
-		font-weight: bold;
-
-		background: #fff;
-		color: #000;
-
-		&.hlavne {
-			background: #f00;
-			color: #fff;
-		}
-		&.zriadovacie {
-			background: #00f;
-			color: #fff;
-		}
-		&.predzvest {
-			background: black;
-			color: #fff;
 		}
 	}
 </style>

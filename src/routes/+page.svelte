@@ -77,21 +77,21 @@
 				class="flex flex-col items-center gap-1 rounded-lg bg-stone-800 p-4 *:transition-colors *:duration-100"
 			>
 				<div
-					class="h-6 w-6 rounded-full {safetySignal == 1 ? 'bg-yellow-400' : 'bg-stone-900'}"
+					class="size-6 rounded-full {safetySignal == 1 ? 'bg-yellow-400' : 'bg-stone-900'}"
 				></div>
-				<div class="h-6 w-6 rounded-full {safetySignal == 2 ? 'bg-red-600' : 'bg-stone-900'}"></div>
+				<div class="size-6 rounded-full {safetySignal == 2 ? 'bg-red-600' : 'bg-stone-900'}"></div>
 				<div
-					class="h-6 w-6 rounded-full {safetySignal == 3 ? 'bg-green-600' : 'bg-stone-900'}"
+					class="size-6 rounded-full {safetySignal == 3 ? 'bg-green-600' : 'bg-stone-900'}"
 				></div>
 				<div
-					class="relative h-6 w-6 rounded-full p-[5px] {safetySignal == 4
+					class="relative size-6 rounded-full p-[5px] {safetySignal == 4
 						? 'bg-yellow-400'
 						: 'bg-stone-900'}"
 				>
 					<div class="h-3.5 w-3.5 transform rounded-full bg-stone-900"></div>
 				</div>
 				<div
-					class="mt-3 h-6 w-6 cursor-pointer rounded-full {now - lastInteract <= 2500
+					class="mt-3 size-6 cursor-pointer rounded-full {now - lastInteract <= 2500
 						? 'bg-sky-500'
 						: 'bg-stone-900'}"
 				></div>
@@ -138,9 +138,9 @@
 <div class="flex w-1/5 flex-col bg-gray-500 p-5">
 	<button onclick={() => (store.day = !store.day)} class="ml-auto cursor-pointer rounded-md p-1">
 		{#if store.day}
-			<Icon icon="bi:moon-stars-fill" class="h-6 w-6" />
+			<Icon icon="bi:moon-stars-fill" class="size-6" />
 		{:else}
-			<Icon icon="bi:sun-fill" class="h-6 w-6" />
+			<Icon icon="bi:sun-fill" class="size-6" />
 		{/if}
 	</button>
 	{#if lightSelector}

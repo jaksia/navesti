@@ -1,6 +1,6 @@
 
-type LabelType = 'vchod' | 'odchod' | 'cestove' | 'oddiel' | 'krycie' | 'autoblok' | 'zriadovacie' | 'vlozene' | 'predzvest';
-type LabelOptions = {
+export type LabelType = 'vchod' | 'odchod' | 'cestove' | 'oddiel' | 'krycie' | 'autoblok' | 'zriadovacie' | 'vlozene' | 'predzvest';
+export type LabelOptions = {
     nextType: Exclude<LabelType, 'cestove'|'vlozene'|'predzvest'>;
     group: boolean;
     repeating: boolean;
@@ -39,22 +39,23 @@ export function generateLabel(type: LabelType, options: Partial<LabelOptions> = 
             const number = Math.floor(Math.random() * 50) + 1;
             label = `Se${number}`;  
         } else {
-            const direction = Math.random() > 0.5 ? 'L' : 'S';
-            let number = Math.floor(Math.random() * 10) + (options.group ? 1 : 0);
-            if(number === 0) number = '';
-            if(options.group) number = `${number}-${number + Math.ceil(Math.random() * 2)*2}`;
+            const direction = Math.random() > 0.5 ? 'L' : 'S',
+                number = Math.floor(Math.random() * 10) + (options.group ? 1 : 0);
+            let processedNumber = `${number}`;
+            if(number === 0) processedNumber = '';
+            if(options.group) processedNumber = `${number}-${number + Math.ceil(Math.random() * 2)*2}`;
             switch(type) {
                 case 'vchod':
-                    label = `${number}${direction}`;
+                    label = `${processedNumber}${direction}`;
                     break;
                 case 'odchod':
-                    label = `${direction}${number}`;
+                    label = `${direction}${processedNumber}`;
                     break;
                 case 'oddiel':
                     label = `${direction}o${Math.round(Math.random()) + 1}`;
                     break;
                 case 'krycie':
-                    label = `${direction}k${number}`;
+                    label = `${direction}k${processedNumber}`;
                     break;
             }
         }

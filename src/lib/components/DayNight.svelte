@@ -1,8 +1,7 @@
 <script lang="ts">
 	import store from '$lib/store.svelte';
 	import type { Snippet } from 'svelte';
-	import { backOut, cubicOut, linear } from 'svelte/easing';
-	import { scale, type TransitionConfig } from 'svelte/transition';
+	import { prefersReducedMotion } from 'svelte/motion';
 
 	const {
 		children,
@@ -15,77 +14,78 @@
 		style?: string;
 		duration?: number;
 	} = $props();
-
-	function radialMask(
-		node: Element,
-		{ origin = 'center', delay = 0, duration = 400, easing = linear }
-	): TransitionConfig {
-		return {
-			delay,
-			duration,
-			easing,
-			css: (t, u) => {
-				const r = 100 * t;
-				return `mask-image: radial-gradient(circle at ${origin}, black ${r}%, transparent ${r}%)`;
-			}
-		};
-	}
-
-	function emptyTransition(node: Element, { delay = 0, duration = 0 }): TransitionConfig {
-		return { delay, duration };
-	}
 </script>
 
-<!-- <div class="relative {classProp} z-0 {store.day ? 'day' : 'night'}" style={styleProp}>
-	<div class="day-bg absolute inset-0 -z-20"></div>
-	{#if !store.day}
+<div
+	class="relative h-full w-full grow overflow-hidden"
+	style="{styleProp}; --anim-duration: {prefersReducedMotion.current ? 0 : duration}ms;"
+>
+	<div class="day absolute inset-0 z-0 {classProp}">
+		<div class="day-bg absolute inset-0 -z-20"></div>
+		{@render children()}
+	</div>
+
+	<div class="night absolute inset-0 z-0 {classProp} {store.day ? '' : 'show'}">
 		<div
-			transition:radialMask={{ origin: '95% 5%', duration: 500 }}
 			class="night-bg absolute inset-0 -z-10 bg-radial-[at_95%_5%] from-gray-600 to-gray-800 to-20%"
 		></div>
 		<div
-			transition:scale={{ duration: 500 }}
-			class="absolute top-[5%] left-[95%] h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/90 drop-shadow-2xl"
+			class="moon absolute top-[5%] left-[95%] z-10 size-16 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/90 drop-shadow-2xl"
 		></div>
-	{/if}
-	{@render children()}
-</div> -->
-
-<div class="relative h-full w-full grow">
-	{#if store.day}
-		<div
-			class="day absolute inset-0 z-0 {classProp}"
-			in:emptyTransition={{ duration: 1 }}
-			out:emptyTransition={{ duration: 1, delay: duration }}
-		>
-			<div class="day-bg absolute inset-0 -z-20"></div>
-			{@render children()}
-		</div>
-	{/if}
-	{#if !store.day}
-		<div
-			class="night absolute inset-0 z-0 {classProp}"
-			transition:radialMask={{ origin: '95% 5%', duration: duration, easing: cubicOut }}
-		>
-			<div
-				class="night-bg absolute inset-0 -z-10 bg-radial-[at_95%_5%] from-gray-600 to-gray-800 to-20%"
-			></div>
-			<div
-				in:scale={{ duration: duration / 2, easing: backOut }}
-				out:scale={{ delay: duration / 2, duration: duration / 2 }}
-				class="absolute top-[5%] left-[95%] z-10 h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/90 drop-shadow-2xl"
-			></div>
-			{@render children()}
-		</div>
-	{/if}
+		{@render children()}
+	</div>
 </div>
 
 <style lang="scss">
+	@property --mask-size {
+		syntax: '<percentage>';
+		inherits: false;
+		initial-value: 0%;
+	}
+
+	@property --moon-scale {
+		syntax: '<number>';
+		inherits: false;
+		initial-value: 0;
+	}
+
+	@property --ground {
+		syntax: '<percentage>';
+		inherits: true;
+		initial-value: 0%;
+	}
+
+	.night {
+		transition: --mask-size var(--anim-duration) cubic-bezier(0.22, 0.61, 0.36, 1);
+		mask-image: radial-gradient(
+			circle at 95% 5%,
+			black var(--mask-size),
+			transparent var(--mask-size)
+		);
+
+		&.show {
+			--mask-size: 100%;
+
+			.moon {
+				--moon-scale: 1;
+				transition-delay: 0s;
+				transition-timing-function: cubic-bezier(0.18, 0.89, 0.32, 1.28);
+			}
+		}
+	}
+
+	.moon {
+		transition: --moon-scale calc(var(--anim-duration) / 2);
+		transition-delay: calc(var(--anim-duration) / 2);
+
+		transform: scale(var(--moon-scale));
+	}
+
 	.day-bg {
 		background-image: linear-gradient(
 			to top,
-			var(--color-lime-300) var(--ground, 0%),
-			var(--color-cyan-200) calc((var(--ground, 0%) + 100%) / 2),
+			var(--color-lime-300) var(--ground),
+			var(--color-cyan-200) calc((var(--ground) + 100%) / 2),
 			var(--color-cyan-300) 100%
 		);
 	}
@@ -107,7 +107,8 @@
 		transition-property: all;
 		filter: drop-shadow(0 0 calc(var(--shadow-size) * 1.5) var(--shadow-color))
 			drop-shadow(0 0 var(--shadow-size) var(--shadow-color))
-			drop-shadow(0 0 var(--shadow-size) var(--third-shadow-color, transparent));
+			drop-shadow(0 0 var(--shadow-size) var(--third-shadow-color, transparent))
+			var(--additional-filter,);
 
 		&.bg-yellow-400 {
 			--base-color: color-mix(in oklab, var(--color-yellow-400) 75%, transparent);
@@ -119,9 +120,7 @@
 		}
 		&.bg-red-600 {
 			--base-color: var(--color-red-600);
-			--third-shadow: drop-shadow(
-				0 0 30px color-mix(in oklab, var(--shadow-color) 50%, transparent)
-			);
+			--third-shadow-color: var(--shadow-color);
 		}
 		&.bg-blue-500 {
 			--shadow-color: var(--color-blue-500);
@@ -133,7 +132,7 @@
 	}
 
 	.night {
-		:global(.pole > * > *)::after {
+		:global(.pole .sign)::after {
 			content: '';
 			position: absolute;
 			top: 0;
@@ -141,7 +140,7 @@
 			width: 100%;
 			height: 100%;
 
-			background-color: #00000080;
+			background-color: #0008;
 		}
 
 		:global(.pole)::before,
@@ -158,8 +157,8 @@
 			border-radius: inherit;
 			outline: inherit;
 
-			background-color: #00000080;
-			outline-color: #00000080;
+			background-color: #0008;
+			outline-color: #0008;
 		}
 
 		:global(.light.bg-stone-800) {
