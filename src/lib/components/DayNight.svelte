@@ -16,7 +16,7 @@
 	} = $props();
 </script>
 
-<div
+<main
 	class="relative h-full w-full grow overflow-hidden"
 	style="{styleProp}; --anim-duration: {prefersReducedMotion.current ? 0 : duration}ms;"
 >
@@ -34,7 +34,7 @@
 		></div>
 		{@render children()}
 	</div>
-</div>
+</main>
 
 <style lang="scss">
 	@property --mask-size {
@@ -95,44 +95,51 @@
 		pointer-events: none;
 	}
 
-	:global .night .light {
-		--shadow-size: 30px;
-		--shadow-color: var(--base-color);
-
-		&.stripe {
-			--shadow-size: 20px;
-			--shadow-color: color-mix(in oklab, var(--base-color) 60%, transparent);
-		}
-
-		transition-property: all;
-		filter: drop-shadow(0 0 calc(var(--shadow-size) * 1.5) var(--shadow-color))
-			drop-shadow(0 0 var(--shadow-size) var(--shadow-color))
-			drop-shadow(0 0 var(--shadow-size) var(--third-shadow-color, transparent))
-			var(--additional-filter,);
-
-		&.bg-yellow-400 {
-			--base-color: color-mix(in oklab, var(--color-yellow-400) 75%, transparent);
-			--third-shadow-color: color-mix(in oklab, var(--shadow-color) 50%, transparent);
-		}
-		&.bg-green-600 {
-			--base-color: var(--color-green-600);
-			--third-shadow-color: color-mix(in oklab, var(--shadow-color) 60%, transparent);
-		}
-		&.bg-red-600 {
-			--base-color: var(--color-red-600);
-			--third-shadow-color: var(--shadow-color);
-		}
-		&.bg-blue-500 {
-			--shadow-color: var(--color-blue-500);
-			--third-shadow-color: var(--shadow-color);
-		}
-		&.bg-white {
-			--shadow-color: color-mix(in oklab, var(--color-white) 90%, transparent);
-		}
+	:global(.light) {
+		transition: all 300ms;
 	}
 
-	.night {
-		:global(.pole .sign)::after {
+	:global .night {
+		.light {
+			--shadow-size: 30px;
+			--shadow-color: var(--base-color);
+
+			&.bg-stone-800 {
+				z-index: -1;
+			}
+
+			&.stripe {
+				--shadow-size: 20px;
+				--shadow-color: color-mix(in oklab, var(--base-color) 60%, transparent);
+			}
+
+			filter: drop-shadow(0 0 calc(var(--shadow-size) * 1.5) var(--shadow-color))
+				drop-shadow(0 0 var(--shadow-size) var(--shadow-color))
+				drop-shadow(0 0 var(--shadow-size) var(--third-shadow-color, transparent))
+				var(--additional-filter,);
+
+			&.bg-yellow-400 {
+				--base-color: color-mix(in oklab, var(--color-yellow-400) 75%, transparent);
+				--third-shadow-color: color-mix(in oklab, var(--shadow-color) 50%, transparent);
+			}
+			&.bg-green-600 {
+				--base-color: var(--color-green-600);
+				--third-shadow-color: color-mix(in oklab, var(--shadow-color) 60%, transparent);
+			}
+			&.bg-red-600 {
+				--base-color: var(--color-red-600);
+				--third-shadow-color: var(--shadow-color);
+			}
+			&.bg-blue-500 {
+				--shadow-color: var(--color-blue-500);
+				--third-shadow-color: var(--shadow-color);
+			}
+			&.bg-white {
+				--shadow-color: color-mix(in oklab, var(--color-white) 90%, transparent);
+			}
+		}
+
+		.arm::after {
 			content: '';
 			position: absolute;
 			top: 0;
@@ -140,11 +147,12 @@
 			width: 100%;
 			height: 100%;
 
+			border-radius: inherit;
+
 			background-color: #0008;
 		}
 
-		:global(.pole)::before,
-		:global(.label)::before {
+		:is(.pole, .label)::before {
 			content: '';
 			position: absolute;
 			top: calc(var(--label-border-size, 0) * -1);
@@ -161,8 +169,15 @@
 			outline-color: #0008;
 		}
 
-		:global(.light.bg-stone-800) {
-			z-index: -1;
+		.pole .sign::after {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+
+			background-color: #0008;
 		}
 	}
 </style>

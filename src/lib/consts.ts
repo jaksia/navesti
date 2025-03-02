@@ -5,6 +5,7 @@ export const colors = {
     blue:   'bg-blue-500',      // bg-blue-500/30   bg-blue-500/50      bg-blue-500/70
     white:  'bg-white',         // bg-white/30      bg-white/50         bg-white/70
     blank:  'bg-stone-800',     // bg-stone-800/30  bg-stone-800/50     bg-stone-800/70
+    transparent: 'bg-transparent',
 };
 
 export const blinking = {

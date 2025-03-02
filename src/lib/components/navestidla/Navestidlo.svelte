@@ -12,7 +12,8 @@
 		labelStyleClass = poleStyleClass,
 		topSigns = () => {},
 		bottomSigns = () => {},
-		renderLights
+		renderLights,
+		renderBlankLights
 	}: {
 		lightCount?: number;
 		activeLights?: (string | null)[];
@@ -24,6 +25,7 @@
 		topSigns?: () => any;
 		bottomSigns?: () => any;
 		renderLights?: () => any;
+		renderBlankLights?: () => any;
 	} = $props();
 
 	$effect(() => {
@@ -35,33 +37,52 @@
 		}
 	});
 
+	const renderBlank = $derived(!renderLights || renderBlankLights ? true : false);
+
 	let labelHeight = $state(0);
 	let labelSpacerHeight = $state(0);
 </script>
 
 <div class="relative flex h-full w-full flex-col items-center">
-	<div
-		class="absolute top-0.5 z-10 flex w-full -translate-y-full flex-col justify-between rounded-full bg-stone-900 px-[15%] py-[15%]
-		*:mt-[6%] *:mb-[6%] **:transition-all **:duration-300"
-	>
+	{#if renderBlank}
+		<div class="lightsContainer z-10 rounded-full bg-stone-900">
+			{#if renderBlankLights}
+				{@render renderBlankLights()}
+			{:else}
+				{#each Array.from({ length: lightCount }) as _, i}
+					<div class="light aspect-square rounded-full {colors.blank}"></div>
+				{/each}
+				{#if speedIndication}
+					<div class="light aspect-square rounded-full {colors.blank}"></div>
+					<div class="light stripe !m-0 aspect-[6] {colors.blank}"></div>
+					<div class="!m-0 aspect-[7]"></div>
+					<div class="light stripe !m-0 aspect-[6] {colors.blank}"></div>
+					<div></div>
+				{/if}
+			{/if}
+		</div>
+	{/if}
+	<div class="lightsContainer z-20 rounded-full {renderBlank ? '' : 'bg-stone-900'}">
 		{#if renderLights}
 			{@render renderLights()}
 		{:else}
 			{#each Array.from({ length: lightCount }) as _, i}
-				<div class="light aspect-square rounded-full {activeLights[i] || colors.blank}"></div>
+				<div class="light aspect-square rounded-full {activeLights[i] || colors.transparent}"></div>
 			{/each}
 			{#if speedIndication}
-				<div class="light aspect-square rounded-full {speed ? colors.yellow : colors.blank}"></div>
+				<div
+					class="light aspect-square rounded-full {speed ? colors.yellow : colors.transparent}"
+				></div>
 				<div
 					class="light stripe !m-0 aspect-[6] {speed === 60
 						? colors.yellow
 						: [80, 100].includes(speed ?? -1)
 							? colors.green
-							: colors.blank}"
+							: colors.transparent}"
 				></div>
 				<div class="!m-0 aspect-[7]"></div>
 				<div
-					class="light stripe !m-0 aspect-[6] {speed === 100 ? colors.green : colors.blank}"
+					class="light stripe !m-0 aspect-[6] {speed === 100 ? colors.green : colors.transparent}"
 				></div>
 				<div></div>
 			{/if}
@@ -96,6 +117,25 @@
 	.signs {
 		--label-outline-size: 1px;
 		--label-border-size: 3px;
+	}
+
+	.lightsContainer {
+		position: absolute;
+		width: 100%;
+		top: calc(var(--spacing) * 0.5); // top-0.5
+
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+
+		translate: 0 -100%;
+
+		padding: 15%;
+
+		> * {
+			margin-top: 6%;
+			margin-bottom: 6%;
+		}
 	}
 
 	.pole {

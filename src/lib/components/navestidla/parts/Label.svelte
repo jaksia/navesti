@@ -55,5 +55,9 @@
 			background: black;
 			color: #fff;
 		}
+		&.vyckavacie {
+			background: #aaa;
+			color: #fff;
+		}
 	}
 </style>

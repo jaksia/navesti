@@ -1,5 +1,5 @@
 
-export type LabelType = 'vchod' | 'odchod' | 'cestove' | 'oddiel' | 'krycie' | 'autoblok' | 'zriadovacie' | 'vlozene' | 'predzvest';
+export type LabelType = 'vchod' | 'odchod' | 'cestove' | 'oddiel' | 'krycie' | 'autoblok' | 'zriadovacie' | 'vlozene' | 'predzvest' | 'vyckavacie';
 export type LabelOptions = {
     nextType: Exclude<LabelType, 'cestove'|'vlozene'|'predzvest'>;
     group: boolean;
@@ -12,7 +12,7 @@ export function generateLabel(type: LabelType, options: Partial<LabelOptions> = 
         throw new Error(`Missing next type for ${type} label`);
     }
     if(type === 'cestove' || type === 'vlozene') options.nextType = 'odchod';
-    if(!['cestove', 'vlozene', 'predzvest'].includes(type)) delete options.nextType;
+    if(!['cestove', 'vlozene', 'predzvest', 'vyckavacie'].includes(type)) delete options.nextType;
     if(!['cetove', 'odchod'].includes(type)) options.group = false;
 
     let label = 'ERROR';
@@ -38,6 +38,9 @@ export function generateLabel(type: LabelType, options: Partial<LabelOptions> = 
         } else if(type === 'zriadovacie') {
             const number = Math.floor(Math.random() * 50) + 1;
             label = `Se${number}`;  
+        } else if(type === 'vyckavacie') {
+            const number = Math.floor(Math.random() * 8) + 1;
+            label = `Vy${number}`;  
         } else {
             const direction = Math.random() > 0.5 ? 'L' : 'S',
                 number = Math.floor(Math.random() * 10) + (options.group ? 1 : 0);

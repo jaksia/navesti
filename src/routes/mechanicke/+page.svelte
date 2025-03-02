@@ -64,9 +64,9 @@
 </svelte:head>
 
 <DayNight class="flex grow items-end justify-around">
-	<div class="pole relative h-3/5 w-4 bg-white transition-colors duration-500">
+	<div class="pole relative h-3/5 w-4 bg-white">
 		<div
-			class="light absolute left-full ml-1 size-8 -translate-y-1/2 rounded-full transition-colors duration-500 {predzvest
+			class="light absolute left-full ml-1 size-8 -translate-y-1/2 rounded-full {predzvest
 				? colors.yellow
 				: colors.green}"
 			style="top: 7.5rem;"
@@ -76,62 +76,62 @@
 			style="transform: {predzvest ? '' : 'rotate3d(1,0,0,88deg)'};"
 		>
 			<div
-				class="arm absolute size-56 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white bg-white transition-colors duration-500 dark:border-white/20 dark:bg-white/20"
+				class="arm absolute size-56 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white dark:bg-white/30"
 			></div>
 			<div
-				class="arm absolute size-48 -translate-x-1/2 -translate-y-1/2 rounded-full border border-black bg-yellow-300 transition-colors duration-500 dark:border-black/50 dark:bg-yellow-300/20"
+				class="arm absolute size-48 -translate-x-1/2 -translate-y-1/2 rounded-full border border-black bg-yellow-300 dark:border-black/50 dark:bg-yellow-300/30"
 			></div>
 		</div>
 		<div class="absolute top-1/2 aspect-square w-[110%]">
 			<Label label="Pr{label}" labelStyleClass="predzvest" />
 		</div>
 	</div>
-	<div class="pole hlavne_jazda relative h-4/5 w-4 transition-colors duration-500">
+	<div class="pole hlavne_jazda relative h-4/5 w-4">
 		<div
-			class="light absolute left-full ml-1 size-8 -translate-y-1/2 rounded-full transition-colors duration-500 {lightColor}"
+			class="light absolute left-full ml-1 size-8 -translate-y-1/2 rounded-full {lightColor}"
 			style="top: 5rem;"
 		></div>
 		{#if secondArm}
 			<div
-				class="light absolute left-full ml-1 size-8 -translate-y-1/2 rounded-full transition-colors duration-500 {secondLightColor}"
+				class="light absolute left-full ml-1 size-8 -translate-y-1/2 rounded-full {secondLightColor}"
 				style="top: 15rem;"
 				transition:fade={{ duration: 500 }}
 			></div>
 		{/if}
 		{#if yellowArm}
 			<div
-				class="absolute left-1/2 transition-transform duration-1000 ease-in-out {yellowRotation} **:transition-colors **:duration-500"
+				class="absolute left-1/2 transition-transform duration-1000 ease-in-out {yellowRotation}"
 				style="top: 3rem;"
 				transition:fade={{ duration: 500 }}
 			>
 				<div
-					class="arm absolute aspect-[4] w-48 -translate-x-[15%] -translate-y-[50%] bg-yellow-300 dark:bg-yellow-300/20"
+					class="arm absolute aspect-[4] w-48 -translate-x-[15%] -translate-y-[50%] bg-yellow-300 dark:bg-yellow-300/30"
 				>
-					<div class="absolute top-0 left-[30%] h-1/5 w-[70%] bg-white dark:bg-white/20"></div>
-					<div class="absolute top-[80%] left-[30%] h-1/5 w-[70%] bg-white dark:bg-white/20"></div>
+					<div class="absolute top-0 left-[30%] h-1/5 w-[70%] bg-white dark:bg-white/30"></div>
+					<div class="absolute top-[80%] left-[30%] h-1/5 w-[70%] bg-white dark:bg-white/30"></div>
 				</div>
 			</div>
 		{/if}
 		<div
-			class="absolute left-1/2 transition-transform duration-1000 ease-in-out {armRotation} **:transition-colors **:duration-500"
+			class="absolute left-1/2 transition-transform duration-1000 ease-in-out {armRotation}"
 			style="top: {3}rem;"
 		>
 			<div
-				class="arm absolute aspect-[4] w-48 -translate-x-[15%] -translate-y-[50%] bg-red-600 dark:bg-red-600/20"
+				class="arm absolute aspect-[4] w-48 -translate-x-[15%] -translate-y-[50%] bg-red-600 dark:bg-red-600/30"
 			>
-				<div class="absolute top-1/3 left-[30%] h-1/3 w-[70%] bg-white dark:bg-white/20"></div>
+				<div class="absolute top-1/3 left-[30%] h-1/3 w-[70%] bg-white dark:bg-white/30"></div>
 			</div>
 		</div>
 		{#if secondArm}
 			<div
-				class="absolute left-1/2 transition-transform duration-1000 ease-in-out {secondArmRotation} **:transition-colors **:duration-500"
+				class="absolute left-1/2 transition-transform duration-1000 ease-in-out {secondArmRotation}"
 				style="top: {13}rem;"
 				transition:fade={{ duration: 500 }}
 			>
 				<div
-					class="arm absolute aspect-[4] w-48 -translate-x-[15%] -translate-y-[50%] bg-red-600 dark:bg-red-600/20"
+					class="arm absolute aspect-[4] w-48 -translate-x-[15%] -translate-y-[50%] bg-red-600 dark:bg-red-600/30"
 				>
-					<div class="absolute top-1/3 left-[30%] h-1/3 w-[70%] bg-white dark:bg-white/20"></div>
+					<div class="absolute top-1/3 left-[30%] h-1/3 w-[70%] bg-white dark:bg-white/30"></div>
 				</div>
 			</div>
 		{/if}
@@ -165,7 +165,12 @@
 			<option value="40" disabled={!secondArm}>Rýchlosť 40 km/h a Výstraha </option>
 		</select>
 	</div>
-	<a href="/" class="mt-auto font-bold underline">Normálne návestidlá</a>
+	<div class="mt-auto">
+		<a href="/mechanicke/zriadovacie" class="block font-bold underline"
+			>Mechanické zriaďovacie návestidlá</a
+		>
+		<a href="/" class="mt-auto font-bold underline">Svetelné návestidlá</a>
+	</div>
 </div>
 
 <style lang="scss">
@@ -191,8 +196,12 @@
 			);
 		}
 	}
-	:global(.night .pole)::before,
-	:global(.night .label)::before {
+	:global(.night) .pole::before,
+	:global(.night) .label::before {
 		background-color: #000c !important;
+	}
+
+	:global(.night) .arm::after {
+		background-color: #0006 !important;
 	}
 </style>

@@ -318,7 +318,7 @@
 			labelStyleClass={labelStyleClass ?? undefined}
 			poleStyleClass={poleStyleClass ?? undefined}
 		>
-			{#snippet renderLights()}
+			{#snippet renderBlankLights()}
 				{#each lights as light, i}
 					<div
 						class="aspect-square rounded-full border-3 border-dotted border-amber-300 {activeDropBox ===
@@ -327,20 +327,7 @@
 							: 'hidden'}"
 						ondrop={(e) => drop(e, i, true)}
 					></div>
-					<div
-						class="light mt-[6%] mb-[6%] aspect-square rounded-full {activeLights[i] !== false
-							? customColorClasses[light]
-							: colors.blank} {mode === Mode.MANUAL ? 'cursor-pointer' : ''} {typeof activeLights[
-							i
-						] === 'string'
-							? activeLights[i]
-							: ''}"
-						draggable="true"
-						ondragstart={() => (dragData = `light;${light};${i}`)}
-						bind:this={lightElements[i]}
-						ondrop={(e) => activeDropBox && drop(e, activeDropBox, true)}
-						onclick={() => mode === Mode.MANUAL && cycleLight(i)}
-					></div>
+					<div class="light mt-[6%] mb-[6%] aspect-square rounded-full {colors.blank}"></div>
 				{/each}
 				<div
 					class="aspect-square rounded-full border-3 border-dotted {activeDropBox === lights.length
@@ -352,10 +339,59 @@
 				></div>
 				{#if speedLight}
 					<div
+						class="light aspect-square rounded-full {speedLight ? colors.blank : 'hidden'}"
+					></div>
+				{/if}
+				{#if speedStripes}
+					<div>
+						<div class="light stripe !m-0 aspect-[6] {colors.blank}"></div>
+						<div class="!m-0 aspect-[7]"></div>
+						<div class="light stripe !mt-0 aspect-[6] {colors.blank}"></div>
+					</div>
+				{/if}
+				<div
+					class="aspect-[2] border-3 border-dotted border-amber-300 {activeDropBox ===
+					lights.length + 1
+						? ''
+						: 'hidden'}"
+					ondrop={(e) => drop(e, lights.length + 1, true)}
+				></div>
+			{/snippet}
+			{#snippet renderLights()}
+				{#each lights as light, i}
+					<div
+						class="aspect-square rounded-full border-3 border-transparent {activeDropBox === i
+							? ''
+							: 'hidden'}"
+						ondrop={(e) => drop(e, i, true)}
+					></div>
+					<div
+						class="light mt-[6%] mb-[6%] aspect-square rounded-full {activeLights[i] !== false
+							? customColorClasses[light]
+							: colors.transparent} {mode === Mode.MANUAL
+							? 'cursor-pointer'
+							: ''} {typeof activeLights[i] === 'string' ? activeLights[i] : ''}"
+						draggable="true"
+						ondragstart={() => (dragData = `light;${light};${i}`)}
+						bind:this={lightElements[i]}
+						ondrop={(e) => activeDropBox && drop(e, activeDropBox, true)}
+						onclick={() => mode === Mode.MANUAL && cycleLight(i)}
+					></div>
+				{/each}
+				<div
+					class="aspect-square rounded-full border-3 border-transparent {activeDropBox ===
+						lights.length ||
+					(lights.length === 0 && !speedLight)
+						? ''
+						: 'hidden'}"
+					ondrop={(e) => drop(e, lights.length, true)}
+				></div>
+				{#if speedLight}
+					<div
 						class="light aspect-square rounded-full {speedLight
 							? speed != null || mode === Mode.BUILD
 								? colors.yellow
-								: colors.blank
+								: colors.transparent
 							: 'hidden'}"
 						onclick={() => mode === Mode.MANUAL && cycleSpeed()}
 						draggable="true"
@@ -370,7 +406,7 @@
 								? colors.yellow
 								: [80, 100].includes(speed ?? -1)
 									? colors.green
-									: colors.blank}"
+									: colors.transparent}"
 							onclick={() => mode === Mode.MANUAL && cycleSpeed()}
 						></div>
 						<div class="!m-0 aspect-[7]"></div>
@@ -378,14 +414,13 @@
 							class="light stripe !mt-0 aspect-[6] {(speedStripes && speed === 100) ||
 							mode == Mode.BUILD
 								? colors.green
-								: colors.blank}"
+								: colors.transparent}"
 							onclick={() => mode === Mode.MANUAL && cycleSpeed()}
 						></div>
 					</div>
 				{/if}
 				<div
-					class="aspect-[2] border-3 border-dotted border-amber-300 {activeDropBox ===
-					lights.length + 1
+					class="aspect-[2] border-3 border-transparent {activeDropBox === lights.length + 1
 						? ''
 						: 'hidden'}"
 					ondrop={(e) => drop(e, lights.length + 1, true)}
