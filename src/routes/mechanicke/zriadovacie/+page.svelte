@@ -1,10 +1,9 @@
 <script lang="ts">
 	import DayNight from '$lib/components/DayNight.svelte';
+	import DayNightToggle from '$lib/components/DayNightToggle.svelte';
 	import Label from '$lib/components/navestidla/parts/Label.svelte';
 	import { colors } from '$lib/consts';
 	import { generateLabel } from '$lib/labels';
-	import store from '$lib/store.svelte';
-	import Icon from '@iconify/svelte';
 
 	let posunDovoleny = $state(false);
 	let kolajovaVaha = $state(true);
@@ -88,14 +87,8 @@
 		</div>
 	</div>
 </DayNight>
-<div class="flex w-1/5 flex-col bg-gray-500 p-5">
-	<button onclick={() => (store.day = !store.day)} class="ml-auto cursor-pointer rounded-md p-1">
-		{#if store.day}
-			<Icon icon="bi:moon-stars-fill" class="size-6" />
-		{:else}
-			<Icon icon="bi:sun-fill" class="size-6" />
-		{/if}
-	</button>
+<div class="bg-base flex w-1/5 flex-col gap-4 p-5">
+	<DayNightToggle />
 	<div class="mt-auto">
 		<a href="/mechanicke" class="block font-bold underline">Normálne mechanické návestidlá</a>
 		<a href="/" class="mt-auto font-bold underline">Svetelné návestidlá</a>

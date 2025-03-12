@@ -1,11 +1,10 @@
 <script lang="ts">
 	import DayNight from '$lib/components/DayNight.svelte';
+	import DayNightToggle from '$lib/components/DayNightToggle.svelte';
 	import Label from '$lib/components/navestidla/parts/Label.svelte';
 	import { colors } from '$lib/consts';
 	import { generateLabel, type LabelType } from '$lib/labels';
 	import { nazvyNavesti } from '$lib/navestidlo';
-	import store from '$lib/store.svelte';
-	import Icon from '@iconify/svelte';
 	import { fade } from 'svelte/transition';
 
 	const blank = colors.blank;
@@ -140,31 +139,28 @@
 		</div>
 	</div>
 </DayNight>
-<div class="flex w-1/5 flex-col bg-gray-500 p-5">
-	<button onclick={() => (store.day = !store.day)} class="ml-auto cursor-pointer rounded-md p-1">
-		{#if store.day}
-			<Icon icon="bi:moon-stars-fill" class="size-6" />
-		{:else}
-			<Icon icon="bi:sun-fill" class="size-6" />
-		{/if}
-	</button>
-	<div>
-		<label for="secondArm">Druhé rameno:</label>
-		<input type="checkbox" id="secondArm" bind:checked={secondArm} class="mt-1 block" />
-	</div>
-	<div>
-		<label for="yellowArm">Žlté rameno:</label>
-		<input type="checkbox" id="yellowArm" bind:checked={yellowArm} class="mt-1 block" />
-	</div>
-	<div>
-		<label for="navest">Návesť:</label>
-		<select id="navest" bind:value={navest} class="mt-1 block rounded-l bg-gray-100 p-1">
+<div class="bg-base flex w-1/5 flex-col gap-4 p-5">
+	<DayNightToggle />
+	<fieldset class="fieldset border-base-300 bg-base-200 rounded-box border p-2">
+		<legend class="fieldset-legend">Nastavenia ramien</legend>
+		<label for="secondArm" class="fieldset-label">
+			<input type="checkbox" id="secondArm" bind:checked={secondArm} class="checkbox checkbox-sm" />
+			Druhé rameno
+		</label>
+		<label for="yellowArm" class="fieldset-label">
+			<input type="checkbox" id="yellowArm" bind:checked={yellowArm} class="checkbox checkbox-sm" />
+			Žlté rameno
+		</label>
+	</fieldset>
+	<label for="navest" class="floating-label">
+		<span>Návesť</span>
+		<select id="navest" bind:value={navest} class="select">
 			<option value="stoj">{nazvyNavesti['stoj']}</option>
 			<option value="volno">{nazvyNavesti['volno']}</option>
 			<option value="vystraha" disabled={!yellowArm}>{nazvyNavesti['vystraha']}</option>
 			<option value="40" disabled={!secondArm}>Rýchlosť 40 km/h a Výstraha </option>
 		</select>
-	</div>
+	</label>
 	<div class="mt-auto">
 		<a href="/mechanicke/zriadovacie" class="block font-bold underline"
 			>Mechanické zriaďovacie návestidlá</a

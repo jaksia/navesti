@@ -1,5 +1,5 @@
 <script lang="ts">
-	import PredzvestBezVyhybiek from './znacky/PredzvestBezVyhybiek.svelte';
+	import PredzvestBezVyhybiek from './signs/PredzvestBezVyhybiek.svelte';
 
 	import { colors } from '$lib/consts';
 	import {
@@ -8,9 +8,9 @@
 		type Additional,
 		type AllowedSignals
 	} from '$lib/navestidlo';
-	import Navestidlo from './Navestidlo.svelte';
-	import PredzvestVyhybky from './znacky/PredzvestVyhybky.svelte';
-	import SkratenaVzdialenost from './znacky/SkratenaVzdialenost.svelte';
+	import Navestidlo, { type DisplayMode } from './Navestidlo.svelte';
+	import PredzvestVyhybky from './signs/PredzvestVyhybky.svelte';
+	import SkratenaVzdialenost from './signs/SkratenaVzdialenost.svelte';
 	import { generateLabel } from '$lib/labels';
 
 	let {
@@ -18,13 +18,17 @@
 		label,
 		repeating = false,
 		kryjeVyhybky = false,
-		additional = null
+		additional = null,
+		displayMode,
+		letters
 	}: {
 		navest: AllowedSignals[TypNavestidla.PREDZVEST] | null;
 		label?: string;
 		repeating?: boolean;
 		kryjeVyhybky?: boolean;
 		additional?: Additional | null;
+		displayMode?: DisplayMode;
+		letters?: { [key: string]: boolean };
 	} = $props();
 
 	const aktivneZnaky = $derived.by(() => {
@@ -48,7 +52,9 @@
 	lightCount={repeating ? 3 : 2}
 	activeLights={aktivneZnaky}
 	label={label ?? generate(repeating)}
-	poleStyleClass="predzvest"
+	labelStyleClass="predzvest"
+	{displayMode}
+	{letters}
 >
 	{#snippet topSigns()}
 		{#if additional === 'skratena_vzd'}

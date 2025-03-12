@@ -1,6 +1,9 @@
 @import 'tailwindcss';
 
 @plugin '@tailwindcss/container-queries';
+@plugin 'daisyui' {
+  themes: dracula --default;
+};
 
 @custom-variant dark (&:where(.night, .night *));
 

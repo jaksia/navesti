@@ -27,10 +27,10 @@
 
 	<div class="night absolute inset-0 z-0 {classProp} {store.day ? '' : 'show'}">
 		<div
-			class="night-bg absolute inset-0 -z-10 bg-radial-[at_95%_5%] from-gray-600 to-gray-800 to-20%"
+			class="night-bg absolute inset-0 -z-20 bg-radial-[at_95%_5%] from-gray-600 to-gray-800 to-20%"
 		></div>
 		<div
-			class="moon absolute top-[5%] left-[95%] z-10 size-16 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/90 drop-shadow-2xl"
+			class="moon absolute top-[5%] left-[95%] -z-10 size-16 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/90 drop-shadow-2xl"
 		></div>
 		{@render children()}
 	</div>
@@ -106,6 +106,15 @@
 
 			&.bg-stone-800 {
 				z-index: -1;
+			}
+
+			&.letter {
+				--shadow-size: 20px;
+				--third-shadow-color: color-mix(in oklab, var(--shadow-color) 50%, transparent);
+
+				&.text-white {
+					--base-color: var(--color-white);
+				}
 			}
 
 			&.stripe {

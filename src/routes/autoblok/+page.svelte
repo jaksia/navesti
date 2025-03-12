@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { dev } from '$app/environment';
 	import DayNight from '$lib/components/DayNight.svelte';
+	import DayNightToggle from '$lib/components/DayNightToggle.svelte';
 	import AutoblokNavestidlo from '$lib/components/navestidla/AutoblokNavestidlo.svelte';
 	import HlavneNavestidlo from '$lib/components/navestidla/HlavneNavestidlo.svelte';
 	import {
@@ -297,51 +298,53 @@
 		</table>
 	</div>
 </DayNight>
-<div class="flex w-1/5 flex-col bg-gray-500 p-5">
-	<button onclick={() => (store.day = !store.day)} class="ml-auto cursor-pointer rounded-md p-1">
-		{#if store.day}
-			<Icon icon="bi:moon-stars-fill" class="size-6" />
-		{:else}
-			<Icon icon="bi:sun-fill" class="size-6" />
-		{/if}
-	</button>
+<div class="bg-base flex w-1/5 flex-col gap-4 p-5">
+	<DayNightToggle />
 
-	<div>
-		<label for="pocetOddielov">Počet oddielov:</label>
-		<input type="range" min="4" max="10" step="1" bind:value={pocetOddielov} id="pocetOddielov" />
-	</div>
-	<div>
-		<label for="vchodovehoNavestidlo">Návesť vchodového návestidla:</label>
-		<select
-			bind:value={vchodNavest}
-			id="vchodovehoNavestidlo"
-			class="mt-1 block w-full rounded-l bg-gray-100 p-1"
-		>
+	<fieldset class="fieldset border-base-300 rounded-box bg-base-200 border p-2">
+		<legend class="fieldset-legend">Počet oddielov</legend>
+		<input
+			type="range"
+			min="4"
+			max="10"
+			step="1"
+			bind:value={pocetOddielov}
+			class="range range-neutral"
+		/>
+	</fieldset>
+	<label for="vchodovehoNavestidlo" class="floating-label">
+		<span>Návesť vchodového návestidla</span>
+		<select bind:value={vchodNavest} id="vchodovehoNavestidlo" class="select">
 			{#each typeOptions[TypNavestidla.HLAVNE_IBA_JAZDA].allowedSignals as navest}
 				<option value={navest} disabled={navest !== 'stoj' && vchodNavestPrivolavacia}
 					>{nazvyNavesti[navest]}</option
 				>
 			{/each}
 		</select>
-	</div>
-	<div>
-		<label for="vchodNavestRychlost">Rýchlosť vchodového návestidla:</label>
+	</label>
+	<label for="vchodNavestRychlost" class="floating-label">
+		<span>Rýchlosť vchodového návestidla</span>
 		<select
 			bind:value={vchodNavestRychlost}
 			id="vchodNavestRychlost"
 			disabled={vchodNavest === 'stoj'}
-			class="mt-1 block w-full rounded-l bg-gray-100 p-1"
+			class="select"
 		>
 			<option value={null}>---</option>
 			{#each [40, 60, 80, 100] as rychlost}
 				<option value={rychlost}>{rychlost} km/h</option>
 			{/each}
 		</select>
-	</div>
-	<div>
-		<label for="vchodNavestPrivolavacia">Privolávacia návest:</label>
-		<input type="checkbox" bind:checked={vchodNavestPrivolavacia} id="vchodNavestPrivolavacia" />
-	</div>
+	</label>
+	<label for="vchodNavestPrivolavacia" class="label">
+		<input
+			type="checkbox"
+			bind:checked={vchodNavestPrivolavacia}
+			id="vchodNavestPrivolavacia"
+			class="checkbox"
+		/>
+		Privolávacia návest
+	</label>
 	<div class="mt-5">
 		<div class="flex justify-between text-3xl">
 			<button onclick={addTrain} class="cursor-pointer">

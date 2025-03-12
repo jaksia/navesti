@@ -25,10 +25,11 @@
 	} from '$lib/navestidlo';
 	import DayNight from '$lib/components/DayNight.svelte';
 	import store from '$lib/store.svelte';
-	import SkratenaVzdialenost from '$lib/components/navestidla/znacky/SkratenaVzdialenost.svelte';
-	import Skupina from '$lib/components/navestidla/znacky/Skupina.svelte';
-	import PredzvestVyhybky from '$lib/components/navestidla/znacky/PredzvestVyhybky.svelte';
-	import PredzvestBezVyhybiek from '$lib/components/navestidla/znacky/PredzvestBezVyhybiek.svelte';
+	import SkratenaVzdialenost from '$lib/components/navestidla/signs/SkratenaVzdialenost.svelte';
+	import Skupina from '$lib/components/navestidla/signs/Skupina.svelte';
+	import PredzvestVyhybky from '$lib/components/navestidla/signs/PredzvestVyhybky.svelte';
+	import PredzvestBezVyhybiek from '$lib/components/navestidla/signs/PredzvestBezVyhybiek.svelte';
+	import DayNightToggle from '$lib/components/DayNightToggle.svelte';
 
 	let mode: Mode = $state(Mode.BUILD);
 
@@ -95,16 +96,6 @@
 		}
 
 		if (!speedLight) (speed = null), (speedStripes = false);
-	});
-
-	const colorCount = $derived.by(() => {
-		return lights.reduce(
-			(acc, color) => {
-				acc[color] = (acc[color] ?? 0) + 1;
-				return acc;
-			},
-			{} as Record<CustomLightColor, number>
-		);
 	});
 
 	let activeDropBox: number | null = $state(null);
@@ -445,50 +436,28 @@
 		</Navestidlo>
 	</div>
 </DayNight>
-<div class="flex w-1/5 flex-col bg-gray-500 p-5">
-	<button onclick={() => (store.day = !store.day)} class="ml-auto cursor-pointer rounded-md p-1">
-		{#if store.day}
-			<Icon icon="bi:moon-stars-fill" class="size-6" />
-		{:else}
-			<Icon icon="bi:sun-fill" class="size-6" />
-		{/if}
-	</button>
+<div class="bg-base flex w-1/5 flex-col gap-4 p-5">
+	<DayNightToggle />
 
-	<div>
-		<label for="label">Označenie</label>
+	<label for="label" class="floating-label">
+		<span>Označenie</span>
 		<div class="flex">
-			<input
-				type="text"
-				bind:value={label}
-				id="label"
-				name="label"
-				class="mt-1 block w-full rounded-l bg-gray-100 p-1"
-			/>
+			<input type="text" bind:value={label} id="label" name="label" class="input" />
 		</div>
-	</div>
-	<div>
-		<label for="labelStyleClass">Štýl označenia</label>
-		<select
-			bind:value={labelStyleClass}
-			id="labelStyleClass"
-			name="labelStyleClass"
-			class="mt-1 block w-full rounded-l bg-gray-100 p-1"
-		>
+	</label>
+	<label for="labelStyleClass" class="floating-label">
+		<span>Štýl označenia</span>
+		<select bind:value={labelStyleClass} id="labelStyleClass" name="labelStyleClass" class="select">
 			<option value={null}>---</option>
 			<option value="hlavne">Hlavné</option>
 			<option value="predzvest">Samostatná predzvesť</option>
 			<option value="autoblok">Návestidlo automatického bloku</option>
 			<option value="zriadovacie">Zriaďovacie</option>
 		</select>
-	</div>
-	<div>
-		<label for="poleStyleClass">Štýl stĺpika</label>
-		<select
-			bind:value={poleStyleClass}
-			id="poleStyleClass"
-			name="poleStyleClass"
-			class="mt-1 block w-full rounded-l bg-gray-100 p-1"
-		>
+	</label>
+	<label for="poleStyleClass" class="floating-label">
+		<span>Štýl stĺpika</span>
+		<select bind:value={poleStyleClass} id="poleStyleClass" name="poleStyleClass" class="select">
 			<option value={null}>---</option>
 			<option value="hlavne">Hlavné</option>
 			<option value="hlavne_jazda">Hlavné (platné iba pre jazdu vlaku)</option>
@@ -497,39 +466,29 @@
 			<option value="autoblok">Návestidlo automatického bloku</option>
 			<option value="zriadovacie">Zriaďovacie</option>
 		</select>
-	</div>
+	</label>
 
 	<!-- multi select for signs -->
-	<div>
-		<label for="signs">Značky</label>
-		<select
-			bind:value={selectedSigns}
-			id="signs"
-			name="signs"
-			class="mt-1 block w-full rounded-l bg-gray-100 p-1"
-			multiple
-		>
+	<label for="signs" class="floating-label">
+		<span>Značky</span>
+		<select bind:value={selectedSigns} id="signs" name="signs" class="textarea" multiple>
 			{#each availableSigns as sign}
 				<option value={sign}>{signNames[sign]}</option>
 			{/each}
 		</select>
-	</div>
+	</label>
 
-	<div>
-		<label for="lightsMode">Režim</label>
-		<select
-			bind:value={mode}
-			id="lightsMode"
-			name="lightsMode"
-			class="mt-1 block w-full rounded-l bg-gray-100 p-1"
-		>
+	<label for="lightsMode" class="floating-label">
+		<span>Režim</span>
+		<select bind:value={mode} id="lightsMode" name="lightsMode" class="select">
 			{#each Object.values(Mode) as value}
 				<option {value} disabled={!signalModeAvailable && value === Mode.SIGNAL}
 					>{modeNames[value]}</option
 				>
 			{/each}
 		</select>
-	</div>
+	</label>
+
 	{#if mode === Mode.BUILD}
 		<i class="text-sm">
 			Svetlá je možné umiestniť na návestidlo potiahnutím. Svetlá na návestidle je možné potiahnuť
@@ -546,58 +505,52 @@
 			blikanie, rýchle blikanie.</i
 		>
 	{:else if mode === Mode.SIGNAL}
-		<label for="signal">Návesť</label>
-		<select
-			bind:value={signal}
-			id="signal"
-			name="signal"
-			class="mt-1 block w-full rounded-l bg-gray-100 p-1"
-		>
-			<option value={null}>---</option>
-			{#each vsetkyNavesti as navest}
-				<option value={navest} disabled={!availableSignals.includes(navest)}
-					>{nazvyNavesti[navest]}</option
-				>
-			{/each}
-		</select>
-		<div>
-			<label for="speed">Rýchlosť</label>
-			<select
-				bind:value={speed}
-				id="speed"
-				name="speed"
-				disabled={!speedLight}
-				class="mt-1 block w-full rounded-l bg-gray-100 p-1"
-			>
+		<label for="signal" class="floating-label">
+			<span>Návesť</span>
+			<select bind:value={signal} id="signal" name="signal" class="select">
+				<option value={null}>---</option>
+				{#each vsetkyNavesti as navest}
+					<option value={navest} disabled={!availableSignals.includes(navest)}
+						>{nazvyNavesti[navest]}</option
+					>
+				{/each}
+			</select>
+		</label>
+		<label for="speed" class="floating-label">
+			<span>Rýchlosť</span>
+			<select bind:value={speed} id="speed" name="speed" disabled={!speedLight} class="select">
 				<option value={null}>---</option>
 				<option value={40}>40 km/h</option>
 				<option value={60} disabled={!speedStripes}>60 km/h</option>
 				<option value={80} disabled={!speedStripes}>80 km/h</option>
 				<option value={100} disabled={!speedStripes}>100 km/h</option>
 			</select>
-		</div>
-		<div>
-			<label for="repeating">Opakovanie</label>
-			<input
-				bind:checked={repeating}
-				disabled={!repeatingAvailable}
-				id="repeating"
-				name="repeating"
-				type="checkbox"
-				class="mt-1 block"
-			/>
-		</div>
-		<div>
-			<label for="privolavacia">Privolávacia návesť</label>
-			<input
-				bind:checked={privolavacia}
-				disabled={!privolavaciaAvailable}
-				id="privolavacia"
-				name="privolavacia"
-				type="checkbox"
-				class="mt-1 block"
-			/>
-		</div>
+		</label>
+		<fieldset class="fieldset border-base-300 rounded-box border p-2">
+			<legend class="fieldset-legend">Ďalšie možnosti</legend>
+			<label for="repeating" class="fieldset-label">
+				<input
+					bind:checked={repeating}
+					disabled={!repeatingAvailable}
+					id="repeating"
+					name="repeating"
+					type="checkbox"
+					class="checkbox"
+				/>
+				Opakovanie
+			</label>
+			<label for="privolavacia" class="fieldset-label">
+				<input
+					bind:checked={privolavacia}
+					disabled={!privolavaciaAvailable}
+					id="privolavacia"
+					name="privolavacia"
+					type="checkbox"
+					class="checkbox"
+				/>
+				Privolávacia návesť
+			</label>
+		</fieldset>
 	{/if}
 	<a href="/" class="mt-auto font-bold underline">Normálne návestidlá</a>
 </div>

@@ -7,21 +7,21 @@
 	let aktivneZnaky = $derived(spadNavestneZnaky[type][mode]);
 </script>
 
-<div class="flex flex-col items-center">
+<div class="navestidlo flex flex-col items-center">
 	<div class="flex flex-col items-center justify-between gap-1 rounded-full bg-stone-900 px-1 py-2">
 		{#each Array.from({ length: type == 'hlavne' ? 4 : 3 }) as _, i}
-			<div class="size-3 rounded-full {aktivneZnaky[i] || 'bg-stone-800'}"></div>
+			<div class="light size-3 rounded-full {aktivneZnaky[i] || 'bg-stone-800'}"></div>
 		{/each}
 		<div class="relative size-3 font-black text-nowrap">
 			<span
-				class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 {mode ===
+				class="light letter absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 {mode ===
 				RezimSpadoviska.SPAT
 					? 'z-10 text-white'
 					: 'text-stone-800'}">Z</span
 			>
 			{#if type === 'hlavne' || type == 'zriadovacie'}
 				<span
-					class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-180
+					class="light letter absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-180
                 {mode == RezimSpadoviska.ZAKAZANE || mode == RezimSpadoviska.SPAT
 						? 'text-stone-800'
 						: 'text-white'}
@@ -31,15 +31,19 @@
 		</div>
 	</div>
 	<div
-		class="label z-10 -mb-0.5 rounded-lg px-1 py-0.5 text-xs
-        font-bold {type}"
+		class="label relative z-10 -mb-0.5 rounded-lg px-1 py-0.5
+        text-xs font-bold {type}"
 	>
 		{label}
 	</div>
-	<div class="pole h-16 w-2 {type}"></div>
+	<div class="pole relative h-16 w-2 {type}"></div>
 </div>
 
 <style lang="scss">
+	.light:not(.letter) {
+		--shadow-size: 15px !important;
+	}
+
 	.pole {
 		background: gray;
 
@@ -70,6 +74,8 @@
 		}
 	}
 	.label {
+		--label-outline-size: 0.5px;
+		--label-border-size: 2px;
 		outline: 0.5px solid black;
 		border: 2px solid white;
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Skupina from './znacky/Skupina.svelte';
+	import Skupina from './signs/Skupina.svelte';
 	import {
 		getNavestneZnaky,
 		isPredzvest,
@@ -12,23 +12,9 @@
 		type AllowedSignals,
 		type Rychlost
 	} from '$lib/navestidlo';
-	import Navestidlo from './Navestidlo.svelte';
-	import SkratenaVzdialenost from './znacky/SkratenaVzdialenost.svelte';
+	import Navestidlo, { type DisplayMode } from './Navestidlo.svelte';
+	import SkratenaVzdialenost from './signs/SkratenaVzdialenost.svelte';
 	import { generateLabel } from '$lib/labels';
-
-	type test<T extends boolean> = {
-		iba_jazda?: T;
-		navest:
-			| (T extends true
-					? AllowedSignals[TypNavestidla.HLAVNE_IBA_JAZDA]
-					: AllowedSignals[TypNavestidla.HLAVNE])
-			| null;
-		label?: string;
-		privolavacia?: boolean;
-		opakovanie?: boolean;
-		rychlost?: Rychlost | null;
-		additional?: Additional | null;
-	};
 
 	let {
 		iba_jazda = false,
@@ -37,7 +23,9 @@
 		privolavacia = false,
 		opakovanie = false,
 		rychlost = null,
-		additional = null
+		additional = null,
+		displayMode,
+		letters
 	}: {
 		iba_jazda?: boolean;
 		navest:
@@ -49,6 +37,8 @@
 		opakovanie?: boolean;
 		rychlost?: Rychlost | null;
 		additional?: Additional | null;
+		displayMode?: DisplayMode;
+		letters?: { [key: string]: boolean };
 	} = $props();
 
 	const type = $derived(iba_jazda ? TypNavestidla.HLAVNE_IBA_JAZDA : TypNavestidla.HLAVNE);
@@ -81,6 +71,8 @@
 	label={label ?? generate(additional)}
 	poleStyleClass="hlavne{iba_jazda ? '_jazda' : ''}"
 	labelStyleClass="hlavne"
+	{displayMode}
+	{letters}
 >
 	{#snippet topSigns()}
 		{#if additional === 'skupinove'}
