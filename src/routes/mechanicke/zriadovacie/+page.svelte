@@ -87,11 +87,10 @@
 		</div>
 	</div>
 </DayNight>
-<div class="bg-base flex w-1/5 flex-col gap-4 p-5">
+<div class="flex w-1/5 flex-col gap-4 p-5">
 	<DayNightToggle />
 	<div class="mt-auto">
-		<a href="/mechanicke" class="block font-bold underline">Normálne mechanické návestidlá</a>
-		<a href="/" class="mt-auto font-bold underline">Svetelné návestidlá</a>
+		<a href="/" class="mt-auto font-bold underline">Naspäť</a>
 	</div>
 </div>
 

@@ -298,7 +298,7 @@
 		</table>
 	</div>
 </DayNight>
-<div class="bg-base flex w-1/5 flex-col gap-4 p-5">
+<div class="flex w-1/5 flex-col gap-4 p-5">
 	<DayNightToggle />
 
 	<fieldset class="fieldset border-base-300 rounded-box bg-base-200 border p-2">
@@ -390,7 +390,7 @@
 			{/each}
 		</div>
 	</div>
-	<a href="/" class="mt-auto font-bold underline">Normálne návestidlá</a>
+	<a href="/" class="mt-auto font-bold underline">Naspäť</a>
 </div>
 
 <style lang="scss">

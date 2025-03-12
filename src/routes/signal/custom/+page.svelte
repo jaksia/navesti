@@ -436,7 +436,7 @@
 		</Navestidlo>
 	</div>
 </DayNight>
-<div class="bg-base flex w-1/5 flex-col gap-4 p-5">
+<div class="flex w-1/5 flex-col gap-4 p-5">
 	<DayNightToggle />
 
 	<label for="label" class="floating-label">
@@ -552,7 +552,7 @@
 			</label>
 		</fieldset>
 	{/if}
-	<a href="/" class="mt-auto font-bold underline">Normálne návestidlá</a>
+	<a href="/signal/" class="mt-auto font-bold underline">Naspäť</a>
 </div>
 
 <style lang="scss">

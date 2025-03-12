@@ -139,7 +139,7 @@
 		</div>
 	</div>
 </DayNight>
-<div class="bg-base flex w-1/5 flex-col gap-4 p-5">
+<div class="flex w-1/5 flex-col gap-4 p-5">
 	<DayNightToggle />
 	<fieldset class="fieldset border-base-300 bg-base-200 rounded-box border p-2">
 		<legend class="fieldset-legend">Nastavenia ramien</legend>
@@ -162,10 +162,7 @@
 		</select>
 	</label>
 	<div class="mt-auto">
-		<a href="/mechanicke/zriadovacie" class="block font-bold underline"
-			>Mechanické zriaďovacie návestidlá</a
-		>
-		<a href="/" class="mt-auto font-bold underline">Svetelné návestidlá</a>
+		<a href="/" class="mt-auto font-bold underline">Naspäť</a>
 	</div>
 </div>
 

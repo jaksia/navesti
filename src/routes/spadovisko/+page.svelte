@@ -176,7 +176,7 @@
 		</table>
 	</div>
 </DayNight>
-<div class="bg-base flex w-1/5 flex-col gap-4 p-5">
+<div class="flex w-1/5 flex-col gap-4 p-5">
 	<DayNightToggle />
 	<label for="track" class="floating-label">
 		<span>Koľaj</span>
@@ -190,7 +190,7 @@
 			{/each}
 		</select>
 	</label>
-	<a href="/" class="mt-auto font-bold underline">Normálne návestidlá</a>
+	<a href="/" class="mt-auto font-bold underline">Naspäť</a>
 </div>
 
 <style lang="scss">

@@ -1,7 +1,7 @@
 <script lang="ts">
 </script>
 
-<div class="bg-base flex w-full flex-wrap items-center gap-2 p-5 text-center *:grow *:text-black">
+<div class="flex w-full flex-wrap items-center gap-2 p-5 text-center *:grow *:text-black">
 	<a href="/svetlo/cervena" class="bg-red-500 py-20 text-2xl hover:bg-red-600">Červená</a>
 	<a href="/svetlo/zelena" class="bg-green-500 py-20 text-2xl hover:bg-green-600">Zelená</a>
 	<a href="/svetlo/modra" class="bg-blue-700 py-20 text-2xl hover:bg-blue-800">Modrá</a>
