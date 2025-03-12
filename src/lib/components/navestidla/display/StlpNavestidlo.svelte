@@ -9,10 +9,10 @@
 		renderTopSigns,
 		renderBottomSigns,
 		renderLights,
-		renderBlankLights
+		renderBlankLights,
+		labelHeight
 	}: NavestidloDisplayParams = $props();
 
-	let labelHeight = $state(0);
 	let labelSpacerHeight = $state(0);
 </script>
 

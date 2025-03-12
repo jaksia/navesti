@@ -72,6 +72,7 @@
 	const NavestidloComponent = $derived(components[displayMode]);
 
 	let letterContainerHeight = $state(0);
+	let labelHeight = $state(0);
 </script>
 
 <div class="navestidlo contents">
@@ -81,6 +82,7 @@
 		{poleStyleClass}
 		renderTopSigns={topSigns}
 		renderBottomSigns={bottomSigns}
+		{labelHeight}
 	>
 		{#snippet renderBlankLights()}
 			{#if renderBlankLightsOuter}
@@ -154,7 +156,7 @@
 		{/snippet}
 		{#snippet renderLabel()}
 			{#if label}
-				<Label {labelStyleClass} {label} />
+				<Label {labelStyleClass} {label} bind:labelHeight />
 			{/if}
 		{/snippet}
 	</NavestidloComponent>

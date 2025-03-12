@@ -306,8 +306,8 @@
 	>
 		<Navestidlo
 			{label}
-			labelStyleClass={labelStyleClass ?? undefined}
-			poleStyleClass={poleStyleClass ?? undefined}
+			labelStyleClass={(labelStyleClass ?? undefined) as never}
+			poleStyleClass={(poleStyleClass ?? undefined) as never}
 		>
 			{#snippet renderBlankLights()}
 				{#each lights as light, i}

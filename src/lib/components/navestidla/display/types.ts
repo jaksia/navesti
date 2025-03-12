@@ -9,4 +9,5 @@ export type NavestidloDisplayParams = {
     renderBottomSigns?: Snippet;
     renderLights: Snippet;
     renderBlankLights: Snippet;
+    labelHeight: number;
 };
