@@ -22,7 +22,7 @@
 			{@render renderBlankLights()}
 		</div>
 	{/if}
-	<div class="lightsContainer z-20 rounded-full {renderBlank ? '' : 'bg-stone-900'}">
+	<div class={['lightsContainer z-20 rounded-full', !renderBlank && 'bg-stone-900']}>
 		{@render renderLights()}
 		{#if label}
 			<div
@@ -35,7 +35,7 @@
 	{#if label}
 		<div class="relative aspect-square w-1/4" bind:clientHeight={labelSpacerHeight}></div>
 	{/if}
-	<div class="pole relative -z-10 h-full w-1/4 {poleStyleClass}">
+	<div class={['pole relative -z-10 h-full w-1/4', poleStyleClass]}>
 		<div
 			class="signs absolute left-1/2 w-full"
 			style="top: {label

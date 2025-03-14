@@ -254,36 +254,38 @@
 					<tr>
 						{#each Object.values(CustomLightColor) as color}
 							<td
-								class="size-14 rounded-full text-2xl {customColorClasses[color]}"
+								class={['size-14 rounded-full text-2xl', customColorClasses[color]]}
 								draggable="true"
 								ondragstart={() => (dragData = `light;${color};-1`)}
 							></td>
 						{/each}
 						<td class="px-1"></td>
 						<td
-							class="size-14 rounded-full text-2xl {colors.yellow} {speedLight ? 'disabled' : ''}"
+							class={['size-14 rounded-full text-2xl', colors.yellow, speedLight ? 'disabled' : '']}
 							draggable={!speedLight}
 							ondragstart={() => (dragData = `speed;light`)}
 						></td>
 						<td
-							class="flex size-14 flex-col justify-center {!speedStripes && speedLight
-								? ''
-								: 'disabled'}"
+							class={[
+								'flex size-14 flex-col justify-center',
+								!speedStripes && speedLight ? '' : 'disabled'
+							]}
 							draggable={!speedStripes && speedLight}
 							ondragstart={() => (dragData = `speed;stripes`)}
 						>
-							<div class="aspect-[6] {colors.yellow}"></div>
-							<div class="aspect-[7]"></div>
-							<div class="aspect-[6] {colors.green}"></div>
+							<div class={['aspect-6/1', colors.yellow]}></div>
+							<div class="aspect-7"></div>
+							<div class={['aspect-6/1', colors.green]}></div>
 						</td>
 						<td class="px-1"></td>
 						<td
 							ondragover={(e) => (e.preventDefault(), (trashActive = true), (activeDropBox = null))}
 							ondragleave={(e) => (trashActive = false)}
 							ondrop={(e) => drop(e, -1, true)}
-							class="transition-colors duration-500 {store.day
-								? 'text-stone-800'
-								: 'text-stone-600'} rounded-full"
+							class={[
+								'rounded-full transition-colors duration-500',
+								store.day ? 'text-stone-800' : 'text-stone-600'
+							]}
 						>
 							{#if trashActive}
 								<Icon icon="mdi:trash-can-empty" class="size-14 cursor-pointer text-red-700" />
@@ -312,56 +314,61 @@
 			{#snippet renderBlankLights()}
 				{#each lights as light, i}
 					<div
-						class="aspect-square rounded-full border-3 border-dotted border-amber-300 {activeDropBox ===
-						i
-							? ''
-							: 'hidden'}"
+						class={[
+							'aspect-square rounded-full border-3 border-dotted border-amber-300',
+							activeDropBox === i ? '' : 'hidden'
+						]}
 						ondrop={(e) => drop(e, i, true)}
 					></div>
-					<div class="light mt-[6%] mb-[6%] aspect-square rounded-full {colors.blank}"></div>
+					<div class={['light mt-[6%] mb-[6%] aspect-square rounded-full', colors.blank]}></div>
 				{/each}
 				<div
-					class="aspect-square rounded-full border-3 border-dotted {activeDropBox === lights.length
-						? 'border-amber-300'
-						: lights.length === 0 && !speedLight
-							? 'border-gray-600'
-							: 'hidden'}"
+					class={[
+						'aspect-square rounded-full border-3 border-dotted',
+						activeDropBox === lights.length
+							? 'border-amber-300'
+							: lights.length === 0 && !speedLight
+								? 'border-gray-600'
+								: 'hidden'
+					]}
 					ondrop={(e) => drop(e, lights.length, true)}
 				></div>
 				{#if speedLight}
 					<div
-						class="light aspect-square rounded-full {speedLight ? colors.blank : 'hidden'}"
+						class={['light aspect-square rounded-full', speedLight ? colors.blank : 'hidden']}
 					></div>
 				{/if}
 				{#if speedStripes}
 					<div>
-						<div class="light stripe !m-0 aspect-[6] {colors.blank}"></div>
-						<div class="!m-0 aspect-[7]"></div>
-						<div class="light stripe !mt-0 aspect-[6] {colors.blank}"></div>
+						<div class={['light stripe !m-0 aspect-6/1', colors.blank]}></div>
+						<div class="!m-0 aspect-7/1"></div>
+						<div class={['light stripe !m-0 aspect-6/1', colors.blank]}></div>
 					</div>
 				{/if}
 				<div
-					class="aspect-[2] border-3 border-dotted border-amber-300 {activeDropBox ===
-					lights.length + 1
-						? ''
-						: 'hidden'}"
+					class={[
+						'aspect-2/1 border-3 border-dotted border-amber-300',
+						activeDropBox === lights.length + 1 ? '' : 'hidden'
+					]}
 					ondrop={(e) => drop(e, lights.length + 1, true)}
 				></div>
 			{/snippet}
 			{#snippet renderLights()}
 				{#each lights as light, i}
 					<div
-						class="aspect-square rounded-full border-3 border-transparent {activeDropBox === i
-							? ''
-							: 'hidden'}"
+						class={[
+							'aspect-square rounded-full border-3 border-transparent',
+							activeDropBox === i ? '' : 'hidden'
+						]}
 						ondrop={(e) => drop(e, i, true)}
 					></div>
 					<div
-						class="light mt-[6%] mb-[6%] aspect-square rounded-full {activeLights[i] !== false
-							? customColorClasses[light]
-							: colors.transparent} {mode === Mode.MANUAL
-							? 'cursor-pointer'
-							: ''} {typeof activeLights[i] === 'string' ? activeLights[i] : ''}"
+						class={[
+							'light mt-[6%] mb-[6%] aspect-square rounded-full',
+							activeLights[i] === false ? colors.transparent : customColorClasses[light],
+							mode === Mode.MANUAL ? 'cursor-pointer' : '',
+							typeof activeLights[i] === 'string' ? activeLights[i] : ''
+						]}
 						draggable="true"
 						ondragstart={() => (dragData = `light;${light};${i}`)}
 						bind:this={lightElements[i]}
@@ -370,20 +377,18 @@
 					></div>
 				{/each}
 				<div
-					class="aspect-square rounded-full border-3 border-transparent {activeDropBox ===
-						lights.length ||
-					(lights.length === 0 && !speedLight)
-						? ''
-						: 'hidden'}"
+					class={[
+						'aspect-square rounded-full border-3 border-transparent',
+						activeDropBox === lights.length || (lights.length === 0 && !speedLight) ? '' : 'hidden'
+					]}
 					ondrop={(e) => drop(e, lights.length, true)}
 				></div>
 				{#if speedLight}
 					<div
-						class="light aspect-square rounded-full {speedLight
-							? speed != null || mode === Mode.BUILD
-								? colors.yellow
-								: colors.transparent
-							: 'hidden'}"
+						class={[
+							'light aspect-square rounded-full',
+							speed != null || mode === Mode.BUILD ? colors.yellow : colors.transparent
+						]}
 						onclick={() => mode === Mode.MANUAL && cycleSpeed()}
 						draggable="true"
 						ondragstart={() => (dragData = `speed;light`)}
@@ -392,28 +397,31 @@
 				{#if speedStripes}
 					<div draggable="true" ondragstart={() => (dragData = `speed;stripes`)}>
 						<div
-							class="light stripe !m-0 aspect-[6] {(speedStripes && speed === 60) ||
-							mode == Mode.BUILD
-								? colors.yellow
-								: [80, 100].includes(speed ?? -1)
-									? colors.green
-									: colors.transparent}"
+							class={[
+								'light stripe !m-0 aspect-6/1',
+								speed === 60 || mode == Mode.BUILD
+									? colors.yellow
+									: [80, 100].includes(speed ?? -1)
+										? colors.green
+										: colors.transparent
+							]}
 							onclick={() => mode === Mode.MANUAL && cycleSpeed()}
 						></div>
-						<div class="!m-0 aspect-[7]"></div>
+						<div class="!m-0 aspect-7/1"></div>
 						<div
-							class="light stripe !mt-0 aspect-[6] {(speedStripes && speed === 100) ||
-							mode == Mode.BUILD
-								? colors.green
-								: colors.transparent}"
+							class={[
+								'light stripe !mt-0 aspect-6/1',
+								speed === 100 || mode == Mode.BUILD ? colors.green : colors.transparent
+							]}
 							onclick={() => mode === Mode.MANUAL && cycleSpeed()}
 						></div>
 					</div>
 				{/if}
 				<div
-					class="aspect-[2] border-3 border-transparent {activeDropBox === lights.length + 1
-						? ''
-						: 'hidden'}"
+					class={[
+						'aspect-2/1 border-3 border-transparent',
+						activeDropBox === lights.length + 1 ? '' : 'hidden'
+					]}
 					ondrop={(e) => drop(e, lights.length + 1, true)}
 				></div>
 			{/snippet}

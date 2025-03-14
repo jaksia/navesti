@@ -65,9 +65,10 @@
 <DayNight class="flex grow items-end justify-around">
 	<div class="pole relative h-3/5 w-4 bg-white">
 		<div
-			class="light absolute left-full ml-1 size-8 -translate-y-1/2 rounded-full {predzvest
-				? colors.yellow
-				: colors.green}"
+			class={[
+				'light absolute left-full ml-1 size-8 -translate-y-1/2 rounded-full',
+				predzvest ? colors.yellow : colors.green
+			]}
 			style="top: 7.5rem;"
 		></div>
 		<div
@@ -87,24 +88,27 @@
 	</div>
 	<div class="pole hlavne_jazda relative h-4/5 w-4">
 		<div
-			class="light absolute left-full ml-1 size-8 -translate-y-1/2 rounded-full {lightColor}"
+			class={['light absolute left-full ml-1 size-8 -translate-y-1/2 rounded-full', lightColor]}
 			style="top: 5rem;"
 		></div>
 		{#if secondArm}
 			<div
-				class="light absolute left-full ml-1 size-8 -translate-y-1/2 rounded-full {secondLightColor}"
+				class={[
+					'light absolute left-full ml-1 size-8 -translate-y-1/2 rounded-full',
+					secondLightColor
+				]}
 				style="top: 15rem;"
 				transition:fade={{ duration: 500 }}
 			></div>
 		{/if}
 		{#if yellowArm}
 			<div
-				class="absolute left-1/2 transition-transform duration-1000 ease-in-out {yellowRotation}"
+				class={['absolute left-1/2 transition-transform duration-1000 ease-in-out', yellowRotation]}
 				style="top: 3rem;"
 				transition:fade={{ duration: 500 }}
 			>
 				<div
-					class="arm absolute aspect-[4] w-48 -translate-x-[15%] -translate-y-[50%] bg-yellow-300 dark:bg-yellow-300/30"
+					class="arm absolute aspect-4/1 w-48 -translate-x-[15%] -translate-y-[50%] bg-yellow-300 dark:bg-yellow-300/30"
 				>
 					<div class="absolute top-0 left-[30%] h-1/5 w-[70%] bg-white dark:bg-white/30"></div>
 					<div class="absolute top-[80%] left-[30%] h-1/5 w-[70%] bg-white dark:bg-white/30"></div>
@@ -112,23 +116,26 @@
 			</div>
 		{/if}
 		<div
-			class="absolute left-1/2 transition-transform duration-1000 ease-in-out {armRotation}"
+			class={['absolute left-1/2 transition-transform duration-1000 ease-in-out', armRotation]}
 			style="top: {3}rem;"
 		>
 			<div
-				class="arm absolute aspect-[4] w-48 -translate-x-[15%] -translate-y-[50%] bg-red-600 dark:bg-red-600/30"
+				class="arm absolute aspect-4/1 w-48 -translate-x-[15%] -translate-y-[50%] bg-red-600 dark:bg-red-600/30"
 			>
 				<div class="absolute top-1/3 left-[30%] h-1/3 w-[70%] bg-white dark:bg-white/30"></div>
 			</div>
 		</div>
 		{#if secondArm}
 			<div
-				class="absolute left-1/2 transition-transform duration-1000 ease-in-out {secondArmRotation}"
+				class={[
+					'absolute left-1/2 transition-transform duration-1000 ease-in-out',
+					secondArmRotation
+				]}
 				style="top: {13}rem;"
 				transition:fade={{ duration: 500 }}
 			>
 				<div
-					class="arm absolute aspect-[4] w-48 -translate-x-[15%] -translate-y-[50%] bg-red-600 dark:bg-red-600/30"
+					class="arm absolute aspect-4/1 w-48 -translate-x-[15%] -translate-y-[50%] bg-red-600 dark:bg-red-600/30"
 				>
 					<div class="absolute top-1/3 left-[30%] h-1/3 w-[70%] bg-white dark:bg-white/30"></div>
 				</div>

@@ -125,23 +125,27 @@
 				class="flex flex-col items-center gap-1 rounded-lg bg-stone-800 p-4 *:transition-colors *:duration-100"
 			>
 				<div
-					class="size-6 rounded-full {safetySignal == 1 ? 'bg-yellow-400' : 'bg-stone-900'}"
-				></div>
-				<div class="size-6 rounded-full {safetySignal == 2 ? 'bg-red-600' : 'bg-stone-900'}"></div>
-				<div
-					class="size-6 rounded-full {safetySignal == 3 ? 'bg-green-600' : 'bg-stone-900'}"
+					class={['size-6 rounded-full', safetySignal == 1 ? 'bg-yellow-400' : 'bg-stone-900']}
 				></div>
 				<div
-					class="relative size-6 rounded-full p-[5px] {safetySignal == 4
-						? 'bg-yellow-400'
-						: 'bg-stone-900'}"
+					class={['size-6 rounded-full', safetySignal == 2 ? 'bg-red-600' : 'bg-stone-900']}
+				></div>
+				<div
+					class={['size-6 rounded-full', safetySignal == 3 ? 'bg-green-600' : 'bg-stone-900']}
+				></div>
+				<div
+					class={[
+						'relative size-6 rounded-full p-[5px]',
+						safetySignal == 4 ? 'bg-yellow-400' : 'bg-stone-900'
+					]}
 				>
 					<div class="h-3.5 w-3.5 transform rounded-full bg-stone-900"></div>
 				</div>
 				<div
-					class="mt-3 size-6 cursor-pointer rounded-full {now - lastInteract <= 2500
-						? 'bg-sky-500'
-						: 'bg-stone-900'}"
+					class={[
+						'mt-3 size-6 cursor-pointer rounded-full',
+						now - lastInteract <= 2500 ? 'bg-sky-500' : 'bg-stone-900'
+					]}
 				></div>
 			</div>
 		</div>

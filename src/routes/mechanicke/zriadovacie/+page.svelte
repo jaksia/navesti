@@ -22,9 +22,10 @@
 		onclick={() => (posunDovoleny = !posunDovoleny)}
 	>
 		<div
-			class="light absolute left-full ml-1 size-8 -translate-y-1/2 rounded-full {posunDovoleny
-				? colors.white
-				: colors.blue}"
+			class={[
+				'light absolute left-full ml-1 size-8 -translate-y-1/2 rounded-full',
+				posunDovoleny ? colors.white : colors.blue
+			]}
 			style="top: 6rem;"
 		></div>
 		<div
@@ -45,14 +46,14 @@
 		onclick={() => (kolajovaVaha = !kolajovaVaha)}
 	>
 		<div
-			class="absolute top-0 right-3.5 w-26 {kolajovaVaha ? 'rotate-45' : ''}"
+			class={['absolute top-0 right-3.5 w-26', kolajovaVaha ? 'rotate-45' : '']}
 			style="transform-origin: 100% 10%;"
 		>
 			<img src="/vaha.svg" alt="" class="-scale-x-100 dark:hidden" />
 			<img src="/vaha-dark.svg" alt="" class="hidden -scale-x-100 dark:block" />
 		</div>
 		<div
-			class="absolute top-0 left-3.5 w-26 {kolajovaVaha ? '-rotate-45' : ''}"
+			class={['absolute top-0 left-3.5 w-26', kolajovaVaha ? '-rotate-45' : '']}
 			style="transform-origin: 0 10%;"
 		>
 			<img src="/vaha.svg" alt="" class="dark:hidden" />
@@ -68,17 +69,26 @@
 			<img src="/vyckavacie-dark.svg" alt="" class="hidden dark:block" />
 			<div class="absolute bottom-0 left-1/2 size-8 -translate-x-1/2 translate-y-full bg-stone-800">
 				<div
-					class="light m-2 size-4 rounded-full {vyckavacieNavestidlo ? 'bg-white' : 'bg-stone-600'}"
+					class={[
+						'light m-2 size-4 rounded-full',
+						vyckavacieNavestidlo ? 'bg-white' : 'bg-stone-600'
+					]}
 				></div>
 			</div>
 			<div class="absolute top-0 left-0 size-8 -translate-y-full bg-stone-800">
 				<div
-					class="light m-2 size-4 rounded-full {vyckavacieNavestidlo ? 'bg-white' : 'bg-stone-600'}"
+					class={[
+						'light m-2 size-4 rounded-full',
+						vyckavacieNavestidlo ? 'bg-white' : 'bg-stone-600'
+					]}
 				></div>
 			</div>
 			<div class="absolute top-0 right-0 size-8 -translate-y-full bg-stone-800">
 				<div
-					class="light m-2 size-4 rounded-full {vyckavacieNavestidlo ? 'bg-white' : 'bg-stone-600'}"
+					class={[
+						'light m-2 size-4 rounded-full',
+						vyckavacieNavestidlo ? 'bg-white' : 'bg-stone-600'
+					]}
 				></div>
 			</div>
 		</div>

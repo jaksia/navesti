@@ -89,13 +89,13 @@
 				{@render renderBlankLightsOuter()}
 			{:else}
 				{#each Array.from({ length: lightCount }) as _, i}
-					<div class="light aspect-square rounded-full {colors.blank}"></div>
+					<div class={['light aspect-square rounded-full', colors.blank]}></div>
 				{/each}
 				{#if speedIndication}
-					<div class="light aspect-square rounded-full {colors.blank}"></div>
-					<div class="light stripe !m-0 aspect-[6] {colors.blank}"></div>
-					<div class="!m-0 aspect-[7]"></div>
-					<div class="light stripe !m-0 aspect-[6] {colors.blank}"></div>
+					<div class={['light aspect-square rounded-full', colors.blank]}></div>
+					<div class={['light stripe !m-0 aspect-6/1', colors.blank]}></div>
+					<div class="!m-0 aspect-7/1"></div>
+					<div class={['light stripe !m-0 aspect-6/1', colors.blank]}></div>
 					<div></div>
 				{/if}
 			{/if}
@@ -119,23 +119,29 @@
 			{:else}
 				{#each Array.from({ length: lightCount }) as _, i}
 					<div
-						class="light aspect-square rounded-full {activeLights[i] || colors.transparent}"
+						class={['light aspect-square rounded-full', activeLights[i] || colors.transparent]}
 					></div>
 				{/each}
 				{#if speedIndication}
 					<div
-						class="light aspect-square rounded-full {speed ? colors.yellow : colors.transparent}"
+						class={['light aspect-square rounded-full', speed ? colors.yellow : colors.transparent]}
 					></div>
 					<div
-						class="light stripe !m-0 aspect-[6] {speed === 60
-							? colors.yellow
-							: [80, 100].includes(speed ?? -1)
-								? colors.green
-								: colors.transparent}"
+						class={[
+							'light stripe !m-0 aspect-6/1',
+							speed === 60
+								? colors.yellow
+								: [80, 100].includes(speed ?? -1)
+									? colors.green
+									: colors.transparent
+						]}
 					></div>
-					<div class="stripe !m-0 aspect-[7]"></div>
+					<div class="stripe !m-0 aspect-7/1"></div>
 					<div
-						class="light stripe !m-0 aspect-[6] {speed === 100 ? colors.green : colors.transparent}"
+						class={[
+							'light stripe !m-0 aspect-6/1',
+							speed === 100 ? colors.green : colors.transparent
+						]}
 					></div>
 					<div></div>
 				{/if}
@@ -143,8 +149,11 @@
 					<div class="light relative aspect-square">
 						{#each Object.entries(letters) as [letter, active]}
 							<div
-								class="light letter absolute top-1/2 left-1/2 aspect-square -translate-1/2 rounded-full font-black
-								{active ? 'text-white' : 'text-transparent'} {flippedLetters.includes(letter) ? 'rotate-180' : ''}"
+								class={[
+									'light letter absolute top-1/2 left-1/2 aspect-square -translate-1/2 rounded-full font-black',
+									active ? 'text-white' : 'text-transparent',
+									flippedLetters.includes(letter) && 'rotate-180'
+								]}
 								style="font-size: {letterContainerHeight * 0.8}px;"
 							>
 								{letter}

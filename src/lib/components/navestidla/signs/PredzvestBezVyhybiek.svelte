@@ -1,4 +1,4 @@
-<div class="sign relative aspect-[0.8] h-36 overflow-hidden border-8 border-black bg-white">
+<div class="sign relative aspect-4/5 h-36 overflow-hidden border-8 border-black bg-white">
 	<div
 		class="absolute top-0 left-1/2 h-full -translate-x-1/2 transform border-x-8 border-black"
 	></div>

@@ -13,7 +13,7 @@
 </script>
 
 <div
-	class="label rounded-lg font-bold {labelStyleClass}"
+	class={['label rounded-lg font-bold', labelStyleClass]}
 	bind:clientHeight={labelHeight}
 	style="font-size: {boundLabelHeight * 0.7}px;
 						   line-height: {boundLabelHeight * 0.85}px;

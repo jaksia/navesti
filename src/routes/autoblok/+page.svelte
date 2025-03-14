@@ -188,12 +188,14 @@
 			{#each Array.from({ length: pocetOddielov }) as _, i}
 				{@const timeDiff = now - oddielChangeTime[i]}
 				<div
-					class="absolute bottom-0 flex h-10 {oddiel[i]
-						? 'bg-red-500/40'
-						: now - oddielChangeTime[i] <= MIN_FREE_TIME
-							? 'bg-yellow-500/40'
-							: 'bg-green-500/40'}
-						border-x border-dotted border-black"
+					class={[
+						'absolute bottom-0 flex h-10 border-x border-dotted border-black',
+						oddiel[i]
+							? 'bg-red-500/40'
+							: now - oddielChangeTime[i] <= MIN_FREE_TIME
+								? 'bg-yellow-500/40'
+								: 'bg-green-500/40'
+					]}
 					style="left: {boundaries[i]}px; Width: {boundaries[i + 1] - boundaries[i]}px;"
 				>
 					{Math.floor(timeDiff / 60000)}:{Math.floor((timeDiff % 60000) / 1000)
@@ -202,20 +204,20 @@
 				</div>
 			{/each}
 			<div
-				class="absolute bottom-0 flex h-10 {behindVchod
-					? 'bg-red-500/40'
-					: 'bg-green-500/40'} border-x border-dotted border-black"
+				class={[
+					'absolute bottom-0 flex h-10 border-x border-dotted border-black',
+					behindVchod ? 'bg-red-500/40' : 'bg-green-500/40'
+				]}
 				style="left: {boundaries[boundaries.length - 1]}px; width: {screenWidth -
 					boundaries[boundaries.length - 1]}px;"
 			></div>
 			{#each trainPositions as train, i}
 				{@const timeDiff = now - waitingTrainsChangeTime[i]}
 				<div
-					class="absolute bottom-0 flex h-10 flex-col items-center justify-center text-sm {waitingTrains[
-						i
-					] !== null
-						? 'animate-pulse bg-violet-500/60'
-						: 'bg-blue-500/40'}"
+					class={[
+						'absolute bottom-0 flex h-10 flex-col items-center justify-center text-sm',
+						waitingTrains[i] !== null ? 'animate-pulse bg-violet-500/60' : 'bg-blue-500/40'
+					]}
 					style="left: {train}px; width: {trainWidth[i]}px;"
 				>
 					<span>{i}</span>
@@ -234,9 +236,10 @@
 					<td>
 						{#each trainPositions as trainpos, i}
 							<div
-								class="absolute top-0 z-10 w-[150%] -translate-y-1/3 {waitingTrains[i] !== null
-									? 'animate-pulse'
-									: ''}"
+								class={[
+									'absolute top-0 z-10 w-[150%] -translate-y-1/3',
+									waitingTrains[i] !== null ? 'animate-pulse' : ''
+								]}
 								style="left: {trainpos}px;"
 								bind:clientWidth={trainWidth[i]}
 							>

@@ -20,12 +20,12 @@
 	class="relative h-full w-full grow overflow-hidden"
 	style="{styleProp}; --anim-duration: {prefersReducedMotion.current ? 0 : duration}ms;"
 >
-	<div class="day absolute inset-0 z-0 {classProp}">
+	<div class={['day absolute inset-0 z-0', classProp]}>
 		<div class="day-bg absolute inset-0 -z-20"></div>
 		{@render children()}
 	</div>
 
-	<div class="night absolute inset-0 z-0 {classProp} {store.day ? '' : 'show'}">
+	<div class={['night absolute inset-0 z-0', classProp, !store.day && 'show']}>
 		<div
 			class="night-bg absolute inset-0 -z-20 bg-radial-[at_95%_5%] from-gray-600 to-gray-800 to-20%"
 		></div>

@@ -151,7 +151,7 @@
 					<td class="relative">
 						<div class="absolute bottom-0 left-1/2 aspect-1/3 h-full -translate-x-1/2 transform">
 							<Navestidlo
-								lightCount={3}
+								lightCount={4}
 								letters={{
 									Z: mode == RezimSpadoviska.SPAT && track == 2,
 									U: ![RezimSpadoviska.ZAKAZANE, RezimSpadoviska.SPAT].includes(mode) && track == 2
