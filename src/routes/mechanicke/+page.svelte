@@ -2,9 +2,9 @@
 	import DayNight from '$lib/components/DayNight.svelte';
 	import DayNightToggle from '$lib/components/DayNightToggle.svelte';
 	import Label from '$lib/components/navestidla/parts/Label.svelte';
-	import { colors } from '$lib/consts';
+	import { colors } from '$lib/consts/styles';
 	import { generateLabel, type LabelType } from '$lib/labels';
-	import { nazvyNavesti } from '$lib/navestidlo';
+	import { nazvyNavesti } from '$lib/consts/navestidlo';
 	import { fade } from 'svelte/transition';
 
 	const blank = colors.blank;
@@ -21,7 +21,7 @@
 
 	let armRotation = $state(rotations.level);
 	let secondArmRotation = $state(rotations.up);
-	let yellowRotation = $state(rotations.up);
+	let yellowRotation = $state(rotations.level);
 	let lightColor = $state(colors.red);
 	let secondLightColor = $state(blank);
 
@@ -32,12 +32,12 @@
 		if (navest == '40' && !secondArm) navest = 'volno';
 
 		if (navest == 'volno') {
-			armRotation = rotations.angle;
-			secondArmRotation = yellowRotation = rotations.up;
+			yellowRotation = armRotation = rotations.angle;
+			secondArmRotation = rotations.up;
 			(lightColor = colors.green), (secondLightColor = blank);
 		} else if (navest == 'stoj') {
-			armRotation = rotations.level;
-			secondArmRotation = yellowRotation = rotations.up;
+			yellowRotation = armRotation = rotations.level;
+			secondArmRotation = rotations.up;
 			(lightColor = colors.red), (secondLightColor = blank);
 		} else if (navest == 'vystraha') {
 			armRotation = rotations.angle;
@@ -46,7 +46,7 @@
 			(lightColor = colors.yellow), (secondLightColor = blank);
 		} else if (navest == '40') {
 			armRotation = secondArmRotation = rotations.angle;
-			yellowRotation = rotations.up;
+			yellowRotation = rotations.level;
 			lightColor = secondLightColor = yellowArm ? colors.yellow : colors.green;
 		}
 
@@ -76,10 +76,10 @@
 			style="transform: {predzvest ? '' : 'rotate3d(1,0,0,88deg)'};"
 		>
 			<div
-				class="arm absolute size-56 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white dark:bg-white/30"
+				class="arm absolute size-56 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white"
 			></div>
 			<div
-				class="arm absolute size-48 -translate-x-1/2 -translate-y-1/2 rounded-full border border-black bg-yellow-300 dark:border-black/50 dark:bg-yellow-300/30"
+				class="arm absolute size-48 -translate-x-1/2 -translate-y-1/2 rounded-full border border-black bg-yellow-300"
 			></div>
 		</div>
 		<div class="absolute top-1/2 aspect-square w-[110%]">
@@ -88,16 +88,16 @@
 	</div>
 	<div class="pole hlavne_jazda relative h-4/5 w-4">
 		<div
-			class={['light absolute left-full ml-1 size-8 -translate-y-1/2 rounded-full', lightColor]}
-			style="top: 5rem;"
+			class={['light absolute left-[150%] ml-1 size-8 -translate-y-1/2 rounded-full', lightColor]}
+			style="top: 5.5rem;"
 		></div>
 		{#if secondArm}
 			<div
 				class={[
-					'light absolute left-full ml-1 size-8 -translate-y-1/2 rounded-full',
+					'light absolute left-[150%] ml-1 size-8 -translate-y-1/2 rounded-full',
 					secondLightColor
 				]}
-				style="top: 15rem;"
+				style="top: 15.5rem;"
 				transition:fade={{ duration: 500 }}
 			></div>
 		{/if}
@@ -108,10 +108,10 @@
 				transition:fade={{ duration: 500 }}
 			>
 				<div
-					class="arm absolute aspect-4/1 w-48 -translate-x-[15%] -translate-y-[50%] bg-yellow-300 dark:bg-yellow-300/30"
+					class="arm absolute aspect-4/1 w-48 -translate-x-[15%] -translate-y-[50%] bg-yellow-300"
 				>
-					<div class="absolute top-0 left-[30%] h-1/5 w-[70%] bg-white dark:bg-white/30"></div>
-					<div class="absolute top-[80%] left-[30%] h-1/5 w-[70%] bg-white dark:bg-white/30"></div>
+					<div class="absolute top-0 left-[30%] h-1/5 w-[70%] bg-white"></div>
+					<div class="absolute top-[80%] left-[30%] h-1/5 w-[70%] bg-white"></div>
 				</div>
 			</div>
 		{/if}
@@ -119,10 +119,8 @@
 			class={['absolute left-1/2 transition-transform duration-1000 ease-in-out', armRotation]}
 			style="top: {3}rem;"
 		>
-			<div
-				class="arm absolute aspect-4/1 w-48 -translate-x-[15%] -translate-y-[50%] bg-red-600 dark:bg-red-600/30"
-			>
-				<div class="absolute top-1/3 left-[30%] h-1/3 w-[70%] bg-white dark:bg-white/30"></div>
+			<div class="arm absolute aspect-4/1 w-48 -translate-x-[15%] -translate-y-[50%] bg-red-600">
+				<div class="absolute top-1/3 left-[30%] h-1/3 w-[70%] bg-white"></div>
 			</div>
 		</div>
 		{#if secondArm}
@@ -134,10 +132,8 @@
 				style="top: {13}rem;"
 				transition:fade={{ duration: 500 }}
 			>
-				<div
-					class="arm absolute aspect-4/1 w-48 -translate-x-[15%] -translate-y-[50%] bg-red-600 dark:bg-red-600/30"
-				>
-					<div class="absolute top-1/3 left-[30%] h-1/3 w-[70%] bg-white dark:bg-white/30"></div>
+				<div class="arm absolute aspect-4/1 w-48 -translate-x-[15%] -translate-y-[50%] bg-red-600">
+					<div class="absolute top-1/3 left-[30%] h-1/3 w-[70%] bg-white"></div>
 				</div>
 			</div>
 		{/if}
@@ -197,11 +193,11 @@
 		}
 	}
 	:global(.night) .pole::before,
-	:global(.night) .label::before {
-		background-color: #000c !important;
+	:global(.night .n-label)::before {
+		background-color: #000b !important;
 	}
 
 	:global(.night) .arm::after {
-		background-color: #0006 !important;
+		background-color: #000a !important;
 	}
 </style>

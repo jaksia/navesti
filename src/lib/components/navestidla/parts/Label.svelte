@@ -13,7 +13,7 @@
 </script>
 
 <div
-	class={['label rounded-lg font-bold', labelStyleClass]}
+	class={['n-label rounded-lg font-bold', labelStyleClass]}
 	bind:clientHeight={labelHeight}
 	style="font-size: {boundLabelHeight * 0.7}px;
 						   line-height: {boundLabelHeight * 0.85}px;
@@ -24,7 +24,7 @@
 </div>
 
 <style lang="scss">
-	.label {
+	.n-label {
 		--label-outline-size: 1px;
 		--label-border-size: 3px;
 		--label-py: 75%;
@@ -35,6 +35,9 @@
 		transform: translateX(-50%);
 		height: 175%;
 		min-height: 15px;
+
+		display: inline-flex;
+		align-items: center;
 
 		padding: var(--label-py) 0.75ch;
 		text-align: center;

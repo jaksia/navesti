@@ -1,5 +1,6 @@
-import { colors, blinking } from "./consts";
-import { povolenaPrivolavacia, povoleneOpakovanie, type Navest } from "./navestidlo";
+import { colors, blinking } from "./consts/styles";
+import type { Navest } from "./types/navestidlo";
+import { povolenaPrivolavacia, povoleneOpakovanie } from "./consts/navestidlo";
 
 export enum CustomLightColor {
     BLUE = "blue",

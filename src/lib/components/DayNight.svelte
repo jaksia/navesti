@@ -96,7 +96,7 @@
 	}
 
 	:global(.light) {
-		transition: all 300ms;
+		transition: all var(--tw-duration, 300ms);
 	}
 
 	:global .night {
@@ -158,10 +158,10 @@
 
 			border-radius: inherit;
 
-			background-color: #0008;
+			background-color: var(--night-overlay-color, #0008);
 		}
 
-		:is(.pole, .label)::before {
+		:is(.pole, .n-label)::before {
 			content: '';
 			position: absolute;
 			top: calc(var(--label-border-size, 0) * -1);
@@ -174,8 +174,8 @@
 			border-radius: inherit;
 			outline: inherit;
 
-			background-color: #0008;
-			outline-color: #0008;
+			background-color: var(--night-overlay-color, #0008);
+			outline-color: var(--night-overlay-color, #0008);
 		}
 
 		.pole .sign::after {
@@ -186,7 +186,7 @@
 			width: 100%;
 			height: 100%;
 
-			background-color: #0008;
+			background-color: var(--night-overlay-color, #0008);
 		}
 	}
 </style>

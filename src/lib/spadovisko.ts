@@ -1,4 +1,4 @@
-import { colors, blinking } from "./consts";
+import { colors, blinking } from "./consts/styles";
 const { red: RED, white: WHITE, blue: BLUE } = colors;
 const BLINK = WHITE + ' ' + blinking.slow;
 
@@ -28,11 +28,11 @@ export const spadNavestneZnaky: { [key in TypSpadNavestidla]: { [key in RezimSpa
         [RezimSpadoviska.PRISUN]:     [BLINK, null, BLINK]
     },
     hlavne: {
-        [RezimSpadoviska.ZAKAZANE]:   [null,  RED,  null, null],
-        [RezimSpadoviska.POMALY]:     [WHITE, null, null, WHITE],
-        [RezimSpadoviska.RYCHLEJSIE]: [WHITE, null, null, null],
-        [RezimSpadoviska.SPAT]:       [null,  RED,  null, null],
-        [RezimSpadoviska.PRISUN]:     [BLINK, null, null, BLINK]
+        [RezimSpadoviska.ZAKAZANE]:   [null,  RED,  null],
+        [RezimSpadoviska.POMALY]:     [WHITE, null, WHITE],
+        [RezimSpadoviska.RYCHLEJSIE]: [WHITE, null, null],
+        [RezimSpadoviska.SPAT]:       [null,  RED,  null],
+        [RezimSpadoviska.PRISUN]:     [BLINK, null, BLINK]
     },
     zriadovacie: {
         [RezimSpadoviska.ZAKAZANE]:   [null, BLUE, null],

@@ -4,14 +4,8 @@
 	import DayNightToggle from '$lib/components/DayNightToggle.svelte';
 	import AutoblokNavestidlo from '$lib/components/navestidla/AutoblokNavestidlo.svelte';
 	import HlavneNavestidlo from '$lib/components/navestidla/HlavneNavestidlo.svelte';
-	import {
-		nazvyNavesti,
-		typeOptions,
-		TypNavestidla,
-		type HlavnaNavest,
-		type Rychlost
-	} from '$lib/navestidlo';
-	import store from '$lib/store.svelte';
+	import type { HlavnaNavest, Rychlost } from '$lib/types/navestidlo';
+	import { nazvyNavesti, typeOptions, TypNavestidla } from '$lib/consts/navestidlo';
 	import Icon from '@iconify/svelte';
 	import { Tween } from 'svelte/motion';
 
@@ -339,7 +333,7 @@
 			{/each}
 		</select>
 	</label>
-	<label for="vchodNavestPrivolavacia" class="label">
+	<label for="vchodNavestPrivolavacia" class="n-label">
 		<input
 			type="checkbox"
 			bind:checked={vchodNavestPrivolavacia}

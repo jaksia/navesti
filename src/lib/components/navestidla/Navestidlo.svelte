@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { colors } from '$lib/consts';
+	import { colors } from '$lib/consts/styles';
 	import type { Component, Snippet } from 'svelte';
 	import Label from './parts/Label.svelte';
 	import StlpNavestidlo from './display/StlpNavestidlo.svelte';
@@ -99,19 +99,22 @@
 					<div></div>
 				{/if}
 			{/if}
-			{#if Object.keys(letters).length > 0}
-				<div class="light relative aspect-square" bind:clientHeight={letterContainerHeight}>
-					{#each Object.entries(letters) as [letter, active]}
-						<div
-							class="light letter absolute top-1/2 left-1/2 aspect-square -translate-1/2 rounded-full font-black text-stone-800
-							{flippedLetters.includes(letter) ? 'rotate-180' : ''}"
-							style="font-size: {letterContainerHeight * 0.8}px;"
-						>
-							{letter}
-						</div>
-					{/each}
+			{#each Object.entries(letters) as [letter, active]}
+				<div
+					class="light relative aspect-square rounded-full"
+					bind:clientHeight={letterContainerHeight}
+				>
+					<div
+						class={[
+							'light letter absolute top-1/2 left-1/2 aspect-square -translate-1/2 rounded-full font-black text-stone-800',
+							flippedLetters.includes(letter) && 'rotate-180'
+						]}
+						style="font-size: {letterContainerHeight}px;"
+					>
+						{letter}
+					</div>
 				</div>
-			{/if}
+			{/each}
 		{/snippet}
 		{#snippet renderLights()}
 			{#if renderLightsOuter}
@@ -145,22 +148,20 @@
 					></div>
 					<div></div>
 				{/if}
-				{#if Object.keys(letters).length > 0}
+				{#each Object.entries(letters) as [letter, active]}
 					<div class="light relative aspect-square">
-						{#each Object.entries(letters) as [letter, active]}
-							<div
-								class={[
-									'light letter absolute top-1/2 left-1/2 aspect-square -translate-1/2 rounded-full font-black',
-									active ? 'text-white' : 'text-transparent',
-									flippedLetters.includes(letter) && 'rotate-180'
-								]}
-								style="font-size: {letterContainerHeight * 0.8}px;"
-							>
-								{letter}
-							</div>
-						{/each}
+						<div
+							class={[
+								'light letter absolute top-1/2 left-1/2 aspect-square -translate-1/2 rounded-full font-black',
+								active ? 'text-white' : 'text-transparent',
+								flippedLetters.includes(letter) && 'rotate-180'
+							]}
+							style="font-size: {letterContainerHeight}px;"
+						>
+							{letter}
+						</div>
 					</div>
-				{/if}
+				{/each}
 			{/if}
 		{/snippet}
 		{#snippet renderLabel()}

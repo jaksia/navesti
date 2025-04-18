@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { dev } from '$app/environment';
-	import { blinking, colors } from '$lib/consts';
+	import { blinking, colors } from '$lib/consts/styles';
 	import {
 		customColorClasses,
 		CustomLightColor,
@@ -16,15 +16,9 @@
 	import Icon from '@iconify/svelte';
 	import { untrack } from 'svelte';
 	import Navestidlo from '$lib/components/navestidla/Navestidlo.svelte';
-	import {
-		additionalNames,
-		nazvyNavesti,
-		vsetkyNavesti,
-		type Additional,
-		type Navest
-	} from '$lib/navestidlo';
+	import type { Additional, Navest } from '$lib/types/navestidlo';
+	import { additionalNames, nazvyNavesti, vsetkyNavesti } from '$lib/consts/navestidlo';
 	import DayNight from '$lib/components/DayNight.svelte';
-	import store from '$lib/store.svelte';
 	import SkratenaVzdialenost from '$lib/components/navestidla/signs/SkratenaVzdialenost.svelte';
 	import Skupina from '$lib/components/navestidla/signs/Skupina.svelte';
 	import PredzvestVyhybky from '$lib/components/navestidla/signs/PredzvestVyhybky.svelte';
@@ -175,8 +169,8 @@
 			lights = Object.values(CustomLightColor);
 			speedLight = speedStripes = true;
 		},
-		reset() {
-			lights = [];
+		reset: () => {
+			lights = activeLights = [];
 			speedLight = speedStripes = false;
 		},
 		default: () => {
@@ -240,7 +234,7 @@
 <DayNight class="flex grow flex-col items-center justify-between">
 	<div class="mt-10 flex gap-1 text-center">
 		{#if mode === Mode.BUILD}
-			<table class="border-separate border-spacing-2 dark:text-white">
+			<table class="border-separate border-spacing-2 text-stone-950 dark:text-stone-300">
 				<thead>
 					<tr>
 						<th colspan={Object.values(CustomLightColor).length}>Svetlá</th>
@@ -282,10 +276,7 @@
 							ondragover={(e) => (e.preventDefault(), (trashActive = true), (activeDropBox = null))}
 							ondragleave={(e) => (trashActive = false)}
 							ondrop={(e) => drop(e, -1, true)}
-							class={[
-								'rounded-full transition-colors duration-500',
-								store.day ? 'text-stone-800' : 'text-stone-600'
-							]}
+							class="rounded-full text-stone-800 dark:text-stone-600"
 						>
 							{#if trashActive}
 								<Icon icon="mdi:trash-can-empty" class="size-14 cursor-pointer text-red-700" />

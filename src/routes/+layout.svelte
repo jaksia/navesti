@@ -5,7 +5,7 @@
 	let mobileAlert = $state(true);
 </script>
 
-<div class="flex h-screen w-screen overflow-hidden select-none">
+<div class="seleact-none flex h-screen w-screen overflow-hidden">
 	{@render children()}
 </div>
 

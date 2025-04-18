@@ -1,9 +1,10 @@
 <script lang="ts">
 	import PoslednyAutoblok from './signs/PoslednyAutoblok.svelte';
 
-	import { getNavestneZnaky, TypNavestidla, type AllowedSignals } from '$lib/navestidlo';
+	import type { AllowedSignals } from '$lib/types/navestidlo';
 	import Navestidlo, { type DisplayMode } from './Navestidlo.svelte';
 	import { generateLabel } from '$lib/labels';
+	import { getNavestneZnaky, TypNavestidla } from '$lib/consts/navestidlo';
 
 	let {
 		navest,

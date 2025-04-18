@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Skupina from './signs/Skupina.svelte';
+	import type { Additional, AllowedSignals, Rychlost } from '$lib/types/navestidlo';
 	import {
 		getNavestneZnaky,
 		isPredzvest,
@@ -7,11 +8,8 @@
 		povolenaPrivolavacia,
 		povoleneOpakovanie,
 		privolavaciaNavest,
-		TypNavestidla,
-		type Additional,
-		type AllowedSignals,
-		type Rychlost
-	} from '$lib/navestidlo';
+		TypNavestidla
+	} from '$lib/consts/navestidlo';
 	import Navestidlo, { type DisplayMode } from './Navestidlo.svelte';
 	import SkratenaVzdialenost from './signs/SkratenaVzdialenost.svelte';
 	import { generateLabel } from '$lib/labels';

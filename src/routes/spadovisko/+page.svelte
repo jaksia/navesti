@@ -1,10 +1,8 @@
 <script lang="ts">
 	import { RezimSpadoviska, spadNavestneZnaky } from '$lib/spadovisko';
-	import SpadoviskoveNavestidlo from '$lib/components/SpadoviskoveNavestidlo.svelte';
 	import DayNight from '$lib/components/DayNight.svelte';
 	import DayNightToggle from '$lib/components/DayNightToggle.svelte';
 	import Navestidlo from '$lib/components/navestidla/Navestidlo.svelte';
-	import { colors } from '$lib/consts';
 
 	let track = $state(1);
 	let mode = $state(RezimSpadoviska.ZAKAZANE);
@@ -135,8 +133,8 @@
 							<Navestidlo
 								lightCount={3}
 								letters={{
-									Z: mode == RezimSpadoviska.SPAT && track == 1,
-									U: ![RezimSpadoviska.ZAKAZANE, RezimSpadoviska.SPAT].includes(mode) && track == 1
+									U: ![RezimSpadoviska.ZAKAZANE, RezimSpadoviska.SPAT].includes(mode) && track == 1,
+									Z: mode == RezimSpadoviska.SPAT && track == 1
 								}}
 								activeLights={spadNavestneZnaky['zriadovacie'][
 									track == 1 ? mode : RezimSpadoviska.ZAKAZANE
@@ -151,15 +149,15 @@
 					<td class="relative">
 						<div class="absolute bottom-0 left-1/2 aspect-1/3 h-full -translate-x-1/2 transform">
 							<Navestidlo
-								lightCount={4}
+								lightCount={3}
 								letters={{
-									Z: mode == RezimSpadoviska.SPAT && track == 2,
-									U: ![RezimSpadoviska.ZAKAZANE, RezimSpadoviska.SPAT].includes(mode) && track == 2
+									U: ![RezimSpadoviska.ZAKAZANE, RezimSpadoviska.SPAT].includes(mode) && track == 2,
+									Z: mode == RezimSpadoviska.SPAT && track == 2
 								}}
 								activeLights={spadNavestneZnaky['hlavne'][
 									track == 2 ? mode : RezimSpadoviska.ZAKAZANE
 								]}
-								label="S101"
+								label="Sc101"
 								poleStyleClass="hlavne"
 								labelStyleClass="hlavne"
 							/>

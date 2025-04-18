@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { generateLabel } from '$lib/labels';
-	import { getNavestneZnaky, TypNavestidla, type AllowedSignals } from '$lib/navestidlo';
+	import type { AllowedSignals } from '$lib/types/navestidlo';
+	import { getNavestneZnaky, TypNavestidla } from '$lib/consts/navestidlo';
 	import Navestidlo, { type DisplayMode } from './Navestidlo.svelte';
 
 	let {

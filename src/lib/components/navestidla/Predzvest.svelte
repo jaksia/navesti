@@ -1,13 +1,9 @@
 <script lang="ts">
 	import PredzvestBezVyhybiek from './signs/PredzvestBezVyhybiek.svelte';
 
-	import { colors } from '$lib/consts';
-	import {
-		getNavestneZnaky,
-		TypNavestidla,
-		type Additional,
-		type AllowedSignals
-	} from '$lib/navestidlo';
+	import { colors } from '$lib/consts/styles';
+	import type { Additional, AllowedSignals } from '$lib/types/navestidlo';
+	import { getNavestneZnaky, TypNavestidla } from '$lib/consts/navestidlo';
 	import Navestidlo, { type DisplayMode } from './Navestidlo.svelte';
 	import PredzvestVyhybky from './signs/PredzvestVyhybky.svelte';
 	import SkratenaVzdialenost from './signs/SkratenaVzdialenost.svelte';

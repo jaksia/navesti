@@ -4,24 +4,21 @@
 	import Predzvest from '$lib/components/navestidla/Predzvest.svelte';
 	import VlozeneNavestidlo from '$lib/components/navestidla/VlozeneNavestidlo.svelte';
 	import ZriadovacieNavestidlo from '$lib/components/navestidla/ZriadovacieNavestidlo.svelte';
-	import {
-		TypNavestidla,
-		additionalNames,
-		isPredzvest,
-		isSpeed,
-		nazvyNavesti,
-		povolenaPrivolavacia,
-		povoleneOpakovanie,
-		typeOptions,
-		type Additional,
-		type AllowedSignals,
-		type Navest,
-		type Rychlost
-	} from '$lib/navestidlo';
+	import type { Additional, AllowedSignals, Navest, Rychlost } from '$lib/types/navestidlo';
 	import DayNight from '$lib/components/DayNight.svelte';
 	import Frame from '$lib/components/Frame.svelte';
 	import type { DisplayMode } from '$lib/components/navestidla/Navestidlo.svelte';
 	import DayNightToggle from '$lib/components/DayNightToggle.svelte';
+	import {
+		TypNavestidla,
+		typeOptions,
+		isSpeed,
+		isPredzvest,
+		nazvyNavesti,
+		povoleneOpakovanie,
+		povolenaPrivolavacia,
+		additionalNames
+	} from '$lib/consts/navestidlo';
 
 	let lightSelector = $state(false);
 
@@ -41,10 +38,15 @@
 	const safetySignal = $derived.by(() => {
 		if (navest === null) return 0;
 		if (navest == 'stoj' || navest == 'p_dovoleny') return 2;
+
 		if (options.repeating && opakovanie && navest == 'vystraha') return 2;
 		if (options.repeating && opakovanie && isSpeed(navest)) return 4;
+
+		if (rychlost != null) return 4;
+
 		if (isSpeed(navest) || navest == 'vystraha') return 1;
-		if (navest == 'volno') return rychlost === null ? 3 : 4;
+		if (navest == 'volno') return 3;
+
 		return 0;
 	});
 
@@ -169,15 +171,13 @@
 	<DayNightToggle />
 	{#if lightSelector}
 		<div class="light-selector my-auto flex flex-col text-center">
-			<a href="/svetlo/cervena" class="rounded-t-lg bg-red-500 py-6 text-xl hover:bg-red-600"
-				>Červená</a
-			>
-			<a href="/svetlo/zelena" class="bg-green-500 py-6 text-xl hover:bg-green-600">Zelená</a>
-			<a href="/svetlo/modra" class="bg-blue-700 py-6 text-xl hover:bg-blue-800">Modrá</a>
-			<a href="/svetlo/biela" class="bg-white py-6 text-xl hover:bg-gray-200">Biela</a>
-			<a href="/svetlo/zlta" class="bg-yellow-400 py-6 text-xl hover:bg-yellow-500">Žltá</a>
+			<a href="/light/red" class="rounded-t-lg bg-red-500 py-6 text-xl hover:bg-red-600">Červená</a>
+			<a href="/light/green" class="bg-green-500 py-6 text-xl hover:bg-green-600">Zelená</a>
+			<a href="/light/blue" class="bg-blue-700 py-6 text-xl hover:bg-blue-800">Modrá</a>
+			<a href="/light/white" class="bg-white py-6 text-xl hover:bg-gray-200">Biela</a>
+			<a href="/light/yellow" class="bg-yellow-400 py-6 text-xl hover:bg-yellow-500">Žltá</a>
 			<a
-				href="/svetlo/privolavacia"
+				href="/light/approach"
 				class="rounded-b-lg bg-linear-to-tr from-yellow-400 to-green-500 py-6 text-xl hover:from-yellow-500 hover:to-green-600"
 				>Privolávacia</a
 			>
@@ -309,7 +309,7 @@
 		<div class="mt-auto">
 			<a href="/signal/custom" class="block font-bold underline">Vlastné návestidlo</a>
 			<a
-				href="/svetlo"
+				href="/light"
 				class="block font-bold underline"
 				onclick={(e) => (e.preventDefault(), (lightSelector = true))}>Svetlo</a
 			>
