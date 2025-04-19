@@ -56,24 +56,24 @@
 			class={['absolute top-0 right-3.5 w-26', kolajovaVaha ? 'rotate-45' : '']}
 			style="transform-origin: 100% 10%;"
 		>
-			<img src="/vaha.svg" alt="" class="-scale-x-100 dark:hidden" />
-			<img src="/vaha-dark.svg" alt="" class="hidden -scale-x-100 dark:block" />
+			<img src="/elements/vaha.svg" alt="" class="-scale-x-100 dark:hidden" />
+			<img src="/elements/vaha-dark.svg" alt="" class="hidden -scale-x-100 dark:block" />
 		</div>
 		<div
 			class={['absolute top-0 left-3.5 w-26', kolajovaVaha ? '-rotate-45' : '']}
 			style="transform-origin: 0 10%;"
 		>
-			<img src="/vaha.svg" alt="" class="dark:hidden" />
-			<img src="/vaha-dark.svg" alt="" class="hidden dark:block" />
+			<img src="/elements/vaha.svg" alt="" class="dark:hidden" />
+			<img src="/elements/vaha-dark.svg" alt="" class="hidden dark:block" />
 		</div>
 	</div>
 	<div
 		class={['pole zriadovacie relative h-2/5 w-4', vyckavacieSvetla && 'cursor-pointer']}
-		onclick={() => (vyckavacieNavestidlo = !vyckavacieNavestidlo)}
+		onclick={() => vyckavacieSvetla && (vyckavacieNavestidlo = !vyckavacieNavestidlo)}
 	>
 		<div class="absolute top-0 left-1/2 w-36 -translate-x-1/2 -translate-y-full">
-			<img src="/vyckavacie.svg" alt="" class="dark:hidden" />
-			<img src="/vyckavacie-dark.svg" alt="" class="hidden dark:block" />
+			<img src="/elements/vyckavacie.svg" alt="" class="dark:hidden" />
+			<img src="/elements/vyckavacie-dark.svg" alt="" class="hidden dark:block" />
 			{#if vyckavacieSvetla}
 				<div
 					class="absolute bottom-0 left-1/2 size-8 -translate-x-1/2 translate-y-full bg-stone-800"

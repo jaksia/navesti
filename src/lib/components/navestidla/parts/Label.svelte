@@ -49,6 +49,7 @@
 		background: #fff;
 		color: #000;
 
+		box-shadow: 0 3px 3px rgba(0, 0, 0, 0.5);
 		&.hlavne {
 			background: #f00;
 			color: #fff;
