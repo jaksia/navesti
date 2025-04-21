@@ -1,19 +1,25 @@
 <script lang="ts">
+	import SvetelneBieleZavory from '$lib/components/priecestie/SvetelneBieleZavory.svelte';
+	import SvetelneBiele from '$lib/components/priecestie/SvetelneBiele.svelte';
+	import Svetelne from '$lib/components/priecestie/Svetelne.svelte';
 	import DayNight from '$lib/components/DayNight.svelte';
 	import DayNightToggle from '$lib/components/DayNightToggle.svelte';
 	import Label from '$lib/components/navestidla/parts/Label.svelte';
-	import ModerneBezZavor from '$lib/components/priecestie/ModerneBezZavor.svelte';
 	import { colors } from '$lib/consts/styles';
 
 	const types = {
-		'Moderné bez závor': ModerneBezZavor
+		'Závorové s bielym svetlom': SvetelneBieleZavory,
+		'Svetelné s bielym svetlom': SvetelneBiele,
+		'Svetelné bez bieleho svetla': Svetelne
 	};
 
 	let pocetPriecesti = $state(1);
 	let trackCount = $state(1);
+	let volume = $state(35);
 	let active = $state(false);
 
 	let secure = $state(false);
+	let clear = $state(true);
 
 	let type = $state(Object.keys(types)[0]) as keyof typeof types;
 
@@ -62,7 +68,7 @@
 		</div>
 	</div>
 	<div class="flex aspect-5/4 h-4/5">
-		<Priecestie {active} {trackCount} bind:secure />
+		<Priecestie {active} {trackCount} {volume} bind:clear bind:secure />
 	</div>
 </DayNight>
 <div class="flex w-1/5 flex-col gap-4 p-5">
@@ -70,7 +76,7 @@
 	<label for="type" class="floating-label">
 		<span>Typ</span>
 		<div class="flex">
-			<select id="type" bind:value={type} class="select">
+			<select id="type" bind:value={type} class="select" disabled={active || !clear}>
 				{#each Object.keys(types) as key}
 					<option value={key}>{key}</option>
 				{/each}
@@ -87,20 +93,47 @@
 				max="99"
 				bind:value={pocetPriecesti}
 				class="input"
+				disabled={active || !clear}
 			/>
 		</div>
 	</label>
 	<label for="track-count" class="floating-label">
 		<span>Počet koľají</span>
 		<div class="flex">
-			<input type="number" id="track-count" min="1" max="5" bind:value={trackCount} class="input" />
+			<input
+				type="number"
+				id="track-count"
+				min="1"
+				max="5"
+				bind:value={trackCount}
+				disabled={active || !clear}
+				class="input"
+			/>
 		</div>
 	</label>
 	<label for="priecestie" class="label">
 		<input type="checkbox" id="priecestie" bind:checked={active} class="checkbox" />
 		Priecestie
+		<input type="checkbox" id="secure" bind:checked={secure} class="checkbox ml-auto" disabled />
 	</label>
+	<fieldset class="fieldset border-base-300 rounded-box bg-base-200 border p-2">
+		<legend class="label">Hlasitosť</legend>
+		<input
+			type="range"
+			id="volume"
+			min="0"
+			max="100"
+			step="1"
+			bind:value={volume}
+			class="range range-neutral"
+		/>
+	</fieldset>
 	<div class="mt-auto">
+		{#if active || !clear}
+			<div class="my-3 text-xs text-red-500 italic">
+				Priecestie je aktívne alebo sa vypína, nie je možné zmeniť nastavenia.
+			</div>
+		{/if}
 		<a href="/" class="mt-auto font-bold underline">Naspäť</a>
 	</div>
 </div>

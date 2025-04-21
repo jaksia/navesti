@@ -1,5 +1,7 @@
 export type PriecestieProps = {
     active: boolean;
     secure: boolean;
-    trackCount?: number;
+    clear: boolean;
+    volume: number;
+    trackCount: number;
 }

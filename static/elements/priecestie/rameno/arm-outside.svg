@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 20">
+    <linearGradient id="armGradient">
+        <stop offset="10%" stop-color="#F00" />
+        <stop offset="10%" stop-color="#FFF" />
+        <stop offset="20%" stop-color="#FFF" />
+        <stop offset="20%" stop-color="#F00" />
+        <stop offset="30%" stop-color="#F00" />
+        <stop offset="30%" stop-color="#FFF" />
+        <stop offset="40%" stop-color="#FFF" />
+        <stop offset="40%" stop-color="#F00" />
+        <stop offset="50%" stop-color="#F00" />
+        <stop offset="50%" stop-color="#FFF" />
+        <stop offset="60%" stop-color="#FFF" />
+        <stop offset="60%" stop-color="#F00" />
+        <stop offset="70%" stop-color="#F00" />
+        <stop offset="70%" stop-color="#FFF" />
+        <stop offset="80%" stop-color="#FFF" />
+        <stop offset="80%" stop-color="#F00" />
+        <stop offset="90%" stop-color="#F00" />
+        <stop offset="90%" stop-color="#FFF" />
+    </linearGradient>
+    <rect width="500" height="20" fill="url(#armGradient)" />
+</svg>
