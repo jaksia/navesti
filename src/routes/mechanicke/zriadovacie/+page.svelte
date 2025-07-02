@@ -10,11 +10,27 @@
 	let kolajovaVaha = $state(true);
 	let vyckavacieNavestidlo = $state(false);
 	let vyckavacieSvetla = $state(false);
+
+	function handleKeyPress(event: KeyboardEvent) {
+		if (event.key === '2') {
+			posunDovoleny = !posunDovoleny;
+		} else if (event.key === '3') {
+			kolajovaVaha = !kolajovaVaha;
+		} else if (event.key === '4' || event.key === '$') {
+			if (event.shiftKey) {
+				vyckavacieSvetla = !vyckavacieSvetla;
+			} else {
+				vyckavacieNavestidlo = !vyckavacieNavestidlo;
+			}
+		}
+	}
 </script>
 
 <svelte:head>
 	<title>Mechanické zriaďovacie návestidlá</title>
 </svelte:head>
+
+<svelte:body onkeypress={handleKeyPress} />
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -158,9 +174,6 @@
 	:global(.night) .pole::before,
 	:global(.night) .n-label::before {
 		--night-overlay-color: #000c;
-	}
-	:global(.night) .arm::after {
-		--night-overlay-color: #000b;
 	}
 
 	.spike {

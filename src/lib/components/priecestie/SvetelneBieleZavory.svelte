@@ -147,47 +147,46 @@
 		</div>
 	</div>
 {/snippet}
-<div class="flex size-full items-end justify-between">
-	<div class="flex h-full items-end">
-		{@render priecestieSvetlo()}
-		<div class="gate-wrapper z-10 scale-90 pl-8">
+{#snippet gate()}
+	<div class="relative mb-10">
+		<div class="gate-wrapper absolute -z-10">
+			<div class={['gate', closed && 'closed']}>
+				<div class="back"></div>
+				<div class="back-inside"></div>
+				<div class="bottom">
+					<div class="back-half"></div>
+				</div>
+				<div class="top">
+					<div class="back-half"></div>
+				</div>
+			</div>
+		</div>
+		<div class="absolute size-28 -translate-1/3 rounded bg-gray-600"></div>
+		<div
+			class="trace-mask absolute -top-12 left-3.5 size-24 rounded-full border-8 border-gray-800"
+		></div>
+		<div class="gate-wrapper">
 			<div class={['gate', closed && 'closed']}>
 				<div class="front"></div>
 				<div class="front-inside"></div>
-				<div class="back"></div>
-				<div class="back-inside"></div>
 				<div class="left"></div>
 				<div class="left-inside"></div>
 				<div class="bottom">
-					<div class="front-cover"></div>
-					<div class="back-cover"></div>
+					<div class="front-half"></div>
 				</div>
 				<div class="top">
-					<div class="front-cover"></div>
-					<div class="back-cover"></div>
+					<div class="front-half"></div>
 				</div>
 			</div>
 		</div>
 	</div>
+{/snippet}
+<div class="flex size-full items-end justify-between">
 	<div class="flex h-full items-end">
-		<div class="gate-wrapper z-10 scale-90 pr-8">
-			<div class={['gate flipped', closed && 'closed']}>
-				<div class="front"></div>
-				<div class="front-inside"></div>
-				<div class="back"></div>
-				<div class="back-inside"></div>
-				<div class="left"></div>
-				<div class="left-inside"></div>
-				<div class="bottom">
-					<div class="front-cover"></div>
-					<div class="back-cover"></div>
-				</div>
-				<div class="top">
-					<div class="front-cover"></div>
-					<div class="back-cover"></div>
-				</div>
-			</div>
-		</div>
+		{@render priecestieSvetlo()}
+		{@render gate()}
+	</div>
+	<div class="flex h-full items-end">
 		{@render priecestieSvetlo()}
 	</div>
 </div>
@@ -205,7 +204,6 @@
 	}
 
 	.gate-wrapper {
-		margin-bottom: 100px;
 		perspective: 500px;
 	}
 
@@ -213,7 +211,7 @@
 		--base-transform: ;
 		transform-style: preserve-3d;
 		transform: var(--base-transform) rotateZ(-90deg);
-		transform-origin: left center;
+		transform-origin: 7.5% 50%;
 		transition: transform 5s;
 
 		&.closed {
@@ -233,12 +231,6 @@
 		div {
 			position: absolute;
 
-			color: black;
-
-			display: flex;
-			justify-content: center;
-			align-items: center;
-
 			background-size: cover;
 		}
 
@@ -253,25 +245,25 @@
 
 		.front-inside,
 		.back-inside {
-			width: 500px;
+			width: 450px;
 			height: 20px;
-			background: url('/elements/priecestie/rameno/arm-inside.svg') no-repeat left;
+			background-color: white;
 		}
 
 		.left {
 			width: 100px;
 			height: 20px;
-			background: url('/elements/priecestie/rameno/side-outside.svg') no-repeat center;
+			background: white;
 
 			transform: rotateY(-90deg) translateZ(50px);
 		}
 
 		.left-inside {
-			width: 100px;
+			width: 90px;
 			height: 20px;
-			background: url('/elements/priecestie/rameno/side-inside.svg') no-repeat center;
+			background: white;
 
-			transform: rotateY(-90deg) translateZ(45px);
+			transform: rotateY(-90deg) translateZ(40px);
 		}
 
 		.front {
@@ -283,25 +275,48 @@
 		}
 
 		.front-inside {
-			transform: translateZ(20px) rotateY(var(--front-back-angle));
+			transform: translateZ(22.5px) rotateY(var(--front-back-angle));
 		}
 
 		.back-inside {
-			transform: translateZ(-20px) rotateY(calc(var(--front-back-angle) * -1));
+			transform: translateZ(-22.5px) rotateY(calc(var(--front-back-angle) * -1));
+		}
+
+		.top,
+		.bottom {
+			position: relative;
+			width: 500px;
+			height: 100px;
+
+			* {
+				position: absolute;
+				width: 500px;
+				height: 50px;
+
+				background: url('/elements/priecestie/rameno/bottom.svg') no-repeat;
+				background-size: cover;
+			}
+
+			.back-half {
+				background-position: 0 0;
+			}
+
+			.front-half {
+				top: 50px;
+				background-position: 0 100%;
+			}
 		}
 
 		.bottom {
-			width: 500px;
-			height: 100px;
 			transform: rotateX(90deg) translateZ(30px);
-			background: #fffa;
 		}
 
 		.top {
-			width: 500px;
-			height: 100px;
-			transform: rotateX(90deg) translateZ(50px);
-			background: #ff0a;
+			transform: rotateX(90deg) translateZ(150px);
 		}
+	}
+
+	.trace-mask {
+		clip-path: polygon(0 50%, 50% 50%, 50% 100%, 0 100%, 0 50%);
 	}
 </style>

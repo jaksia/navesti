@@ -32,7 +32,7 @@
 
 <DayNight class="flex grow items-end justify-around">
 	<div class="aspect-1/5 h-2/5">
-		<div class="relative flex h-full w-full flex-col items-center">
+		<div class="relative flex size-full flex-col items-center">
 			<div class="absolute top-0 aspect-4/6 w-[200%] -translate-y-full">
 				<div class="p-shape bottom- absolute size-full bg-stone-950">
 					<div

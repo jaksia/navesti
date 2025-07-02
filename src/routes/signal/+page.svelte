@@ -39,8 +39,11 @@
 		if (navest === null) return 0;
 		if (navest == 'stoj' || navest == 'p_dovoleny') return 2;
 
-		if (options.repeating && opakovanie && navest == 'vystraha') return 2;
-		if (options.repeating && opakovanie && isSpeed(navest)) return 4;
+		if (options.repeating && opakovanie) {
+			if (navest == 'vystraha') return 2;
+			if (isSpeed(navest)) return 4;
+			if (navest == 'volno') return 3;
+		}
 
 		if (rychlost != null) return 4;
 
@@ -141,7 +144,7 @@
 						safetySignal == 4 ? 'bg-yellow-400' : 'bg-stone-900'
 					]}
 				>
-					<div class="h-3.5 w-3.5 transform rounded-full bg-stone-900"></div>
+					<div class="size-3.5 transform rounded-full bg-stone-900"></div>
 				</div>
 				<div
 					class={[

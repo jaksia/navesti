@@ -6,7 +6,7 @@
 
 	setInterval(() => {
 		bg = bg === 'bg-green-500' ? 'bg-yellow-400' : 'bg-green-500';
-	}, 1000);
+	}, 6000);
 </script>
 
 <div class={['relative h-screen w-screen', bg]}>

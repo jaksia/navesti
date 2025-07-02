@@ -17,7 +17,7 @@
 </script>
 
 <main
-	class="relative h-full w-full grow overflow-hidden"
+	class="relative size-full grow overflow-hidden"
 	style="{styleProp}; --anim-duration: {prefersReducedMotion.current ? 0 : duration}ms;"
 >
 	<div class={['day absolute inset-0 z-0', classProp]}>
@@ -158,7 +158,7 @@
 
 			border-radius: inherit;
 
-			background-color: var(--night-overlay-color, #0008);
+			background-color: var(--night-overlay-color, #000b);
 		}
 
 		:is(.pole, .n-label)::before {

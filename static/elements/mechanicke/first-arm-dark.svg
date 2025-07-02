@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="30">
+    <path d="M 0 0 H 180 V 30 h -142.5 v -2.5 a 12.5 12.5 0 0 0 0 -25
+             a 12.5 12.5 0 0 0 0 25 v 2.5 h -37.5 z" fill="red" />
+    <rect x="60" y="5" width="120" height="20" fill="white" />
+    <path d="M 0 0 H 180 V 30 h -142.5 v -2.5 a 12.5 12.5 0 0 0 0 -25
+             a 12.5 12.5 0 0 0 0 25 v 2.5 h -37.5 z" fill="#000a" />
+</svg>

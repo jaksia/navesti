@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { dev } from '$app/environment';
 	import { blinking, colors } from '$lib/consts/styles';
 	import {
 		customColorClasses,
@@ -24,6 +23,7 @@
 	import PredzvestVyhybky from '$lib/components/navestidla/signs/PredzvestVyhybky.svelte';
 	import PredzvestBezVyhybiek from '$lib/components/navestidla/signs/PredzvestBezVyhybiek.svelte';
 	import DayNightToggle from '$lib/components/DayNightToggle.svelte';
+	import { browser } from '$app/environment';
 
 	let mode: Mode = $state(Mode.BUILD);
 
@@ -84,7 +84,7 @@
 				pattern[lights.indexOf(CustomLightColor.WHITE)] = true;
 			}
 			if (privolavacia && privolavaciaAvailable) {
-				pattern[lights.indexOf(CustomLightColor.WHITE)] = blinking.slow as LightMode;
+				pattern[lights.indexOf(CustomLightColor.WHITE)] = 'slow';
 			}
 			activeLights = pattern;
 		}
@@ -152,7 +152,7 @@
 	}
 
 	function cycleLight(i: number) {
-		const list = [false, true, blinking.slow, blinking.fast] as LightMode[];
+		const list = [false, true, 'slow', 'fast'] as LightMode[];
 		const index = list.indexOf(activeLights[i]);
 		activeLights[i] = list[(index + 1) % list.length];
 	}
@@ -187,7 +187,7 @@
 			activeLights = lights.map(() => false);
 			let i = 0;
 			const interval = setInterval(() => {
-				activeLights[i] = blinking.slow as LightMode;
+				activeLights[i] = 'slow';
 				i += 1;
 				if (i >= lights.length) clearInterval(interval);
 			}, 1000 / lights.length);
@@ -358,7 +358,7 @@
 							'light mt-[6%] mb-[6%] aspect-square rounded-full',
 							activeLights[i] === false ? colors.transparent : customColorClasses[light],
 							mode === Mode.MANUAL ? 'cursor-pointer' : '',
-							typeof activeLights[i] === 'string' ? activeLights[i] : ''
+							typeof activeLights[i] === 'string' ? blinking[activeLights[i]] : ''
 						]}
 						draggable="true"
 						ondragstart={() => (dragData = `light;${light};${i}`)}

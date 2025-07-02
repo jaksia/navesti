@@ -2,7 +2,7 @@
 </script>
 
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-<div class="mx-auto flex flex-wrap items-center justify-center gap-4">
+<div class="mx-auto flex flex-wrap items-center justify-center gap-4 overflow-auto">
 	<div class="card bg-base-200 w-96 shadow-sm">
 		<figure class="!diff aspect-4/3" style="align-items: unset;">
 			<div class="diff-item-1" role="img">

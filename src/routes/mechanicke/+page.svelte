@@ -21,7 +21,6 @@
 
 	let armRotation = $state(rotations.level);
 	let secondArmRotation = $state(rotations.up);
-	let yellowRotation = $state(rotations.level);
 	let lightColor = $state(colors.red);
 	let secondLightColor = $state(blank);
 
@@ -29,24 +28,23 @@
 
 	$effect(() => {
 		if (navest == 'vystraha' && !yellowArm) navest = 'stoj';
+		if (navest == 'volno' && yellowArm) navest = 'vystraha';
 		if (navest == '40' && !secondArm) navest = 'volno';
 
 		if (navest == 'volno') {
-			yellowRotation = armRotation = rotations.angle;
+			armRotation = rotations.angle;
 			secondArmRotation = rotations.up;
 			(lightColor = colors.green), (secondLightColor = blank);
 		} else if (navest == 'stoj') {
-			yellowRotation = armRotation = rotations.level;
+			armRotation = rotations.level;
 			secondArmRotation = rotations.up;
 			(lightColor = colors.red), (secondLightColor = blank);
 		} else if (navest == 'vystraha') {
 			armRotation = rotations.angle;
 			secondArmRotation = rotations.up;
-			yellowRotation = rotations.level;
 			(lightColor = colors.yellow), (secondLightColor = blank);
 		} else if (navest == '40') {
 			armRotation = secondArmRotation = rotations.angle;
-			yellowRotation = rotations.level;
 			lightColor = secondLightColor = yellowArm ? colors.yellow : colors.green;
 		}
 
@@ -75,65 +73,93 @@
 			class="absolute top-0 left-1/2 transition-transform duration-1000 ease-in-out"
 			style="transform: {predzvest ? '' : 'rotate3d(1,0,0,88deg)'};"
 		>
-			<div
-				class="arm absolute size-56 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white"
-			></div>
-			<div
-				class="arm absolute size-48 -translate-x-1/2 -translate-y-1/2 rounded-full border border-black bg-yellow-300"
-			></div>
+			<div class="absolute size-56 -translate-x-1/2 -translate-y-1/2 rounded-full">
+				<img
+					src="/elements/mechanicke/predzvest.svg"
+					alt="Predzvest"
+					class="size-full dark:hidden"
+				/>
+				<img
+					src="/elements/mechanicke/predzvest-dark.svg"
+					alt="Predzvest"
+					class="hidden size-full dark:block"
+				/>
+			</div>
 		</div>
 		<div class="absolute top-1/2 aspect-square w-[110%]">
 			<Label label="Pr{label}" labelStyleClass="predzvest" />
 		</div>
 	</div>
-	<div class="pole hlavne_jazda relative h-4/5 w-4">
+	<div class="pole hlavne_jazda no-darken relative h-4/5 w-4">
 		<div
-			class={['light absolute left-[150%] ml-1 size-8 -translate-y-1/2 rounded-full', lightColor]}
-			style="top: 5.5rem;"
+			class={['light absolute ml-1 size-8 -translate-y-1/2 rounded-full', lightColor]}
+			style="top: 3rem; left: 1.755rem;"
 		></div>
 		{#if secondArm}
 			<div
-				class={[
-					'light absolute left-[150%] ml-1 size-8 -translate-y-1/2 rounded-full',
-					secondLightColor
-				]}
-				style="top: 15.5rem;"
+				class={['light absolute ml-1 size-8 -translate-y-1/2 rounded-full', secondLightColor]}
+				style="top: 13rem; left: 1.755rem;"
 				transition:fade={{ duration: 500 }}
 			></div>
 		{/if}
+
+		<div
+			class={['absolute left-1/2 z-10 transition-transform duration-1000 ease-in-out', armRotation]}
+			style="top: {3}rem;"
+		>
+			<div class="absolute aspect-6/1 w-64 -translate-x-[5%] -translate-y-1/2">
+				<img
+					src="/elements/mechanicke/first-arm.svg"
+					alt="Hlavné rameno"
+					class="h-full w-full dark:hidden"
+				/>
+				<img
+					src="/elements/mechanicke/first-arm-dark.svg"
+					alt="Hlavné rameno"
+					class="hidden h-full w-full dark:block"
+				/>
+			</div>
+		</div>
 		{#if yellowArm}
 			<div
-				class={['absolute left-1/2 transition-transform duration-1000 ease-in-out', yellowRotation]}
+				class="absolute left-1/2 transition-transform duration-1000 ease-in-out"
 				style="top: 3rem;"
 				transition:fade={{ duration: 500 }}
 			>
-				<div
-					class="arm absolute aspect-4/1 w-48 -translate-x-[15%] -translate-y-[50%] bg-yellow-300"
-				>
-					<div class="absolute top-0 left-[30%] h-1/5 w-[70%] bg-white"></div>
-					<div class="absolute top-[80%] left-[30%] h-1/5 w-[70%] bg-white"></div>
+				<div class="absolute aspect-6/1 w-64 -translate-x-[5%] -translate-y-1/2">
+					<img
+						src="/elements/mechanicke/yellow-arm.svg"
+						alt="Žlté rameno"
+						class="h-full w-full dark:hidden"
+					/>
+					<img
+						src="/elements/mechanicke/yellow-arm-dark.svg"
+						alt="Žlté rameno"
+						class="hidden h-full w-full dark:block"
+					/>
 				</div>
 			</div>
 		{/if}
-		<div
-			class={['absolute left-1/2 transition-transform duration-1000 ease-in-out', armRotation]}
-			style="top: {3}rem;"
-		>
-			<div class="arm absolute aspect-4/1 w-48 -translate-x-[15%] -translate-y-[50%] bg-red-600">
-				<div class="absolute top-1/3 left-[30%] h-1/3 w-[70%] bg-white"></div>
-			</div>
-		</div>
 		{#if secondArm}
 			<div
 				class={[
-					'absolute left-1/2 transition-transform duration-1000 ease-in-out',
+					'absolute left-1/2 z-10 transition-transform duration-1000 ease-in-out',
 					secondArmRotation
 				]}
-				style="top: {13}rem;"
+				style="top: 13rem;"
 				transition:fade={{ duration: 500 }}
 			>
-				<div class="arm absolute aspect-4/1 w-48 -translate-x-[15%] -translate-y-[50%] bg-red-600">
-					<div class="absolute top-1/3 left-[30%] h-1/3 w-[70%] bg-white"></div>
+				<div class="absolute aspect-6/1 w-64 -translate-x-[15%] -translate-y-1/2">
+					<img
+						src="/elements/mechanicke/second-arm.svg"
+						alt="Druhé rameno"
+						class="size-full dark:hidden"
+					/>
+					<img
+						src="/elements/mechanicke/second-arm-dark.svg"
+						alt="Druhé rameno"
+						class="hidden size-full dark:block"
+					/>
 				</div>
 			</div>
 		{/if}
@@ -159,7 +185,7 @@
 		<span>Návesť</span>
 		<select id="navest" bind:value={navest} class="select">
 			<option value="stoj">{nazvyNavesti['stoj']}</option>
-			<option value="volno">{nazvyNavesti['volno']}</option>
+			<option value="volno" disabled={yellowArm}>{nazvyNavesti['volno']}</option>
 			<option value="vystraha" disabled={!yellowArm}>{nazvyNavesti['vystraha']}</option>
 			<option value="40" disabled={!secondArm}>Rýchlosť 40 km/h a Výstraha </option>
 		</select>
@@ -170,6 +196,10 @@
 </div>
 
 <style lang="scss">
+	// .arm {
+	// 	@apply absolute aspect-6/1 w-64 -translate-x-[5%] -translate-y-1/2;
+	// }
+
 	.pole {
 		&.hlavne_jazda {
 			background-image: linear-gradient(

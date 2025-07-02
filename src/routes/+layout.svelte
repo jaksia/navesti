@@ -39,3 +39,8 @@
 		</button>
 	</div>
 {/if}
+
+<div class="absolute bottom-0 left-0 m-2 text-sm text-gray-500/50 select-none">
+	<a href="https://github.com/jaksia/navesti" class="link" target="_blank">GitHub</a><br />
+	&copy; {new Date().getFullYear()} Jakub Šiagi<br />
+</div>

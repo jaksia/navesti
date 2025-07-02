@@ -10,6 +10,7 @@ export enum CustomLightColor {
     WHITE = "white"
 }
 
+
 export const customColorClasses = {
     [CustomLightColor.BLUE]: colors.blue,
     [CustomLightColor.RED]: colors.red,
@@ -71,9 +72,8 @@ export function generatePattern(lights: CustomLightColor[], signal: Navest): Lig
         out[yellowIndex] = true;
     }
 
-    // Types match, but TS doesn't realize it
-    if([40, 80, 'odchod_dovoluje'].includes(signal as never)) out[out.indexOf(true)] = blinking.slow as never;
-    if([60, 100].includes(signal as never)) out[out.indexOf(true)] = blinking.fast as never;
+    if([40, 80, 'odchod_dovoluje'].includes(signal)) out[out.indexOf(true)] = 'slow';
+    if([60, 100, ''].includes(signal)) out[out.indexOf(true)] = 'fast';
 
     return out;
 }

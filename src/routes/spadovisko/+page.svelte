@@ -165,9 +165,9 @@
 					</td>
 				</tr>
 				<tr>
-					<td class="text-center font-bold text-stone-900">1. koľaj</td>
+					<td class="text-center font-bold text-stone-900 dark:text-stone-300">1. koľaj</td>
 					<td></td>
-					<td class="text-center font-bold text-stone-900">2. koľaj</td>
+					<td class="text-center font-bold text-stone-900 dark:text-stone-300">2. koľaj</td>
 					<td></td>
 				</tr>
 			</tbody>

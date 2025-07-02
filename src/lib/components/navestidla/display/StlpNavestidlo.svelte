@@ -16,7 +16,7 @@
 	let labelSpacerHeight = $state(0);
 </script>
 
-<div class="relative flex h-full w-full flex-col items-center">
+<div class="relative flex size-full flex-col items-center">
 	{#if renderBlank}
 		<div class="lightsContainer z-10 rounded-full bg-stone-900">
 			{@render renderBlankLights()}
