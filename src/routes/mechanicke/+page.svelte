@@ -27,22 +27,22 @@
 	let predzvest = $state(true);
 
 	$effect(() => {
-		if (navest == 'vystraha' && !yellowArm) navest = 'stoj';
+		if (navest == 'vystraha' && !yellowArm) navest = 'volno';
 		if (navest == 'volno' && yellowArm) navest = 'vystraha';
 		if (navest == '40' && !secondArm) navest = 'volno';
 
 		if (navest == 'volno') {
 			armRotation = rotations.angle;
 			secondArmRotation = rotations.up;
-			(lightColor = colors.green), (secondLightColor = blank);
+			((lightColor = colors.green), (secondLightColor = blank));
 		} else if (navest == 'stoj') {
 			armRotation = rotations.level;
 			secondArmRotation = rotations.up;
-			(lightColor = colors.red), (secondLightColor = blank);
+			((lightColor = colors.red), (secondLightColor = blank));
 		} else if (navest == 'vystraha') {
 			armRotation = rotations.angle;
 			secondArmRotation = rotations.up;
-			(lightColor = colors.yellow), (secondLightColor = blank);
+			((lightColor = colors.yellow), (secondLightColor = blank));
 		} else if (navest == '40') {
 			armRotation = secondArmRotation = rotations.angle;
 			lightColor = secondLightColor = yellowArm ? colors.yellow : colors.green;
@@ -178,7 +178,7 @@
 		</label>
 		<label for="yellowArm" class="fieldset-label">
 			<input type="checkbox" id="yellowArm" bind:checked={yellowArm} class="checkbox checkbox-sm" />
-			Žlté rameno
+			Žlté rameno (pevné)
 		</label>
 	</fieldset>
 	<label for="navest" class="floating-label">
@@ -196,10 +196,6 @@
 </div>
 
 <style lang="scss">
-	// .arm {
-	// 	@apply absolute aspect-6/1 w-64 -translate-x-[5%] -translate-y-1/2;
-	// }
-
 	.pole {
 		&.hlavne_jazda {
 			background-image: linear-gradient(

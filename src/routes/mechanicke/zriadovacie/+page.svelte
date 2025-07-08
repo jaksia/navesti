@@ -12,16 +12,18 @@
 	let vyckavacieSvetla = $state(false);
 
 	function handleKeyPress(event: KeyboardEvent) {
+		let cancel = true;
 		if (event.key === '2') {
 			posunDovoleny = !posunDovoleny;
 		} else if (event.key === '3') {
 			kolajovaVaha = !kolajovaVaha;
-		} else if (event.key === '4' || event.key === '$') {
-			if (event.shiftKey) {
-				vyckavacieSvetla = !vyckavacieSvetla;
-			} else {
-				vyckavacieNavestidlo = !vyckavacieNavestidlo;
-			}
+		} else if (event.key === '4') {
+			vyckavacieNavestidlo = !vyckavacieNavestidlo;
+		} else cancel = false;
+
+		if (cancel) {
+			event.preventDefault();
+			event.stopPropagation();
 		}
 	}
 </script>

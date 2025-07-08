@@ -21,17 +21,13 @@
 	style="{styleProp}; --anim-duration: {prefersReducedMotion.current ? 0 : duration}ms;"
 >
 	<div class={['day absolute inset-0 z-0', classProp]}>
-		<div class="day-bg absolute inset-0 -z-20"></div>
+		<div class="day-bg absolute inset-0"></div>
 		{@render children()}
 	</div>
 
 	<div class={['night absolute inset-0 z-0', classProp, !store.day && 'show']}>
-		<div
-			class="night-bg absolute inset-0 -z-20 bg-radial-[at_95%_5%] from-gray-600 to-gray-800 to-20%"
-		></div>
-		<div
-			class="moon absolute top-[5%] left-[95%] -z-10 size-16 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/90 drop-shadow-2xl"
-		></div>
+		<div class="night-bg absolute inset-0"></div>
+		<div class="moon bg-white/90 drop-shadow-2xl"></div>
 		{@render children()}
 	</div>
 </main>
@@ -78,7 +74,15 @@
 		transition: --moon-scale calc(var(--anim-duration) / 2);
 		transition-delay: calc(var(--anim-duration) / 2);
 
-		transform: scale(var(--moon-scale));
+		transform: translate(-50%, -50%) scale(var(--moon-scale));
+
+		position: absolute;
+		top: 5%;
+		left: 95%;
+		z-index: -10;
+		width: 4rem;
+		aspect-ratio: 1;
+		border-radius: 4rem;
 	}
 
 	.day-bg {
@@ -90,103 +94,17 @@
 		);
 	}
 
+	.night-bg {
+		background-image: radial-gradient(
+			at 95% 5%,
+			var(--color-gray-600) 0%,
+			var(--color-gray-800) 20%
+		);
+	}
+
 	.day-bg,
 	.night-bg {
 		pointer-events: none;
-	}
-
-	:global(.light) {
-		transition: all var(--tw-duration, 300ms);
-	}
-
-	:global .night {
-		.light {
-			--shadow-size: 30px;
-			--shadow-color: var(--base-color);
-
-			&.bg-stone-800 {
-				z-index: -1;
-			}
-
-			&.letter {
-				--shadow-size: 20px;
-				--third-shadow-color: color-mix(in oklab, var(--shadow-color) 50%, transparent);
-
-				&.text-white {
-					--base-color: var(--color-white);
-				}
-			}
-
-			&.stripe {
-				--shadow-size: 20px;
-				--shadow-color: color-mix(in oklab, var(--base-color) 60%, transparent);
-			}
-
-			filter: drop-shadow(0 0 calc(var(--shadow-size) * 1.5) var(--shadow-color))
-				drop-shadow(0 0 var(--shadow-size) var(--shadow-color))
-				drop-shadow(0 0 var(--shadow-size) var(--third-shadow-color, transparent))
-				var(--additional-filter,);
-
-			&.bg-yellow-400 {
-				--base-color: color-mix(in oklab, var(--color-yellow-400) 75%, transparent);
-				--third-shadow-color: color-mix(in oklab, var(--shadow-color) 50%, transparent);
-			}
-			&.bg-green-600 {
-				--base-color: var(--color-green-600);
-				--third-shadow-color: color-mix(in oklab, var(--shadow-color) 60%, transparent);
-			}
-			&.bg-red-600 {
-				--base-color: var(--color-red-600);
-				--third-shadow-color: var(--shadow-color);
-			}
-			&.bg-blue-500 {
-				--shadow-color: var(--color-blue-500);
-				--third-shadow-color: var(--shadow-color);
-			}
-			&.bg-white {
-				--shadow-color: color-mix(in oklab, var(--color-white) 90%, transparent);
-			}
-		}
-
-		.arm::after {
-			content: '';
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-
-			border-radius: inherit;
-
-			background-color: var(--night-overlay-color, #000b);
-		}
-
-		:is(.pole, .n-label)::before {
-			content: '';
-			position: absolute;
-			top: calc(var(--label-border-size, 0) * -1);
-			left: calc(var(--label-border-size, 0) * -1);
-			min-width: 100%;
-			min-height: 100%;
-			width: calc(100% + var(--label-border-size, 0) * 2);
-			height: calc(100% + var(--label-border-size, 0) * 2);
-
-			border-radius: inherit;
-			outline: inherit;
-
-			background-color: var(--night-overlay-color, #0008);
-			outline-color: var(--night-overlay-color, #0008);
-		}
-
-		.pole .sign::after {
-			content: '';
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-
-			background-color: var(--night-overlay-color, #0008);
-		}
+		z-index: -20;
 	}
 </style>

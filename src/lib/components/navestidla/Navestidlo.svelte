@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { colors } from '$lib/consts/styles';
-	import type { Component, Snippet } from 'svelte';
+	import { type Component, type Snippet } from 'svelte';
 	import Label from './parts/Label.svelte';
 	import StlpNavestidlo from './display/StlpNavestidlo.svelte';
 	import LavkaNavestidlo from './display/LavkaNavestidlo.svelte';
@@ -21,7 +21,6 @@
 		| 'zriadovacie'
 		| 'predzvest'
 		| '';
-	const flippedLetters = ['U'];
 
 	let {
 		lightCount = 0,
@@ -59,15 +58,6 @@
 		displayMode?: DisplayMode;
 	} = $props();
 
-	$effect(() => {
-		if (speed !== undefined && !speedIndication) {
-			console.warn('Speed indication is disabled, but speed is set.');
-		}
-		if (activeLights.length !== 0 && activeLights.length < lightCount) {
-			console.warn('Light count is greater than supplied active lights.');
-		}
-	});
-
 	const renderBlank = $derived(!renderLightsOuter || renderBlankLightsOuter ? true : false);
 	const NavestidloComponent = $derived(components[displayMode]);
 
@@ -89,29 +79,27 @@
 				{@render renderBlankLightsOuter()}
 			{:else}
 				{#each Array.from({ length: lightCount }) as _, i}
-					<div class={['light aspect-square rounded-full', colors.blank]}></div>
+					<div class={['light', colors.blank]}></div>
 				{/each}
 				{#if speedIndication}
-					<div class={['light aspect-square rounded-full', colors.blank]}></div>
-					<div class={['light stripe !m-0 aspect-6/1', colors.blank]}></div>
-					<div class="!m-0 aspect-7/1"></div>
-					<div class={['light stripe !m-0 aspect-6/1', colors.blank]}></div>
+					<div class={['light', colors.blank]}></div>
+					<div class={['light stripe !m-0', colors.blank]}></div>
+					<div class="stripe-gap !m-0"></div>
+					<div class={['light stripe !m-0', colors.blank]}></div>
 					<div></div>
 				{/if}
 			{/if}
 			{#each Object.entries(letters) as [letter, active]}
-				<div
-					class="light relative aspect-square rounded-full"
-					bind:clientHeight={letterContainerHeight}
-				>
+				<div class="light relative" bind:clientHeight={letterContainerHeight}>
 					<div
-						class={[
-							'light letter absolute top-1/2 left-1/2 aspect-square -translate-1/2 rounded-full font-black text-stone-800',
-							flippedLetters.includes(letter) && 'rotate-180'
-						]}
+						class={['light letter text-stone-850', letter.endsWith('_') && 'flipped']}
 						style="font-size: {letterContainerHeight}px;"
 					>
-						{letter}
+						{#if letter.endsWith('_')}
+							{letter.slice(0, -1)}
+						{:else}
+							{letter}
+						{/if}
 					</div>
 				</div>
 			{/each}
@@ -121,17 +109,13 @@
 				{@render renderLightsOuter()}
 			{:else}
 				{#each Array.from({ length: lightCount }) as _, i}
-					<div
-						class={['light aspect-square rounded-full', activeLights[i] || colors.transparent]}
-					></div>
+					<div class={['light', activeLights[i] || colors.transparent]}></div>
 				{/each}
 				{#if speedIndication}
-					<div
-						class={['light aspect-square rounded-full', speed ? colors.yellow : colors.transparent]}
-					></div>
+					<div class={['light', speed ? colors.yellow : colors.transparent]}></div>
 					<div
 						class={[
-							'light stripe !m-0 aspect-6/1',
+							'light stripe !m-0',
 							speed === 60
 								? colors.yellow
 								: [80, 100].includes(speed ?? -1)
@@ -139,26 +123,27 @@
 									: colors.transparent
 						]}
 					></div>
-					<div class="stripe !m-0 aspect-7/1"></div>
+					<div class="stripe-gap !m-0"></div>
 					<div
-						class={[
-							'light stripe !m-0 aspect-6/1',
-							speed === 100 ? colors.green : colors.transparent
-						]}
+						class={['light stripe !m-0', speed === 100 ? colors.green : colors.transparent]}
 					></div>
 					<div></div>
 				{/if}
 				{#each Object.entries(letters) as [letter, active]}
-					<div class="light relative aspect-square">
+					<div class="light relative">
 						<div
 							class={[
-								'light letter absolute top-1/2 left-1/2 aspect-square -translate-1/2 rounded-full font-black',
-								active ? 'text-white' : 'text-transparent',
-								flippedLetters.includes(letter) && 'rotate-180'
+								'light letter',
+								active ? 'text-n-white' : 'text-transparent',
+								letter.endsWith('_') && 'flipped'
 							]}
 							style="font-size: {letterContainerHeight}px;"
 						>
-							{letter}
+							{#if letter.endsWith('_')}
+								{letter.slice(0, -1)}
+							{:else}
+								{letter}
+							{/if}
 						</div>
 					</div>
 				{/each}

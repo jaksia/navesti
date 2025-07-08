@@ -1,10 +1,8 @@
 @import 'tailwindcss';
 
-@plugin '@tailwindcss/container-queries';
 @plugin 'daisyui' {
   themes: custom --default;
-};
-
+}
 
 @plugin "daisyui/theme" {
   name: "custom";
@@ -41,13 +39,9 @@
   --noise: 0;
 }
 
-
 @custom-variant dark (&:where(.night, .night *));
 
 @theme {
-  --animate-blink: blink 1s infinite;
-  --animate-blink-fast: blink 0.5s infinite;
-
   --text-2xs: 0.625rem;
   --text-2_5xs: 0.5875rem;
   --text-3xs: 0.5rem;
@@ -58,15 +52,27 @@
   --height-18: 4.5rem;
 
   --color-stone-850: oklch(0.242 0.007 45.171);
+}
 
-  @keyframes blink {
-    0%,
-    100% {
-      opacity: 0;
-    }
-    50% {
-      opacity: 1;
-    }
+@theme static {
+  --color-n-yellow: var(--color-yellow-400);
+  --color-n-green: var(--color-green-600);
+  --color-n-red: var(--color-red-600);
+  --color-n-blue: var(--color-blue-500);
+  --color-n-white: var(--color-white);
+  --color-n-blank: var(--color-stone-800);
+
+  --animate-blink: blink 1s infinite;
+  --animate-blink-fast: blink 0.5s infinite;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
   }
 }
 
@@ -85,5 +91,127 @@
   ::backdrop,
   ::file-selector-button {
     border-color: var(--color-gray-200, currentColor);
+  }
+}
+
+
+.light {
+  --tw-duration: 300ms;
+  @apply transition-all;
+}
+
+.light:not(.stripe):not(.letter) {
+  @apply aspect-square rounded-full;
+}
+
+.light.stripe {
+  @apply aspect-6/1;
+}
+
+.light.letter {
+  @apply absolute top-1/2 left-1/2 -translate-1/2 font-black;
+}
+
+.stripe-gap {
+  @apply aspect-7/1;
+}
+
+.night {
+
+  /* Styles for light spread in night mode */
+  .light {
+    --shadow-size: 30px;
+    --shadow-color: var(--base-color);
+
+    filter: drop-shadow(0 0 calc(var(--shadow-size) * 1.5) var(--shadow-color))
+      drop-shadow(0 0 var(--shadow-size) var(--shadow-color))
+      drop-shadow(0 0 var(--shadow-size) var(--third-shadow-color, transparent))
+      var(--additional-filter,);
+
+    /* Changes for letters and stripes */
+
+    &.letter {
+      --shadow-size: 15px;
+      --third-shadow-color: color-mix(in oklab, var(--shadow-color) 45%, transparent);
+
+      &.text-n-white {
+        --base-color: color-mix(in oklab, var(--color-n-white) 80%, transparent);
+      }
+
+      &.flipped {
+        scale: 1 -1;
+      }
+    }
+
+    &.stripe {
+      --shadow-size: 20px;
+      --shadow-color: color-mix(in oklab, var(--base-color) 60%, transparent);
+    }
+
+    /* Shadow colors for specific backgrounds */
+
+    &.bg-n-blank {
+      z-index: -1;
+    }
+    &.bg-n-yellow {
+      --base-color: color-mix(in oklab, var(--color-n-yellow) 75%, transparent);
+      --third-shadow-color: color-mix(in oklab, var(--shadow-color) 50%, transparent);
+    }
+    &.bg-n-green {
+      --base-color: var(--color-n-green);
+      --third-shadow-color: color-mix(in oklab, var(--shadow-color) 60%, transparent);
+    }
+    &.bg-n-red {
+      --base-color: var(--color-n-red);
+      --third-shadow-color: var(--shadow-color);
+    }
+    &.bg-n-blue {
+      --shadow-color: var(--color-n-blue);
+      --third-shadow-color: var(--shadow-color);
+    }
+    &.bg-n-white {
+      --shadow-color: color-mix(in oklab, var(--color-n-white) 90%, transparent);
+    }
+  }
+
+  .arm::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    border-radius: inherit;
+
+    background-color: var(--night-overlay-color, #000b);
+  }
+
+  .pole::before, .n-label::before {
+    content: '';
+    position: absolute;
+    top: calc(var(--label-border-size, 0) * -1);
+    left: calc(var(--label-border-size, 0) * -1);
+    min-width: 100%;
+    min-height: 100%;
+    width: calc(100% + var(--label-border-size, 0) * 2);
+    height: calc(100% + var(--label-border-size, 0) * 2);
+
+    border-radius: inherit;
+    outline: inherit;
+
+    background-color: var(--night-overlay-color, #0008);
+    outline-color: var(--night-overlay-color, #0008);
+  }
+
+  .pole .sign::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    background-color: var(--night-overlay-color, #0008);
   }
 }

@@ -21,10 +21,10 @@ export const spadNavestneZnaky: { [key in TypSpadNavestidla]: { [key in RezimSpa
         [RezimSpadoviska.PRISUN]:     [null,  RED,  null],
     },
     opakovacie: {
-        [RezimSpadoviska.ZAKAZANE]:   [null, BLUE, null],
+        [RezimSpadoviska.ZAKAZANE]:   [null,  BLUE, null],
         [RezimSpadoviska.POMALY]:     [WHITE, null, WHITE],
         [RezimSpadoviska.RYCHLEJSIE]: [WHITE, null, null],
-        [RezimSpadoviska.SPAT]:       [null, BLUE,  null],
+        [RezimSpadoviska.SPAT]:       [null,  BLUE, null],
         [RezimSpadoviska.PRISUN]:     [BLINK, null, BLINK]
     },
     hlavne: {
@@ -35,10 +35,10 @@ export const spadNavestneZnaky: { [key in TypSpadNavestidla]: { [key in RezimSpa
         [RezimSpadoviska.PRISUN]:     [BLINK, null, BLINK]
     },
     zriadovacie: {
-        [RezimSpadoviska.ZAKAZANE]:   [null, BLUE, null],
+        [RezimSpadoviska.ZAKAZANE]:   [null,  BLUE, null],
         [RezimSpadoviska.POMALY]:     [WHITE, null, WHITE],
         [RezimSpadoviska.RYCHLEJSIE]: [WHITE, null, null],
-        [RezimSpadoviska.SPAT]:       [null, BLUE,  null],
+        [RezimSpadoviska.SPAT]:       [null,  BLUE, null],
         [RezimSpadoviska.PRISUN]:     [BLINK, null, BLINK]
     },
 };
