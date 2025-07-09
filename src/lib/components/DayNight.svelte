@@ -13,8 +13,32 @@
 		children: Snippet;
 		class?: string;
 		style?: string;
+		id?: string;
 		duration?: number;
 	} = $props();
+
+	let showDay = $state(true);
+	let showNight = $state(true);
+	let dayCopy = $state(store.day);
+
+	let timeout: number | null = null;
+
+	$effect(() => {
+		store.day; // Needed for reactivity to trigger
+
+		showDay = true;
+		showNight = true;
+		setTimeout(() => {
+			dayCopy = store.day;
+		}, 0);
+
+		if (timeout) clearTimeout(timeout);
+
+		timeout = setTimeout(() => {
+			showDay = store.day;
+			showNight = !store.day;
+		}, duration * 2);
+	});
 </script>
 
 <main
@@ -22,16 +46,19 @@
 	{id}
 	style="{styleProp}; --anim-duration: {prefersReducedMotion.current ? 0 : duration}ms;"
 >
-	<div class={['day absolute inset-0 z-0', classProp]}>
-		<div class="day-bg absolute inset-0"></div>
-		{@render children()}
-	</div>
-
-	<div class={['night absolute inset-0 z-0', classProp, !store.day && 'show']}>
-		<div class="night-bg absolute inset-0"></div>
-		<div class="moon bg-white/90 drop-shadow-2xl"></div>
-		{@render children()}
-	</div>
+	{#if showDay}
+		<div class={['day absolute inset-0 z-0', classProp]}>
+			<div class="day-bg absolute inset-0"></div>
+			{@render children()}
+		</div>
+	{/if}
+	{#if showNight}
+		<div class={['night absolute inset-0 z-0', classProp, !dayCopy && 'show']}>
+			<div class="night-bg absolute inset-0"></div>
+			<div class="moon bg-white/90 drop-shadow-2xl"></div>
+			{@render children()}
+		</div>
+	{/if}
 </main>
 
 <style lang="scss">
