@@ -4,22 +4,18 @@
 	import DayNightToggle from '$lib/components/DayNightToggle.svelte';
 	import Navestidlo from '$lib/components/navestidla/Navestidlo.svelte';
 
-	const NUM_TRACKS = 2;
-
 	let track = $state(1);
-	let mode: RezimSpadoviska = $state(RezimSpadoviska.ZAKAZANE);
+	let mode = $state(RezimSpadoviska.ZAKAZANE);
 
-	let letters = $derived({
+	const letters = $derived({
 		U_: ![RezimSpadoviska.SPAT, RezimSpadoviska.ZAKAZANE].includes(mode),
-		Z: mode == RezimSpadoviska.SPAT
+		Z: [RezimSpadoviska.SPAT].includes(mode)
 	});
 
-	let trackMode = $derived(
-		Array.from({ length: NUM_TRACKS }).reduce((acc: Record<number, RezimSpadoviska>, _, i) => {
-			acc[i + 1] = i + 1 === track ? mode : RezimSpadoviska.ZAKAZANE;
-			return acc;
-		}, {})
-	);
+	const trackMode = $derived({
+		1: track == 1 ? mode : RezimSpadoviska.ZAKAZANE,
+		2: track == 2 ? mode : RezimSpadoviska.ZAKAZANE
+	});
 </script>
 
 {#snippet singleRail()}
@@ -43,11 +39,9 @@
 <svelte:head>
 	<title>Spádovisko</title>
 </svelte:head>
-<DayNight class="flex">
+<DayNight class="flex" id="spadovisko">
 	<table class="m-auto">
-		<thead>
-			<tr class="*:w-20"><th></th><th></th><th></th><th></th></tr>
-		</thead>
+		<thead><tr class="*:w-20"><th></th><th></th><th></th><th></th></tr></thead>
 		<tbody>
 			{@render singleRail()}
 			<tr>
@@ -57,7 +51,7 @@
 					<div class="spad-navestidlo">
 						<Navestidlo
 							lightCount={3}
-							letters={{ Z: mode == RezimSpadoviska.SPAT }}
+							letters={{ Z: letters.Z }}
 							activeLights={spadNavestneZnaky['kmenove'][mode]}
 							label="Sp101"
 							poleStyleClass="zriadovacie"
@@ -167,18 +161,6 @@
 </div>
 
 <style lang="scss">
-	:global(.light:not(.letter)) {
-		--shadow-size: 15px !important;
-	}
-
-	:global(.light.letter) {
-		--shadow-size: 10px !important;
-	}
-
-	:global(.day-bg) {
-		background: var(--color-green-300) !important;
-	}
-
 	.spad-navestidlo {
 		position: absolute;
 		bottom: 0;
@@ -186,5 +168,19 @@
 		transform: translateX(-50%);
 		aspect-ratio: 1 / 3;
 		height: 100%;
+	}
+
+	:global #spadovisko {
+		.light:not(.letter) {
+			--shadow-size: 15px !important;
+		}
+
+		.light.letter {
+			--shadow-size: 10px !important;
+		}
+
+		.day-bg {
+			background: var(--color-green-300) !important;
+		}
 	}
 </style>

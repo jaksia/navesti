@@ -231,7 +231,7 @@
 						{#each trainPositions as trainpos, i}
 							<div
 								class={[
-									'absolute top-0 z-10 w-[150%] -translate-y-1/3',
+									'absolute z-10 w-[150%] -translate-y-1/3',
 									waitingTrains[i] !== null ? 'animate-pulse' : ''
 								]}
 								style="left: {trainpos}px;"

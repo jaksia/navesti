@@ -26,7 +26,7 @@
 >
 	<div
 		class={[
-			'absolute top-0 h-full w-3/5 origin-[center_left] bg-stone-300 px-[10%] py-[7%]',
+			'absolute h-full w-3/5 origin-[center_left] bg-stone-300 px-[10%] py-[7%]',
 			rotations[direction],
 			left ? 'left-3/5' : 'left-2/5'
 		]}

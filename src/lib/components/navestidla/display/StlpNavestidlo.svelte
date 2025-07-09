@@ -37,14 +37,14 @@
 	{/if}
 	<div class={['pole relative -z-10 h-full w-1/4', poleStyleClass]}>
 		<div
-			class="signs absolute left-1/2 w-full"
+			class="signs absolute left-1/2 w-full *:-translate-x-1/2"
 			style="top: {label
 				? `calc(${labelHeight - labelSpacerHeight}px + var(--label-outline-size) + var(--label-border-size))`
 				: '0'}"
 		>
 			{@render renderTopSigns?.()}
 		</div>
-		<div class="signs absolute bottom-0 left-1/2 -translate-x-1/2">
+		<div class="signs absolute bottom-0 left-1/2 w-full *:-translate-x-1/2">
 			{@render renderBottomSigns?.()}
 		</div>
 	</div>

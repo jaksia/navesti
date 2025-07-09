@@ -25,10 +25,6 @@
 
 <style lang="scss">
 	.n-label {
-		--label-outline-size: 1px;
-		--label-border-size: 3px;
-		--label-py: 75%;
-
 		position: absolute;
 		left: 50%;
 		top: 0;

@@ -77,7 +77,7 @@
 {#snippet priecestieSvetlo()}
 	<div class="pole priecestie relative h-2/5 w-4">
 		<div
-			class="absolute top-0 left-1/2 flex aspect-square w-30 -translate-x-1/2 -translate-y-full flex-col bg-stone-950"
+			class="absolute left-1/2 flex aspect-square w-30 -translate-x-1/2 -translate-y-full flex-col bg-stone-950"
 		>
 			<div
 				class="sign absolute -top-1 -left-[5%] w-[110%] -translate-y-full rounded border-3 border-black bg-white px-1"

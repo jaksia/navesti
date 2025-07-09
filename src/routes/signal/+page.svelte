@@ -140,11 +140,11 @@
 				></div>
 				<div
 					class={[
-						'relative size-6 rounded-full p-[5px]',
+						'size-6 rounded-full p-[20%]',
 						safetySignal == 4 ? 'bg-yellow-400' : 'bg-stone-900'
 					]}
 				>
-					<div class="size-3.5 transform rounded-full bg-stone-900"></div>
+					<div class="size-full rounded-full bg-stone-900"></div>
 				</div>
 				<div
 					class={[

@@ -7,6 +7,7 @@
 		children,
 		class: classProp = '',
 		style: styleProp = '',
+		id = undefined,
 		duration = 750
 	}: {
 		children: Snippet;
@@ -18,6 +19,7 @@
 
 <main
 	class="relative size-full grow overflow-hidden"
+	{id}
 	style="{styleProp}; --anim-duration: {prefersReducedMotion.current ? 0 : duration}ms;"
 >
 	<div class={['day absolute inset-0 z-0', classProp]}>

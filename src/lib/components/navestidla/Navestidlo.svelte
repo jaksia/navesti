@@ -159,11 +159,6 @@
 
 <style lang="scss">
 	.navestidlo :global {
-		.signs {
-			--label-outline-size: 1px;
-			--label-border-size: 3px;
-		}
-
 		.pole {
 			position: relative;
 			background: gray;

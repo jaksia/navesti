@@ -24,6 +24,9 @@
 	import PredzvestBezVyhybiek from '$lib/components/navestidla/signs/PredzvestBezVyhybiek.svelte';
 	import DayNightToggle from '$lib/components/DayNightToggle.svelte';
 	import { browser } from '$app/environment';
+	import PoslednyAutoblok from '$lib/components/navestidla/signs/PoslednyAutoblok.svelte';
+
+	type Sign = Additional | 'predzvest_k' | 'predzvest_nk' | 'posledny_autoblok';
 
 	let mode: Mode = $state(Mode.BUILD);
 
@@ -53,18 +56,20 @@
 	let labelStyleClass: string | null = $state(null);
 	let poleStyleClass: string | null = $state(null);
 
-	const availableSigns: (Additional | 'predzvest_k' | 'predzvest_nk')[] = [
+	const availableSigns = [
 		'skratena_vzd',
 		'skupinove',
 		'predzvest_k',
-		'predzvest_nk'
-	];
+		'predzvest_nk',
+		'posledny_autoblok'
+	] as Sign[];
 	const signNames = {
 		...additionalNames,
 		predzvest_k: 'Hl. návestidlo kryje výhybky',
-		predzvest_nk: 'Hl. návestidlo nekryje výhybky'
-	};
-	let selectedSigns: (Additional | 'predzvest_k' | 'predzvest_nk')[] = $state([]);
+		predzvest_nk: 'Hl. návestidlo nekryje výhybky',
+		posledny_autoblok: 'Posledné návestidlo autobloku'
+	} as Record<Sign, string>;
+	let selectedSigns: Sign[] = $state([]);
 
 	$effect(() => {
 		const [oldLE] = untrack(() => [lightElements]);
@@ -89,7 +94,7 @@
 			activeLights = pattern;
 		}
 
-		if (!speedLight) (speed = null), (speedStripes = false);
+		if (!speedLight) ((speed = null), (speedStripes = false));
 	});
 
 	let activeDropBox: number | null = $state(null);
@@ -124,7 +129,7 @@
 			const color = data[0] as CustomLightColor,
 				origPos = parseInt(data[1]);
 
-			(activeDropBox = null), (trashActive = false);
+			((activeDropBox = null), (trashActive = false));
 
 			if (origPos !== -1) {
 				lights = [...lights.slice(0, origPos), ...lights.slice(origPos + 1)];
@@ -148,7 +153,7 @@
 	}
 
 	function dragend() {
-		(activeDropBox = null), (trashActive = false), (dragData = null);
+		((activeDropBox = null), (trashActive = false), (dragData = null));
 	}
 
 	function cycleLight(i: number) {
@@ -422,6 +427,9 @@
 				{/if}
 				{#if selectedSigns.includes('skupinove')}
 					<Skupina />
+				{/if}
+				{#if selectedSigns.includes('posledny_autoblok')}
+					<PoslednyAutoblok />
 				{/if}
 			{/snippet}
 			{#snippet bottomSigns()}

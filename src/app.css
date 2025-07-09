@@ -64,6 +64,10 @@
 
   --animate-blink: blink 1s infinite;
   --animate-blink-fast: blink 0.5s infinite;
+
+  --label-outline-size: 1px;
+  --label-border-size: 3px;
+  --label-py: 75%;
 }
 
 @keyframes blink {
@@ -76,28 +80,13 @@
   }
 }
 
-/*
-  The default border color has changed to `currentColor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
-@layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentColor);
-  }
-}
-
-
 .light {
   --tw-duration: 300ms;
   @apply transition-all;
+
+  &.flipped {
+    scale: 1 -1;
+  }
 }
 
 .light:not(.stripe):not(.letter) {
@@ -122,30 +111,28 @@
   .light {
     --shadow-size: 30px;
     --shadow-color: var(--base-color);
+    --third-shadow-opacity: 60%;
+
 
     filter: drop-shadow(0 0 calc(var(--shadow-size) * 1.5) var(--shadow-color))
       drop-shadow(0 0 var(--shadow-size) var(--shadow-color))
-      drop-shadow(0 0 var(--shadow-size) var(--third-shadow-color, transparent))
-      var(--additional-filter,);
+      drop-shadow(0 0 var(--shadow-size) color-mix(in oklab, var(--shadow-color) var(--third-shadow-opacity), transparent));
 
     /* Changes for letters and stripes */
 
     &.letter {
       --shadow-size: 15px;
-      --third-shadow-color: color-mix(in oklab, var(--shadow-color) 45%, transparent);
+      --third-shadow-opacity: 45%;
 
       &.text-n-white {
         --base-color: color-mix(in oklab, var(--color-n-white) 80%, transparent);
-      }
-
-      &.flipped {
-        scale: 1 -1;
       }
     }
 
     &.stripe {
       --shadow-size: 20px;
       --shadow-color: color-mix(in oklab, var(--base-color) 60%, transparent);
+      --third-shadow-opacity: 30%;
     }
 
     /* Shadow colors for specific backgrounds */
@@ -155,24 +142,24 @@
     }
     &.bg-n-yellow {
       --base-color: color-mix(in oklab, var(--color-n-yellow) 75%, transparent);
-      --third-shadow-color: color-mix(in oklab, var(--shadow-color) 50%, transparent);
+      --third-shadow-opacity: 50%;
     }
     &.bg-n-green {
       --base-color: var(--color-n-green);
-      --third-shadow-color: color-mix(in oklab, var(--shadow-color) 60%, transparent);
     }
     &.bg-n-red {
       --base-color: var(--color-n-red);
-      --third-shadow-color: var(--shadow-color);
     }
     &.bg-n-blue {
-      --shadow-color: var(--color-n-blue);
-      --third-shadow-color: var(--shadow-color);
+      --base-color: var(--color-n-blue);
     }
     &.bg-n-white {
-      --shadow-color: color-mix(in oklab, var(--color-n-white) 90%, transparent);
+      --base-color: color-mix(in oklab, var(--color-n-white) 90%, transparent);
+      --third-shadow-opacity: 10%;
     }
   }
+
+  /* Styles for darkened poles and arms in night mode */
 
   .arm::after {
     content: '';
@@ -190,28 +177,33 @@
   .pole::before, .n-label::before {
     content: '';
     position: absolute;
-    top: calc(var(--label-border-size, 0) * -1);
-    left: calc(var(--label-border-size, 0) * -1);
-    min-width: 100%;
-    min-height: 100%;
-    width: calc(100% + var(--label-border-size, 0) * 2);
-    height: calc(100% + var(--label-border-size, 0) * 2);
 
     border-radius: inherit;
     outline: inherit;
 
-    background-color: var(--night-overlay-color, #0008);
-    outline-color: var(--night-overlay-color, #0008);
+    background-color: var(--night-overlay-color, #0009);
+    outline-color: var(--night-overlay-color, #0009);
   }
 
   .pole .sign::after {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
 
     background-color: var(--night-overlay-color, #0008);
   }
+
+  .pole::before {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .n-label::before {
+    top: calc(var(--label-border-size, 0) * -1);
+    left: calc(var(--label-border-size, 0) * -1);
+    width: calc(100% + var(--label-border-size, 0) * 2);
+    height: calc(100% + var(--label-border-size, 0) * 2);
+  }
+
 }

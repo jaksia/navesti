@@ -6,61 +6,57 @@
 	import { generateLabel, type LabelType } from '$lib/labels';
 	import { nazvyNavesti } from '$lib/consts/navestidlo';
 	import { fade } from 'svelte/transition';
+	import type { HlavnaNavest } from '$lib/types/navestidlo';
 
-	const blank = colors.blank;
 	const rotations = {
 		up: '-rotate-90',
-		level: 'rotate-0',
+		level: '',
 		angle: '-rotate-45'
 	};
+	const firstLightColors = {
+		volno: colors.green,
+		stoj: colors.red,
+		vystraha: colors.yellow
+	};
 
-	let navest = $state('stoj');
+	const labelTypes: LabelType[] = ['krycie', 'vchod', 'odchod', 'oddiel'];
+	const label = generateLabel(labelTypes[Math.floor(Math.random() * labelTypes.length)]);
+
+	let navest: Exclude<HlavnaNavest, 60 | 80 | 100> = $state('stoj');
 
 	let secondArm = $state(false);
 	let yellowArm = $state(false);
 
-	let armRotation = $state(rotations.level);
-	let secondArmRotation = $state(rotations.up);
-	let lightColor = $state(colors.red);
-	let secondLightColor = $state(blank);
+	let firstArmActive = $state(false);
+	let secondArmActive = $state(false);
+
+	let firstLightColor = $state(colors.red);
+	let secondLightColor = $state(colors.blank);
 
 	let predzvest = $state(true);
 
 	$effect(() => {
-		if (navest == 'vystraha' && !yellowArm) navest = 'volno';
-		if (navest == 'volno' && yellowArm) navest = 'vystraha';
-		if (navest == '40' && !secondArm) navest = 'volno';
+		if (navest === 40 && !secondArm) navest = 'volno';
+		if (navest === 'volno' && yellowArm) navest = 'vystraha';
+		if (navest === 'vystraha' && !yellowArm) navest = 'volno';
 
-		if (navest == 'volno') {
-			armRotation = rotations.angle;
-			secondArmRotation = rotations.up;
-			((lightColor = colors.green), (secondLightColor = blank));
-		} else if (navest == 'stoj') {
-			armRotation = rotations.level;
-			secondArmRotation = rotations.up;
-			((lightColor = colors.red), (secondLightColor = blank));
-		} else if (navest == 'vystraha') {
-			armRotation = rotations.angle;
-			secondArmRotation = rotations.up;
-			((lightColor = colors.yellow), (secondLightColor = blank));
-		} else if (navest == '40') {
-			armRotation = secondArmRotation = rotations.angle;
-			lightColor = secondLightColor = yellowArm ? colors.yellow : colors.green;
-		}
+		predzvest = [40, 'stoj'].includes(navest);
 
-		predzvest = navest == 'stoj' || navest == '40';
+		firstArmActive = ['volno', 'vystraha', 40].includes(navest);
+		secondArmActive = navest === 40;
+
+		if (navest !== 40) firstLightColor = firstLightColors[navest];
+		else firstLightColor = yellowArm ? colors.yellow : colors.green;
+
+		secondLightColor = navest === 40 ? firstLightColor : colors.blank;
 	});
-
-	const labelTypes: LabelType[] = ['krycie', 'vchod', 'odchod', 'oddiel'];
-
-	let label = $state(generateLabel(labelTypes[Math.floor(Math.random() * labelTypes.length)]));
 </script>
 
 <svelte:head>
 	<title>Mechanické návestidlá</title>
 </svelte:head>
 
-<DayNight class="flex grow items-end justify-around">
+<DayNight class="flex grow items-end justify-around" id="mechanicke-navestidla">
 	<div class="pole relative h-3/5 w-4 bg-white">
 		<div
 			class={[
@@ -70,7 +66,7 @@
 			style="top: 7.5rem;"
 		></div>
 		<div
-			class="absolute top-0 left-1/2 transition-transform duration-1000 ease-in-out"
+			class="absolute left-1/2 transition-transform duration-1000 ease-in-out"
 			style="transform: {predzvest ? '' : 'rotate3d(1,0,0,88deg)'};"
 		>
 			<div class="absolute size-56 -translate-x-1/2 -translate-y-1/2 rounded-full">
@@ -92,7 +88,7 @@
 	</div>
 	<div class="pole hlavne_jazda no-darken relative h-4/5 w-4">
 		<div
-			class={['light absolute ml-1 size-8 -translate-y-1/2 rounded-full', lightColor]}
+			class={['light absolute ml-1 size-8 -translate-y-1/2 rounded-full', firstLightColor]}
 			style="top: 3rem; left: 1.755rem;"
 		></div>
 		{#if secondArm}
@@ -104,7 +100,10 @@
 		{/if}
 
 		<div
-			class={['absolute left-1/2 z-10 transition-transform duration-1000 ease-in-out', armRotation]}
+			class={[
+				'absolute left-1/2 z-10 transition-transform duration-1000 ease-in-out',
+				firstArmActive && rotations.angle
+			]}
 			style="top: {3}rem;"
 		>
 			<div class="absolute aspect-6/1 w-64 -translate-x-[5%] -translate-y-1/2">
@@ -121,11 +120,7 @@
 			</div>
 		</div>
 		{#if yellowArm}
-			<div
-				class="absolute left-1/2 transition-transform duration-1000 ease-in-out"
-				style="top: 3rem;"
-				transition:fade={{ duration: 500 }}
-			>
+			<div class="absolute left-1/2" style="top: 3rem;" transition:fade={{ duration: 500 }}>
 				<div class="absolute aspect-6/1 w-64 -translate-x-[5%] -translate-y-1/2">
 					<img
 						src="/elements/mechanicke/yellow-arm.svg"
@@ -144,7 +139,7 @@
 			<div
 				class={[
 					'absolute left-1/2 z-10 transition-transform duration-1000 ease-in-out',
-					secondArmRotation
+					secondArmActive ? rotations.angle : rotations.up
 				]}
 				style="top: 13rem;"
 				transition:fade={{ duration: 500 }}
@@ -187,7 +182,7 @@
 			<option value="stoj">{nazvyNavesti['stoj']}</option>
 			<option value="volno" disabled={yellowArm}>{nazvyNavesti['volno']}</option>
 			<option value="vystraha" disabled={!yellowArm}>{nazvyNavesti['vystraha']}</option>
-			<option value="40" disabled={!secondArm}>Rýchlosť 40 km/h a Výstraha </option>
+			<option value={40} disabled={!secondArm}>Rýchlosť 40 km/h a Výstraha </option>
 		</select>
 	</label>
 	<div class="mt-auto">
@@ -218,12 +213,7 @@
 			);
 		}
 	}
-	:global(.night) .pole::before,
-	:global(.night .n-label)::before {
-		background-color: #000b !important;
-	}
-
-	:global(.night) .arm::after {
-		background-color: #000a !important;
+	:global(#mechanicke-navestidla) {
+		--night-overlay-color: #000b;
 	}
 </style>
