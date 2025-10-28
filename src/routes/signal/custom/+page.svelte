@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { blinking, colors } from '$lib/consts/styles';
+	import { blinking, colors, textColors } from '$lib/consts/styles';
 	import {
 		customColorClasses,
 		CustomLightColor,
@@ -7,13 +7,15 @@
 		maxLightCounts,
 		generatePattern,
 		type LightMode,
-		availableSignals as availableSignalsF,
+		availableSignals as availableSignalsFn,
 		canRepeat,
 		canPrivolavacia,
-		modeNames
+		modeNames,
+		type CustomLightSymbol,
+		textColorClasses
 	} from '$lib/custom';
 	import Icon from '@iconify/svelte';
-	import { untrack } from 'svelte';
+	import { onDestroy, onMount, untrack } from 'svelte';
 	import Navestidlo from '$lib/components/navestidla/Navestidlo.svelte';
 	import type { Additional, Navest } from '$lib/types/navestidlo';
 	import { additionalNames, nazvyNavesti, vsetkyNavesti } from '$lib/consts/navestidlo';
@@ -25,36 +27,9 @@
 	import DayNightToggle from '$lib/components/DayNightToggle.svelte';
 	import { browser } from '$app/environment';
 	import PoslednyAutoblok from '$lib/components/navestidla/signs/PoslednyAutoblok.svelte';
+	import store from '$lib/store.svelte';
 
 	type Sign = Additional | 'predzvest_k' | 'predzvest_nk' | 'posledny_autoblok';
-
-	let mode: Mode = $state(Mode.BUILD);
-
-	let lights: CustomLightColor[] = $state([]);
-	let activeLights: LightMode[] = $state([]);
-	let lightElements: HTMLElement[] = $state([]);
-	let speedLight = $state(false);
-	let speedStripes = $state(false);
-
-	const signalModeAvailable = $derived(
-		Object.values(CustomLightColor).every(
-			(color) => lights.filter((l) => l === color).length <= maxLightCounts[color]
-		)
-	);
-
-	let signal: Navest | null = $state(null);
-	let availableSignals: Navest[] = $derived(availableSignalsF(lights));
-	let speed: number | null = $state(null);
-
-	let repeating = $state(false);
-	let repeatingAvailable = $derived(canRepeat(lights, signal));
-
-	let privolavacia = $state(false);
-	let privolavaciaAvailable = $derived(canPrivolavacia(lights, signal));
-
-	let label = $state('');
-	let labelStyleClass: string | null = $state(null);
-	let poleStyleClass: string | null = $state(null);
 
 	const availableSigns = [
 		'skratena_vzd',
@@ -69,7 +44,49 @@
 		predzvest_nk: 'Hl. návestidlo nekryje výhybky',
 		posledny_autoblok: 'Posledné návestidlo autobloku'
 	} as Record<Sign, string>;
+
+	let mode: Mode = $state(Mode.BUILD);
+
+	let lights: CustomLightColor[] = $state([]);
+	let symbols: (CustomLightSymbol | null)[] = $state([]);
+	let symbolsHeight: { [key: number]: number } = $state({});
+	let activeLights: LightMode[] = $state([]);
+	let lightElements: HTMLElement[] = $state([]);
+	let speedLight = $state(false);
+	let speedStripes = $state(false);
+
+	const nonSymbolLights = $derived(
+		lights
+			.map((l, i) => (symbols[i] === null ? { l, i } : null))
+			.reduce(
+				(agg, elem) => {
+					if (elem) agg[elem.i] = elem.l;
+					return agg;
+				},
+				{} as Record<number, CustomLightColor>
+			)
+	);
+	const signalModeAvailable = $derived(
+		Object.values(CustomLightColor).every(
+			(color) =>
+				Object.values(nonSymbolLights).filter((l) => l === color).length <= maxLightCounts[color]
+		)
+	);
+
+	let label = $state('');
+	let labelStyleClass: string | null = $state(null);
+	let poleStyleClass: string | null = $state(null);
+
 	let selectedSigns: Sign[] = $state([]);
+
+	let signal: Navest | null = $state(null);
+	let speed: number | null = $state(null);
+	let repeating = $state(false);
+	let privolavacia = $state(false);
+
+	const availableSignals: Navest[] = $derived(availableSignalsFn(Object.values(nonSymbolLights)));
+	const repeatingAvailable = $derived(canRepeat(Object.values(nonSymbolLights), signal));
+	const privolavaciaAvailable = $derived(canPrivolavacia(Object.values(nonSymbolLights), signal));
 
 	$effect(() => {
 		const [oldLE] = untrack(() => [lightElements]);
@@ -85,13 +102,22 @@
 			if (!signal || !pattern) {
 				pattern = lights.map(() => false);
 			}
+
 			if (repeating && repeatingAvailable) {
-				pattern[lights.indexOf(CustomLightColor.WHITE)] = true;
+				pattern[Object.values(nonSymbolLights).indexOf(CustomLightColor.WHITE)] = true;
 			}
 			if (privolavacia && privolavaciaAvailable) {
-				pattern[lights.indexOf(CustomLightColor.WHITE)] = 'slow';
+				pattern[Object.values(nonSymbolLights).indexOf(CustomLightColor.WHITE)] = 'slow';
 			}
-			activeLights = pattern;
+
+			// Translate pattern to real light indexes instead of non-symbol light indexes
+			const realPattern: Record<number, LightMode> = {};
+			Object.entries(pattern).forEach(([i, mode]) => {
+				const realIndex = (Object.keys(nonSymbolLights) as unknown as number[])[parseInt(i)];
+				realPattern[realIndex] = mode;
+			});
+			// Fill in the rest with false
+			activeLights = lights.map((_, i) => realPattern[i] ?? false);
 		}
 
 		if (!speedLight) ((speed = null), (speedStripes = false));
@@ -105,7 +131,7 @@
 		event.preventDefault();
 		if (mode !== Mode.BUILD || !dragData) return;
 		const [type, ...data] = dragData.split(';');
-		if (type === 'light') {
+		if (['light', 'letter', 'symbol'].includes(type)) {
 			activeDropBox = lightElements.findIndex((el, i) => {
 				const rect = el.getBoundingClientRect();
 				const thirdY =
@@ -125,22 +151,41 @@
 		if (!dragData) return;
 		const [type, ...data] = dragData.split(';');
 		dragData = null;
-		if (type === 'light') {
-			const color = data[0] as CustomLightColor,
-				origPos = parseInt(data[1]);
+		if (['light', 'letter', 'symbol'].includes(type)) {
+			const origPos = parseInt(data[1]);
+			const color = data[0] as CustomLightColor;
+			let symbol: CustomLightSymbol | null = null;
+			if (type === 'letter' && data[1] === 'custom') {
+				// prompt for letter
+				const letter = browser
+					? prompt('Zadaj písmeno (A-Z). Ak za neho dáš _, bude obrátené.')
+					: undefined;
+				if (!letter || !letter.match(/^[A-Z]_?$/)) {
+					alert('Neplatné písmeno.');
+					((activeDropBox = null), (trashActive = false));
+					return;
+				}
+				symbol = letter as CustomLightSymbol;
+			} else {
+				symbol = data[1] as CustomLightSymbol;
+				if ((symbol as never) === 'null') symbol = null;
+			}
 
 			((activeDropBox = null), (trashActive = false));
 
 			if (origPos !== -1) {
 				lights = [...lights.slice(0, origPos), ...lights.slice(origPos + 1)];
+				symbols = [...symbols.slice(0, origPos), ...symbols.slice(origPos + 1)];
 				activeLights = [...activeLights.slice(0, origPos), ...activeLights.slice(origPos + 1)];
 			}
 			if (i === -1) return;
 			if (insert) {
 				lights = [...lights.slice(0, i), color, ...lights.slice(i)];
+				symbols = [...symbols.slice(0, i), symbol, ...symbols.slice(i)];
 				activeLights = [...activeLights.slice(0, i), false, ...activeLights.slice(i)];
 			} else {
 				lights[i] = color;
+				symbols[i] = symbol;
 			}
 		} else if (type === 'speed') {
 			const speedType = data[0];
@@ -153,7 +198,7 @@
 	}
 
 	function dragend() {
-		((activeDropBox = null), (trashActive = false), (dragData = null));
+		((trashActive = false), (dragData = null));
 	}
 
 	function cycleLight(i: number) {
@@ -207,7 +252,47 @@
 	};
 
 	let word = $state('');
+
+	onMount(() => {
+		store.cancelDrag = true;
+	});
+
+	onDestroy(() => {
+		store.cancelDrag = false;
+	});
 </script>
+
+{#snippet renderSymbol(symbol: CustomLightSymbol, i: number, colorClasses: string[] = [])}
+	<div
+		class={[
+			'light letter',
+			symbol.length > 2 && 'size-full',
+			symbol.endsWith('_') && 'flipped',
+			colorClasses.length > 0 ? colorClasses : ['text-stone-850']
+		]}
+		style="font-size: {symbolsHeight[i]}px;"
+	>
+		{#if symbol == 'short_distance'}
+			<svg class="size-full" viewBox="0 0 75 50">
+				<rect x="0" y="00" width="25" height="50" fill="currentcolor"></rect>
+				<rect x="50" y="00" width="25" height="50" fill="currentcolor"></rect>
+			</svg>
+		{:else if symbol == 'disabled'}
+			<svg class="size-full" viewBox="0 0 100 100">
+				<path
+					d="M10 10 L90 90 M90 10 L10 90"
+					stroke="currentcolor"
+					stroke-width="15"
+					stroke-linecap="round"
+				></path>
+			</svg>
+		{:else if symbol.endsWith('_')}
+			{symbol.slice(0, -1)}
+		{:else}
+			{symbol}
+		{/if}
+	</div>
+{/snippet}
 
 <svelte:head>
 	<title>Vlastné návestidlo</title>
@@ -246,6 +331,8 @@
 						<th></th>
 						<th colspan="2">Rýchlosť</th>
 						<th></th>
+						<th colspan="3">Písmená / symboly</th>
+						<th></th>
 						<th>Kôš</th>
 					</tr>
 				</thead>
@@ -275,6 +362,38 @@
 							<div class={['aspect-6/1', colors.yellow]}></div>
 							<div class="aspect-7"></div>
 							<div class={['aspect-6/1', colors.green]}></div>
+						</td>
+						<td class="px-1"></td>
+						<td
+							class="size-14 rounded-full bg-black/20 text-2xl"
+							draggable="true"
+							ondragstart={() => (dragData = `letter;white;custom`)}
+						>
+							<Icon icon="mdi:alphabetical" class="text-n-white m-auto size-10" />
+						</td>
+						<td
+							class="size-14 rounded-full bg-black/20 text-2xl"
+							draggable="true"
+							ondragstart={() => (dragData = `symbol;white;short_distance`)}
+						>
+							<svg class="text-n-white m-1 transform items-center" viewBox="0 0 110 70">
+								<rect x="15" y="10" width="25" height="50" fill="currentcolor"></rect>
+								<rect x="70" y="10" width="25" height="50" fill="currentcolor"></rect>
+							</svg>
+						</td>
+						<td
+							class="size-14 rounded-full bg-black/20 text-2xl"
+							draggable="true"
+							ondragstart={() => (dragData = `symbol;white;disabled`)}
+						>
+							<svg class="text-n-white m-auto size-8 transform items-center" viewBox="0 0 100 100">
+								<path
+									d="M10 10 L90 90 M90 10 L10 90"
+									stroke="currentcolor"
+									stroke-width="15"
+									stroke-linecap="round"
+								></path>
+							</svg>
 						</td>
 						<td class="px-1"></td>
 						<td
@@ -316,7 +435,13 @@
 						]}
 						ondrop={(e) => drop(e, i, true)}
 					></div>
-					<div class={['light mt-[6%] mb-[6%] aspect-square rounded-full', colors.blank]}></div>
+					{#if symbols[i]}
+						<div class="light relative" bind:clientHeight={symbolsHeight[i]}>
+							{@render renderSymbol(symbols[i], i)}
+						</div>
+					{:else}
+						<div class={['light', colors.blank]}></div>
+					{/if}
 				{/each}
 				<div
 					class={[
@@ -336,9 +461,9 @@
 				{/if}
 				{#if speedStripes}
 					<div>
-						<div class={['light stripe !m-0 aspect-6/1', colors.blank]}></div>
-						<div class="!m-0 aspect-7/1"></div>
-						<div class={['light stripe !m-0 aspect-6/1', colors.blank]}></div>
+						<div class={['light stripe m-0! aspect-6/1', colors.blank]}></div>
+						<div class="m-0! aspect-7/1"></div>
+						<div class={['light stripe m-0! aspect-6/1', colors.blank]}></div>
 					</div>
 				{/if}
 				<div
@@ -358,19 +483,36 @@
 						]}
 						ondrop={(e) => drop(e, i, true)}
 					></div>
-					<div
-						class={[
-							'light mt-[6%] mb-[6%] aspect-square rounded-full',
-							activeLights[i] === false ? colors.transparent : customColorClasses[light],
-							mode === Mode.MANUAL ? 'cursor-pointer' : '',
-							typeof activeLights[i] === 'string' ? blinking[activeLights[i]] : ''
-						]}
-						draggable="true"
-						ondragstart={() => (dragData = `light;${light};${i}`)}
-						bind:this={lightElements[i]}
-						ondrop={(e) => activeDropBox && drop(e, activeDropBox, true)}
-						onclick={() => mode === Mode.MANUAL && cycleLight(i)}
-					></div>
+					{#if symbols[i]}
+						<div
+							class={['light relative', mode === Mode.MANUAL ? 'cursor-pointer' : '']}
+							bind:clientHeight={symbolsHeight[i]}
+							bind:this={lightElements[i]}
+							draggable="true"
+							ondragstart={() => (dragData = `symbol;${light};${symbols[i]};${i}`)}
+							ondrop={(e) => activeDropBox && drop(e, activeDropBox, true)}
+							onclick={() => mode === Mode.MANUAL && cycleLight(i)}
+						>
+							{@render renderSymbol(symbols[i], i, [
+								activeLights[i] === false ? textColors.transparent : textColorClasses[light],
+								typeof activeLights[i] === 'string' ? blinking[activeLights[i]] : ''
+							])}
+						</div>
+					{:else}
+						<div
+							class={[
+								'light',
+								activeLights[i] === false ? colors.transparent : customColorClasses[light],
+								mode === Mode.MANUAL ? 'cursor-pointer' : '',
+								typeof activeLights[i] === 'string' ? blinking[activeLights[i]] : ''
+							]}
+							draggable="true"
+							ondragstart={() => (dragData = `light;${light};${symbols[i]};${i}`)}
+							bind:this={lightElements[i]}
+							ondrop={(e) => activeDropBox && drop(e, activeDropBox, true)}
+							onclick={() => mode === Mode.MANUAL && cycleLight(i)}
+						></div>
+					{/if}
 				{/each}
 				<div
 					class={[
@@ -394,7 +536,7 @@
 					<div draggable="true" ondragstart={() => (dragData = `speed;stripes`)}>
 						<div
 							class={[
-								'light stripe !m-0 aspect-6/1',
+								'light stripe m-0! aspect-6/1',
 								speed === 60 || mode == Mode.BUILD
 									? colors.yellow
 									: [80, 100].includes(speed ?? -1)
@@ -403,10 +545,10 @@
 							]}
 							onclick={() => mode === Mode.MANUAL && cycleSpeed()}
 						></div>
-						<div class="!m-0 aspect-7/1"></div>
+						<div class="m-0! aspect-7/1"></div>
 						<div
 							class={[
-								'light stripe !mt-0 aspect-6/1',
+								'light stripe mt-0! aspect-6/1',
 								speed === 100 || mode == Mode.BUILD ? colors.green : colors.transparent
 							]}
 							onclick={() => mode === Mode.MANUAL && cycleSpeed()}
@@ -558,6 +700,11 @@
 				Privolávacia návesť
 			</label>
 		</fieldset>
+		{#if symbols.length > 0}
+			<i class="text-sm text-yellow-600">
+				V režime "podľa návesti" sú písmená a symboly ignorované a nedajú sa zapnúť.
+			</i>
+		{/if}
 	{/if}
 	<a href="/signal/" class="mt-auto font-bold underline">Naspäť</a>
 </div>

@@ -1,9 +1,18 @@
 <script lang="ts">
+	import store from '$lib/store.svelte';
 	import '../app.css';
 	let { children } = $props();
 
 	let mobileAlert = $state(true);
+
+	function cancelDrag(e: Event) {
+		if (!store.cancelDrag) return;
+		e.preventDefault();
+		e.stopPropagation();
+	}
 </script>
+
+<svelte:body ondragover={cancelDrag} ondragenter={cancelDrag} ondrop={cancelDrag} />
 
 <div class="flex h-screen w-screen overflow-hidden select-none">
 	{@render children()}

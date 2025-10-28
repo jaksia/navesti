@@ -330,4 +330,8 @@
 		color: black;
 		font-weight: bold;
 	}
+
+	.fieldset:not(:has(label)) {
+		display: none;
+	}
 </style>

@@ -83,9 +83,9 @@
 				{/each}
 				{#if speedIndication}
 					<div class={['light', colors.blank]}></div>
-					<div class={['light stripe !m-0', colors.blank]}></div>
-					<div class="stripe-gap !m-0"></div>
-					<div class={['light stripe !m-0', colors.blank]}></div>
+					<div class={['light stripe m-0!', colors.blank]}></div>
+					<div class="stripe-gap m-0!"></div>
+					<div class={['light stripe m-0!', colors.blank]}></div>
 					<div></div>
 				{/if}
 			{/if}
@@ -115,7 +115,7 @@
 					<div class={['light', speed ? colors.yellow : colors.transparent]}></div>
 					<div
 						class={[
-							'light stripe !m-0',
+							'light stripe m-0!',
 							speed === 60
 								? colors.yellow
 								: [80, 100].includes(speed ?? -1)
@@ -123,9 +123,9 @@
 									: colors.transparent
 						]}
 					></div>
-					<div class="stripe-gap !m-0"></div>
+					<div class="stripe-gap m-0!"></div>
 					<div
-						class={['light stripe !m-0', speed === 100 ? colors.green : colors.transparent]}
+						class={['light stripe m-0!', speed === 100 ? colors.green : colors.transparent]}
 					></div>
 					<div></div>
 				{/if}

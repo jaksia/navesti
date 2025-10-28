@@ -109,30 +109,36 @@
 
   /* Styles for light spread in night mode */
   .light {
-    --shadow-size: 30px;
+    --shadow-size: 100px;
     --shadow-color: var(--base-color);
     --third-shadow-opacity: 60%;
+    
+    &:not(.bg-n-blank) {
+      mix-blend-mode: screen;
+    }
 
-
-    filter: drop-shadow(0 0 calc(var(--shadow-size) * 1.5) var(--shadow-color))
-      drop-shadow(0 0 var(--shadow-size) var(--shadow-color))
-      drop-shadow(0 0 var(--shadow-size) color-mix(in oklab, var(--shadow-color) var(--third-shadow-opacity), transparent));
+    box-shadow: 0 0 calc(var(--shadow-size)) var(--shadow-color),
+                0 0 var(--shadow-size) calc(var(--shadow-size) * 0.1) var(--shadow-color),
+                0 0 var(--shadow-size) calc(var(--shadow-size) * 0.1) color-mix(in oklab, var(--shadow-color) var(--third-shadow-opacity), transparent);
 
     /* Changes for letters and stripes */
 
     &.letter {
-      --shadow-size: 15px;
-      --third-shadow-opacity: 45%;
+      box-shadow: none;
+      filter: drop-shadow(0 0 15px var(--shadow-color))
+        drop-shadow(0 0 7.5px var(--shadow-color))
+        drop-shadow(0 0 7.5px color-mix(in oklab, var(--shadow-color) 45%, transparent));
+
 
       &.text-n-white {
-        --base-color: color-mix(in oklab, var(--color-n-white) 80%, transparent);
+        --base-color: var(--color-n-white);
       }
     }
 
     &.stripe {
-      --shadow-size: 20px;
-      --shadow-color: color-mix(in oklab, var(--base-color) 60%, transparent);
-      --third-shadow-opacity: 30%;
+      --shadow-size: 50px;
+      --shadow-color: color-mix(in oklab, var(--base-color) 35%, transparent);
+      --third-shadow-opacity: 10%;
     }
 
     /* Shadow colors for specific backgrounds */
@@ -141,11 +147,11 @@
       z-index: -1;
     }
     &.bg-n-yellow {
-      --base-color: color-mix(in oklab, var(--color-n-yellow) 75%, transparent);
-      --third-shadow-opacity: 50%;
+      --base-color: var(--color-n-yellow);
     }
     &.bg-n-green {
       --base-color: var(--color-n-green);
+      --third-shadow-opacity: 100%;
     }
     &.bg-n-red {
       --base-color: var(--color-n-red);

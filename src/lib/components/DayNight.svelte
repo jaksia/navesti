@@ -1,6 +1,6 @@
 <script lang="ts">
 	import store from '$lib/store.svelte';
-	import type { Snippet } from 'svelte';
+	import { type Snippet } from 'svelte';
 	import { prefersReducedMotion } from 'svelte/motion';
 
 	const {

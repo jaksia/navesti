@@ -105,7 +105,7 @@
 					></div>
 				</div>
 				<div
-					class="absolute left-0 size-8 -translate-y-full bg-stone-800"
+					class="absolute top-0 left-0 size-8 -translate-y-full bg-stone-800"
 					transition:fade={{ duration: 300 }}
 				>
 					<div
@@ -113,7 +113,7 @@
 					></div>
 				</div>
 				<div
-					class="absolute right-0 size-8 -translate-y-full bg-stone-800"
+					class="absolute top-0 right-0 size-8 -translate-y-full bg-stone-800"
 					transition:fade={{ duration: 300 }}
 				>
 					<div
