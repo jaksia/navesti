@@ -152,7 +152,7 @@
 		const [type, ...data] = dragData.split(';');
 		dragData = null;
 		if (['light', 'letter', 'symbol'].includes(type)) {
-			const origPos = parseInt(data[1]);
+			const origPos = parseInt(data[2]);
 			const color = data[0] as CustomLightColor;
 			let symbol: CustomLightSymbol | null = null;
 			if (type === 'letter' && data[1] === 'custom') {
@@ -166,9 +166,8 @@
 					return;
 				}
 				symbol = letter as CustomLightSymbol;
-			} else {
+			} else if (type === 'symbol' || type === 'letter') {
 				symbol = data[1] as CustomLightSymbol;
-				if ((symbol as never) === 'null') symbol = null;
 			}
 
 			((activeDropBox = null), (trashActive = false));
@@ -342,7 +341,7 @@
 							<td
 								class={['size-14 rounded-full text-2xl', customColorClasses[color]]}
 								draggable="true"
-								ondragstart={() => (dragData = `light;${color};-1`)}
+								ondragstart={() => (dragData = `light;${color}`)}
 							></td>
 						{/each}
 						<td class="px-1"></td>
