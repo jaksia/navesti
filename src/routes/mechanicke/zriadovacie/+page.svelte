@@ -89,6 +89,7 @@
 		</div>
 	</div>
 	<div
+		id="vyckavacie"
 		class={['pole zriadovacie relative h-2/5 w-4', vyckavacieSvetla && 'cursor-pointer']}
 		onclick={() => vyckavacieSvetla && (vyckavacieNavestidlo = !vyckavacieNavestidlo)}
 	>
@@ -174,5 +175,10 @@
 	.spike {
 		aspect-ratio: 1;
 		clip-path: polygon(50% 0, 100% 50%, 0 50%);
+	}
+
+	#vyckavacie .light {
+		--third-shadow-opacity: 15%;
+		--shadow-size: 40px;
 	}
 </style>
